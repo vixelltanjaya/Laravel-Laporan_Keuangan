@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use Illuminate\Http\Request;
 
 class PayrollController extends Controller
@@ -11,7 +12,13 @@ class PayrollController extends Controller
      */
     public function index()
     {
-        return view('user-admin.payroll');
+
+
+        $employees = Employee::all();
+
+        return view('user-admin.payroll',[
+            'employees'=>$employees
+        ]);
     }
 
     /**

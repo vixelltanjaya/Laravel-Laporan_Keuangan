@@ -2,6 +2,10 @@
 
 @section('auth')
 
+<!-- DataTables CSS -->
+
+
+
 
     @if(\Request::is('static-sign-up')) 
         @include('layouts.navbars.guest.nav')

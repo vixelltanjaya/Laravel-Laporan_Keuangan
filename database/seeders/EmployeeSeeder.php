@@ -18,7 +18,8 @@ class EmployeeSeeder extends Seeder
             'id' => 1,
             'username' => 'bisma',
             'email' => 'bisma@gmail.com',
-            'role'=> 'admin',
+            'department'=> 'finance',
+            'status'=> 'tetap',
             'created_at' => now(),
             'updated_at' => now()
         ]);

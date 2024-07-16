@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('username');
-            $table->string('email')->unique();
-            $table->string('role');
-            $table->date('created_at')->format('d/m/Y');
-            $table->date('updated_at')->format('d/m/Y');
+            $table->string('username',144)->index();
+            $table->string('email',75)->unique();
+            $table->string('department',60);
+            $table->string('status',60);
+            $table->timestamps();
         });
     }
 

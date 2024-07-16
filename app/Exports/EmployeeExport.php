@@ -18,14 +18,15 @@ class EmployeeExport implements FromCollection, WithHeadings
             'No',
             'Nama',
             'Email',
-            'Jabatan',
+            'Departemen',
+            'Status',
             'Terakhir_diupdate',
         ];
     }
 
     public function collection()
     {
-        $employees = Employee::select('username', 'email', 'role', 'updated_at')->orderBy('updated_at', 'desc')->get();
+        $employees = Employee::select('username', 'email', 'department', 'status','updated_at')->orderBy('updated_at', 'desc')->get();
 
         // array kosong tampung data
         $modifiedCollection = [];
@@ -39,7 +40,8 @@ class EmployeeExport implements FromCollection, WithHeadings
                 'No' => $number++,
                 'Nama' => $employee->username,
                 'Email' => $employee->email,
-                'Jabatan' => $employee->role,
+                'Departemen' => $employee->department,
+                'Status' => $employee->status,
                 'Terakhir_diupdate' => $employee->updated_at,
             ];
         }

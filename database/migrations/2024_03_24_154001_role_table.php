@@ -12,13 +12,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('role', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('username');
-            $table->string('slug')->unique();
-            $table->string('role');
-            $table->date('created_at')->format('d/m/Y');
-            $table->date('updated_at')->format('d/m/Y');
+            $table->string('name', 255);
+            $table->string('slug', 255)->unique();
+            $table->string('description', 255);
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::table('role', function (Blueprint $table) {
+            $table->index('slug');
+            $table->index('description');
         });
     }
 
@@ -27,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('role');
     }
 };

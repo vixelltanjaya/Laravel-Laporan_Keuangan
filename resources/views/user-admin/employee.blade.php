@@ -14,10 +14,11 @@
                         </div>
 
                         <div class="nav-item d-flex align-self-end">
-                            <a href="#" class="btn bg-gradient-primary mb-0 me-2" type="button" data-bs-toggle="modal" data-bs-target="#modalAddEmployee">+&nbsp;Employee</a>
-                            <a href="/exportexcel" target="_blank" class="btn btn-primary active mb-0 text-white me-2 " role="button" aria-pressed="true">
-                            <i class="fas fa-download me-1"></i>Download</a>
-                            <a href="/importexcel" target="_blank" class="btn btn-primary active mb-0 text-white" role="button" aria-pressed="true">Import Data</a>
+                            <a href="#" class="btn bg-gradient-primary me-2" type="button" data-bs-toggle="modal" data-bs-target="#modalAddEmployee">+&nbsp;Employee</a>
+                            <a href="/exportexcel" target="_blank" class="btn btn-dark active text-white me-2 " role="button" aria-pressed="true">
+                            <i class="fas fa-download me-1"></i>Unduh</a>
+                            <a href="/" target="_blank" class="btn btn-default active text-black me-2" role="button" aria-pressed="true" data-bs-toggle="modal" data-bs-target="#importEmployeeModal">
+                                <i class="fas fa-file-import me-1"></i>Import</a>
                         </div>
                     </div>
                 </div>
@@ -67,7 +68,10 @@
                                         Email
                                     </th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                        Role
+                                        Departemen
+                                    </th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                        Status Pegawai
                                     </th>
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                         Creation Date
@@ -90,7 +94,10 @@
                                         <p class="text-xs font-weight-bold mb-0">{{ $employee->email }}</p>
                                     </td>
                                     <td class="text-center">
-                                        <p class="text-xs font-weight-bold mb-0">{{ $employee->role }}</p>
+                                        <p class="text-xs font-weight-bold mb-0">{{ $employee->department }}</p>
+                                    </td>
+                                    <td class="text-center">
+                                        <p class="text-xs font-weight-bold mb-0">{{ $employee->status }}</p>
                                     </td>
                                     <td class="text-center">
                                         <span class="text-secondary text-xs font-weight-bold">{{ $employee->created_at->format('d/m/Y') }}</span>
@@ -114,8 +121,8 @@
     </div>
 </div>
 
-<div class="align text-center">
-    {{$employees->links()}}
+<div class="justify-content-center pagination pagination-sm pagination-lg">
+    {{ $employees->links()}}
 </div>
 
 <!-- Add Modal -->
@@ -131,15 +138,19 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="username" class="form-label">Nama</label>
-                        <input type="text" class="form-control" name="username" id="username" value="{{ auth()->user()->name }}">
+                        <input type="text" class="form-control" name="username" id="username">
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="text" class="form-control" id="email" name="email">
                     </div>
                     <div class="mb-3">
-                        <label for="role" class="form-label">Role</label>
-                        <input type="text" class="form-control" id="role" name="role">
+                        <label for="departemen" class="form-label">Departemen</label>
+                        <input type="text" class="form-control" id="departemen" name="departemen">
+                    </div>
+                    <div class="mb-3">
+                        <label for="status_pegawai" class="form-label">Status Pegawai</label>
+                        <input type="text" class="form-control" id="status_pegawai" name="status_pegawai">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -173,12 +184,16 @@
                         <input type="text" class="form-control" id="email" name="email" value="{{ old('email', $employee->email) }}" readonly="true">
                     </div>
                     <div class="mb-3">
-                        <label for="role" class="form-label">Role</label>
-                        <input type="text" class="form-control" id="role" name="role" value="{{ old('role', $employee->role) }}">
+                        <label for="departemen" class="form-label">Departemen</label>
+                        <input type="text" class="form-control" id="departemen" name="departemen" value="{{ old('departemen', $employee->department) }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="status_pegawai" class="form-label">Status Pegawai</label>
+                        <input type="text" class="form-control" id="status_pegawai" name="status_pegawai" value="{{ old('status_pegawai', $employee->status) }}">
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -186,8 +201,6 @@
     </div>
 </div>
 @endforeach
-
-
 
 <!-- Modal for Deleting User -->
 @foreach ($employees as $employee)
@@ -206,8 +219,8 @@
                         <p> Apakah anda yakin akan menghapus data {{$employee->username}}?</p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                        <button type="submit" class="btn btn-danger">Yes, delete</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">Hapus</button>
                     </div>
                 </form>
             </div>
@@ -215,6 +228,31 @@
     </div>
 </div>
 @endforeach
+
+<!-- Import employee modal -->
+<div class="modal" id="importEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="importEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importEmployeeModalLabel">Import Akun</h5>
+            </div>
+            <form id="importEmployeeModalForm" method="POST" action="{{route('import-employee')}}" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="import_employee">Upload File</label>
+                        <input type="file" class="form-control-file" id="import_employee" name="import_employee" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 
 <!-- Bootstrap JavaScript -->

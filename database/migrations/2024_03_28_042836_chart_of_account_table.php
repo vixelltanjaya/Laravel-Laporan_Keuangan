@@ -11,17 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('coa', function (Blueprint $table) {
+        Schema::create('chart_of_account', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('account_id',20)->unique();
-            $table->string('account_code',255);
-            $table->string('account_group',14);
-            $table->string('account_name',14);
-            $table->string('account_subgroup',14);
-            $table->string('account_status',14);
-            $table->date('created_at');
-            $table->date('updated_at');
-            $table->date('inactive_at');
+            $table->string('account_id', 20)->unique()->index();
+            $table->string('account_name', 255);
+            $table->string('account_sign', 14);
+            $table->string('account_type', 14);
+            $table->string('account_group', 50);
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-       Schema::dropIfExists('coa');
+        Schema::dropIfExists('chart_of_account');
     }
 };

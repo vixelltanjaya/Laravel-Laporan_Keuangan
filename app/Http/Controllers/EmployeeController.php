@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Exports\EmployeeExport;
+use App\Imports\EmployeeImport;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class EmployeeController extends Controller
@@ -13,25 +15,26 @@ class EmployeeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
 
-        $employees = Employee::orderBy('id', 'asc');
+        $query = Employee::orderBy('id', 'asc');
 
         if (request()->has('search') && request('search') != '') {
             $search = request('search');
-            $employees->where(function ($query) use ($search) {
+            $query->where(function ($query) use ($search) {
                 $query->where('username', 'like', '%' . $search . '%')
-                ->orWhere('role', 'like', '%' . $search . '%');
+                    ->orWhere('department', 'like', '%' . $search . '%')
+                    ->orWhere('status', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%');
             });
         }
 
-        $employees = $employees->simplePaginate(10);
+        $employees = $query->paginate(10);
 
         return view('user-admin.employee', [
             'employees' => $employees
         ]);
-
         // $employee = Employee::latest();
 
         // if (request('search')){
@@ -52,18 +55,24 @@ class EmployeeController extends Controller
         $validateData = $request->validate([
             'username' => 'required',
             'email' => 'required|email|unique:employees,email',
-            'role' => 'required',
+            'departemen' => 'required',
+            'status_pegawai' => 'required'
         ]);
 
-        $employee = new Employee;
+        try {
+            $employee = new Employee;
 
-        $employee->username = $validateData['username'];
-        $employee->email = $validateData['email'];
-        $employee->role = $validateData['role'];
+            $employee->username = $validateData['username'];
+            $employee->email = $validateData['email'];
+            $employee->department = $validateData['departemen'];
+            $employee->status = $validateData['status_pegawai'];
 
-        $employee->save();
+            $employee->save();
 
-        return back()->with('berhasil', 'Data berhasil dimasukkan!');
+            return back()->with('berhasil', 'Data berhasil dimasukkan!');
+        } catch (Exception $e) {
+            return back()->withErrors(['gagal' => 'Data gagal dimasukkan: ' . $e->getMessage()]);
+        }
     }
 
     /**
@@ -74,15 +83,18 @@ class EmployeeController extends Controller
 
         $validatedData = $request->validate([
             'username' => 'required',
-            'email' => 'required|email|unique:employees,email',
-            'role' => 'required',
+            'departemen' => 'required',
+            'status_pegawai' => 'required',
         ]);
 
         $employee = Employee::findOrFail($id);
 
         $employee->username = $validatedData['username'];
-        $employee->email = $validatedData['email'];
-        $employee->role = $validatedData['role'];
+        $employee->department = $validatedData['departemen'];
+        $employee->status = $validatedData['status_pegawai'];
+
+        Log::debug('Array ID ' . json_encode($id));
+        Log::debug('Array emp ' . json_encode($employee));
 
         $employee->save();
 
@@ -102,5 +114,30 @@ class EmployeeController extends Controller
     public function exportexcel()
     {
         return Excel::download(new EmployeeExport, 'data_pegawai.xlsx');
+    }
+
+    public function importAccount(Request $request)
+    {
+        Log::info('Apakah proses import masuk sini?');
+
+        $request->validate([
+            'import_employee' => 'required|file|mimes:xls,xlsx,csv',
+        ]);
+
+        if ($request->hasFile('import_employee')) {
+            Log::info('File ditemukan: ' . $request->file('import_employee')->getClientOriginalName());
+
+            try {
+                Excel::import(new EmployeeImport, $request->file('import_employee'));
+            } catch (Exception $e) {
+                Log::error('Error during import: ' . $e->getMessage());
+                return redirect()->back()->with('gagal', 'Terjadi kesalahan saat mengimpor file: ' . $e->getMessage());
+            }
+        } else {
+            Log::error('File tidak ditemukan dalam request');
+            return redirect()->back()->with('gagal', 'File tidak ditemukan dalam request.');
+        }
+
+        return redirect()->back()->with('berhasil', 'File berhasil diunggah dan diproses.');
     }
 }
