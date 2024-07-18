@@ -24,6 +24,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'username',
         'email',
         'password',
+        'role_id',
         'created_at',
         'updated_at',
     ];
@@ -55,21 +56,13 @@ class User extends Authenticatable implements MustVerifyEmail
                 'A.name',
                 'A.username',
                 'A.email',
+                'A.role_id',
                 'C.name as role_name',
                 'C.description as role_description',
                 'C.slug as role_slug',
-                'E.name as permission_name',
-                'E.slug as permission_slug',
-                'E.description as permission_description'
+                'A.created_at as created_at'
             )
-            ->join('role_user as B', 'A.id', '=', 'B.user_id')
-            ->join('role as C', 'C.id', '=', 'B.role_id')
-            ->join('permissions_role as D', 'D.role_id', '=', 'C.id')
-            ->join('permissions as E', 'E.id', '=', 'D.permission_id')
-            ->join('permissions_user as F', function ($join) {
-                $join->on('F.permission_id', '=', 'E.id')
-                    ->on('F.user_id', '=', 'A.id');
-            })
+            ->join('role as C', 'C.id', '=', 'A.role_id')
             ->get();
     }
 }

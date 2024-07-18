@@ -47,7 +47,7 @@
                                     <th>No</th>
                                     <th>Tanggal</th>
                                     <th>Keterangan</th>
-                                    <th>Status</th>
+                                    <th>Kode Transaksi</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -64,16 +64,14 @@
                                         <p>{{$cin->description}}</p>
                                     </td>
                                     <td>
-                                        <p class="badge {{ $cin->is_reversed == 0 ? 'bg-gradient-success' : 'bg-gradient-secondary' }}">
-                                            {{ $cin->is_reversed == 0 ? 'Baru' : 'Batal' }}
-                                        </p>
+                                        <p>{{$cin->evidence_code}}</p>
                                     </td>
                                     <td>
                                         <p>
-                                            <a href="{{route('view-cash-in.index',['id' => $cin->id])}}" class="btn btn-link" target="_blank">
+                                            <a href="{{route('view-cash-in.index',['id' => $cin->id])}}" class="btn btn-link text-info">
                                                 <i class="fas fa-eye"></i> Lihat
                                             </a>
-                                            <button class="btn btn-link btn-sm" onclick="printInvoice()">
+                                            <button class="btn btn-link btn-sm text-dark" onclick="printInvoice()">
                                                 <i class="fas fa-print"></i> Print
                                             </button>
                                         </p>

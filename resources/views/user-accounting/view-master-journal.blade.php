@@ -18,10 +18,6 @@
                     <label class="h6 mb-0">Deskripsi :</label>
                     <label class="h6 font-weight-lighter mb-0">{{ $masterJournal->description }}</label>
                 </div>
-                <div class="form-group col-md-6 mb-3">
-                    <label class="h6 mb-0">Lini Bisnis: </label>
-                    <label class="h6 font-weight-lighter mb-0">{{ $division->firstWhere('id', $masterJournal->business_type_id)->description ?? '' }}</label>
-                </div>
                 <div class="form-group col-md-6 mb-4">
                     <label class="h6 mb-0">Kode Bukti Transaksi: </label>
                     <label class="h6 font-weight-lighter mb-0">{{ $EvidenceCode->firstWhere('id', $masterJournal->evidence_id)->prefix_code . ' - ' . $EvidenceCode->firstWhere('id', $masterJournal->evidence_id)->code_title ?? '' }}</label>

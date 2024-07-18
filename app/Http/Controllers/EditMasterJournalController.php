@@ -24,7 +24,7 @@ class EditMasterJournalController extends Controller
         $division = Division::all();
         $EvidenceCode = EvidenceCode::all();
 
-        Log::info('Divisi ID dari MasterJournal: ' . $masterJournal->business_type_id);
+        // Log::info('Divisi ID dari MasterJournal: ' . $masterJournal->business_type_id);
         Log::info('evidence ID dari MasterJournal: ' . $masterJournal->evidence_id);
 
         // Log::info('Chart of Accounts: ' . json_encode($chartOfAccounts));

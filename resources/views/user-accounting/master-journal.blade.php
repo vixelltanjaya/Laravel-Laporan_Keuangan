@@ -70,15 +70,15 @@
                                     <td>
                                         <p>{{ $transactionMaster->description }}</p>
                                     </td>
-                                    <td>
+                                    <td class="d-flex justify-content-between">
                                         <p>
-                                            <a href="{{ route('edit-master-journal.index', ['code' => $transactionMaster->code]) }}" class="btn btn-link text-primary font-weight-bold text-small">
+                                            <a href="{{ route('edit-master-journal.index', ['code' => $transactionMaster->code]) }}" class="btn btn-link text-secondary font-weight-bold text-small">
                                                 <i class="fas fa-user-edit"></i> Edit
                                             </a>
-                                            <a href="{{ route('view-master-journal.index', ['code' => $transactionMaster->code]) }}" class="btn btn-link text-primary font-weight-bold text-small">
+                                            <a href="{{ route('view-master-journal.index', ['code' => $transactionMaster->code]) }}" class="btn btn-link text-info font-weight-bold text-small">
                                                 <i class="fa fa-eye" aria-hidden="true"></i> Lihat
                                             </a>
-                                            <button class="btn btn-link text-primary font-weight-bold text-small" data-bs-toggle="modal" data-bs-target="#deleteMasterJournalModal" data-id="{{ $transactionMaster->id }}" data-code="{{ $transactionMaster->code }}">
+                                            <button class="btn btn-link text-danger font-weight-bold text-small" data-bs-toggle="modal" data-bs-target="#deleteMasterJournalModal" data-id="{{ $transactionMaster->id }}" data-code="{{ $transactionMaster->code }}">
                                                 <i class="fas fa-trash"></i> Hapus
                                             </button>
                                         </p>

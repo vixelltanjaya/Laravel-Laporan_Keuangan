@@ -45,17 +45,7 @@
                         <label for="description">Deskripsi Transaksi<span class="text-danger">*</span></label>
                         <input type="text" class="form-control" name="description" value="{{ $masterJournal->description }}" required>
                     </div>
-
-                    <div class="form-group col-md-6">
-                        <label for="divisi">Lini Bisnis<span class="text-danger">*</span></label>
-                        <select name="divisi" id="divisi" class="form-control" required>
-                            <option value="">Pilih Lini Bisnis</option>
-                            @foreach($division as $divisi)
-                            <option value="{{ $divisi->id }}" {{ $masterJournal->business_type_id == $divisi->id ? 'selected' : '' }}>{{ $divisi->description }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
+                    
                     <div class="form-group col-md-6">
                         <label for="evidence_id">Kode Bukti Transaksi<span class="text-danger">*</span></label>
                         <select name="evidence_id" id="evidence_id" class="form-control" required>

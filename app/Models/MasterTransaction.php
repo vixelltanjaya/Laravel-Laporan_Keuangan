@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class MasterTransaction extends Model
 {
     use HasFactory;
-    protected $fillable = ['code','description','evidence_id','business_type_id'];
+    protected $fillable = ['code','description','evidence_id'];
     protected $table = 'master_transaction';
 
 
@@ -22,7 +22,7 @@ class MasterTransaction extends Model
 
     public static function joinDetailMasterTransaction($code){
         return DB::table('master_transaction as A')
-            ->select('A.id', 'A.code', 'A.description', 'A.evidence_id', 'A.business_type_id', 'B.gl_account', 'B.account_position', 'C.account_name')
+            ->select('A.id', 'A.code', 'A.description', 'A.evidence_id', 'B.gl_account', 'B.account_position', 'C.account_name')
             ->join('detail_master_transaction as B', 'A.code', '=', 'B.master_code')
             ->join('chart_of_account as C', 'C.account_id', '=', 'B.gl_account')
             ->where('A.code','=',$code)

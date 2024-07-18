@@ -21,6 +21,7 @@ class UserSeeder extends Seeder
             'name'=>'bisma',
             'username' => 'admin',
             'email' => 'test@gmail.com',
+            'role_id' => 1,
             'email_verified_at' => Carbon::now(),
             'password' => Hash::make('123456'),
             'created_at' => Carbon::now(),

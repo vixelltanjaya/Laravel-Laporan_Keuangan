@@ -18,7 +18,6 @@ class MasterTransactionSeeder extends Seeder
             'code' => -99,
             'description' => 'Penerimaan Pelunasan Pariwisata',
             'evidence_id' => 2,
-            'business_type_id' => 1,
             'created_at' => now(),
             'updated_at' => now()
         ]);

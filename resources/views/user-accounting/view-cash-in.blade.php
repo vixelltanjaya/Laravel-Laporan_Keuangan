@@ -43,9 +43,9 @@
 
                     <p class="mb-1">Status: <strong>{{ $journalEntry->is_reversed ? 'Batal' : 'Baru' }}</strong></p>
                     <div class="d-flex justify-content-between">
-                        <button id="cancelJournalButton" type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelJournalModal">
-                            Batalkan Jurnal
-                        </button>
+                        @if($id)
+                        <a href="{{ route('correcting-entry.index', ['id' => $id]) }}" class="btn bg-gradient-dark">Jurnal Koreksi</a>
+                        @endif
                         <a href="{{ route('cash-in.index') }}" class="btn btn-secondary"><i class="fas fa-angle-left me-1"></i>Kembali</a>
                     </div>
                 </div>

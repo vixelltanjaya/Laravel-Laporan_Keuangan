@@ -16,7 +16,7 @@
                         <div class="nav-item d-flex align-self-end">
                             <a href="#" class="btn bg-gradient-primary me-2" type="button" data-bs-toggle="modal" data-bs-target="#modalAddEmployee">+&nbsp;Employee</a>
                             <a href="/exportexcel" target="_blank" class="btn btn-dark active text-white me-2 " role="button" aria-pressed="true">
-                            <i class="fas fa-download me-1"></i>Unduh</a>
+                                <i class="fas fa-download me-1"></i>Unduh</a>
                             <a href="/" target="_blank" class="btn btn-default active text-black me-2" role="button" aria-pressed="true" data-bs-toggle="modal" data-bs-target="#importEmployeeModal">
                                 <i class="fas fa-file-import me-1"></i>Import</a>
                         </div>
@@ -146,11 +146,18 @@
                     </div>
                     <div class="mb-3">
                         <label for="departemen" class="form-label">Departemen</label>
-                        <input type="text" class="form-control" id="departemen" name="departemen">
+                        <select class="form-control" id="departemen" name="departemen">
+                            <option value="akunting">Akunting</option>
+                            <option value="administrasi">Administrasi</option>
+                            <option value="personalia">Personalia</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="status_pegawai" class="form-label">Status Pegawai</label>
-                        <input type="text" class="form-control" id="status_pegawai" name="status_pegawai">
+                        <select class="form-control" id="status_pegawai" name="status_pegawai">
+                            <option value="tetap">Tetap</option>
+                            <option value="harian">Harian</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -185,11 +192,21 @@
                     </div>
                     <div class="mb-3">
                         <label for="departemen" class="form-label">Departemen</label>
-                        <input type="text" class="form-control" id="departemen" name="departemen" value="{{ old('departemen', $employee->department) }}">
+                        <select class="form-control" id="departemen" name="departemen">
+                            <option value="" disabled selected>Pilih Departemen</option>
+                            <option value="akunting" {{ old('departemen', $employee->departemen) == 'akunting' ? 'selected' : '' }}>Akunting</option>
+                            <option value="administrasi" {{ old('departemen', $employee->departemen) == 'administrasi' ? 'selected' : '' }}>Administrasi</option>
+                            <option value="personalia" {{ old('departemen', $employee->departemen) == 'personalia' ? 'selected' : '' }}>Personalia</option>
+                        </select>
                     </div>
+
                     <div class="mb-3">
                         <label for="status_pegawai" class="form-label">Status Pegawai</label>
-                        <input type="text" class="form-control" id="status_pegawai" name="status_pegawai" value="{{ old('status_pegawai', $employee->status) }}">
+                        <select class="form-control" id="status_pegawai" name="status_pegawai">
+                            <option value="" disabled selected>Pilih Status Pegawai</option>
+                            <option value="tetap" {{ old('status_pegawai', $employee->status_pegawai) == 'tetap' ? 'selected' : '' }}>Tetap</option>
+                            <option value="harian" {{ old('status_pegawai', $employee->status_pegawai) == 'harian' ? 'selected' : '' }}>Harian</option>
+                        </select>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>

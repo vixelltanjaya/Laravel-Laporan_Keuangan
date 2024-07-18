@@ -31,7 +31,7 @@ class MasterJournalController extends Controller
             'code' => 'required|numeric',
             'description' => 'required|string|max:255',
             'evidence_id' => 'required|integer|exists:evidence_code,id',
-            'divisi' => 'required|integer|exists:division,id',
+            // 'divisi' => 'required|integer|exists:division,id',
             'noAccount.*' => 'required|exists:chart_of_account,account_id',
             'accountSign.*' => 'required|in:debit,credit',
         ]);
@@ -45,7 +45,7 @@ class MasterJournalController extends Controller
             $masterJournal->code = $request->code;
             $masterJournal->description = $request->description;
             $masterJournal->evidence_id = $request->evidence_id;
-            $masterJournal->business_type_id = $request->divisi;
+            // $masterJournal->business_type_id = $request->divisi;
             $masterJournal->save();
 
             // Save detail transactions
@@ -82,7 +82,7 @@ class MasterJournalController extends Controller
             'code' => 'required|integer',
             'description' => 'required|string|max:255',
             'evidence_id' => 'required|integer|exists:evidence_code,id',
-            'divisi' => 'required|integer|exists:division,id',
+            // 'divisi' => 'required|integer|exists:division,id',
             'noAccount.*' => 'required|exists:chart_of_account,account_id',
             'accountSign.*' => 'required|in:debit,credit',
         ]);
@@ -98,7 +98,7 @@ class MasterJournalController extends Controller
             $masterJournal->code = $request->code;
             $masterJournal->description = $request->description;
             $masterJournal->evidence_id = $request->evidence_id;
-            $masterJournal->business_type_id = $request->divisi;
+            // $masterJournal->business_type_id = $request->divisi;
             $masterJournal->save();
 
             Log::debug('master journal' .json_encode($masterJournal));

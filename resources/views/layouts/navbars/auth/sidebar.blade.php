@@ -39,7 +39,7 @@
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <i style="font-size: 1rem;" class="fa fa-user ps-2 pe-2 text-center text-dark {{ (Request::is('customer ') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
-          <span class="nav-link-text ms-1">Kustomer</span>
+          <span class="nav-link-text ms-1">Customer</span>
         </a>
       </li>
 
@@ -115,8 +115,8 @@
         </a>
       </li>
 
-       <!-- Master Journal  -->
-       <li class="nav-item">
+      <!-- Master Journal  -->
+      <li class="nav-item">
         <a class="nav-link {{ (Request::is('master-journal') ? 'active' : '') }}" href="{{ url('master-journal') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <svg class="text-dark" width="16px" height="16px" viewBox="0 0 40 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -260,7 +260,7 @@
         </a>
       </li>
 
-
+      @if (Auth::user()->role_id == 1)
       <li class="nav-item mt-3">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Account pages</h6>
       </li>
@@ -306,6 +306,7 @@
           <span class="nav-link-text ms-1">User Manajemen</span>
         </a>
       </li>
+      @endif
     </ul>
   </div>
 </aside>

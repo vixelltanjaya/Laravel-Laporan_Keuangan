@@ -18,7 +18,7 @@
                         <div class="nav-item d-flex align-self-end">
                             <a href="#" class="btn bg-gradient-primary mb-0 me-2" data-bs-toggle="modal" data-bs-target="#addAccountModal">+&nbsp;Akun</a>
                             <a href="/exportMasterAccountToExcel" target="_blank" class="btn btn-dark active mb-0 text-white me-2" role="button" aria-pressed="true">
-                                <i class="fas fa-download me-1"></i>Unduh</a>
+                                <i class="fas fa-download me-1"></i>Export</a>
                             <a href="/" target="_blank" class="btn btn-default active mb-0 text-black me-2" role="button" aria-pressed="true" data-bs-toggle="modal" data-bs-target="#importAccountModal">
                                 <i class="fas fa-file-import me-1"></i>Import</a>
                         </div>
@@ -84,11 +84,11 @@
                                     <td>
                                         <p>{{ $coa->account_group }}</p>
                                     </td>
-                                    <td>
-                                        <button class="btn btn-link text-primary font-weight-bold text-small" data-id="{{$coa->id}}" data-account_id="{{ $coa->account_id }}" data-account_name="{{ $coa->account_name }}" data-account_sign="{{ $coa->account_sign }}" data-account_type="{{ $coa->account_type }}" data-account_group="{{ $coa->account_group }}" data-bs-toggle="modal" data-bs-target="#editAccountModal">
+                                    <td class="d-flex justify-content-between">
+                                        <button class="btn btn-link text-secondary" data-id="{{$coa->id}}" data-account_id="{{ $coa->account_id }}" data-account_name="{{ $coa->account_name }}" data-account_sign="{{ $coa->account_sign }}" data-account_type="{{ $coa->account_type }}" data-account_group="{{ $coa->account_group }}" data-bs-toggle="modal" data-bs-target="#editAccountModal">
                                             <i class="fas fa-user-edit"></i> Edit
                                         </button>
-                                        <button class="btn btn-link text-primary font-weight-bold text-small" data-id="{{ $coa->id }}" data-account_id="{{ $coa->account_id }}" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                        <button class="btn btn-link text-danger" data-id="{{ $coa->id }}" data-account_id="{{ $coa->account_id }}" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
                                             <i class="fas fa-trash"></i> Hapus
                                         </button>
                                     </td>

@@ -15,11 +15,10 @@ class AddMasterJournalController extends Controller
     {
         $EvidenceCode = EvidenceCode::all();
         $chartOfAccount = CoaModel::orderBy('account_id','asc')->get( );
-        $division = Division::all();
+    
         return view('user-accounting.add-master-journal', [
             'chartOfAccounts' => $chartOfAccount,
-            'EvidenceCode' => $EvidenceCode,
-            'division' => $division,
+            'EvidenceCode' => $EvidenceCode
         ]);
     }
 }

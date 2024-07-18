@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class UserManagementController extends Controller
 {
@@ -12,8 +14,11 @@ class UserManagementController extends Controller
      */
     public function index()
     {
-        $UserManagement=User::joinUserManagementRole();
-        return view('user-management', compact('UserManagement'));
+        $UserManagement = User::joinUserManagementRole();
+        $role = Role::all();
+        $users = User::all();
+
+        return view('user-management', compact(['UserManagement', 'role', 'users']));
     }
 
     /**
@@ -29,7 +34,19 @@ class UserManagementController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate the request data
+        $request->validate([
+            'role' => 'required|exists:role,id',
+            'name' => 'required|exists:users,id',
+        ]);
+
+        // Find the user and update the role_id
+        $user = User::find($request->name);
+        $user->role_id = $request->role;
+        $user->save();
+
+        // Redirect back with success message
+        return redirect()->route('user-management.index')->with('success', 'User role updated successfully!');
     }
 
     /**

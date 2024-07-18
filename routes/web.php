@@ -3,6 +3,7 @@
 use App\Http\Controllers\AddDataPariwisataController;
 use App\Http\Controllers\AddEvidenceCodeController;
 use App\Http\Controllers\AddMasterJournalController;
+use App\Http\Controllers\AddUserController;
 use App\Http\Controllers\BookedBusController;
 use App\Http\Controllers\CashInController;
 use App\Http\Controllers\CashInFormController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\cashOutFormController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\ChartOfAccountController;
 use App\Http\Controllers\ClosedBalanceController;
+use App\Http\Controllers\CorrectingEntryController;
 use App\Http\Controllers\CountPayrollController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EditMasterJournalController;
@@ -25,6 +27,7 @@ use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ReportingController;
 use App\Http\Controllers\ResetController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SessionsController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ViewCashInController;
@@ -165,7 +168,10 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('edit-master-journal/{code}', [EditMasterJournalController::class, 'index'])->name('edit-master-journal.index');
 	Route::get('view-master-journal/{code}', [ViewMasterJournalController::class, 'index'])->name('view-master-journal.index');
 
-	Route::resource('user-management', UserManagementController::class);
+	Route::prefix('correcting-entry')->group(function () {
+		Route::get('{id}', [CorrectingEntryController::class, 'index'])->name('correcting-entry.index');
+		Route::post('store/{id}', [CorrectingEntryController::class, 'store'])->name('correcting-entry.store');
+	});
 
 	Route::resource('evidence-code', EvidenceCodeController::class)->only(['index', 'store', 'update', 'destroy']);
 
@@ -174,6 +180,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('add-evidence-code', function () {
 		return view('user-accounting.add-evidence-code');
 	});
+
+	
 
 	Route::get('/logout', [SessionsController::class, 'destroy']);
 	Route::get('/user-profile', [InfoUserController::class, 'create']);
@@ -199,3 +207,16 @@ Route::group(['middleware' => 'guest'], function () {
 Route::get('/login', function () {
 	return view('session/login-session');
 })->name('login');
+
+Route::group(['middleware' => ['auth', 'check.role:1']], function () {
+	Route::resource('add-role', RoleController::class)->only(['index', 'store']);
+
+	Route::prefix('add-user')->group(function () {
+		Route::get('destroy', [AddUserController::class, 'destroy'])->name('add-user.destroy');
+		Route::get('update', [AddUserController::class, 'update'])->name('add-user.update');
+		Route::post('store', [AddUserController::class, 'store'])->name('add-user.store');
+		Route::get('/', [AddUserController::class, 'index'])->name('add-user.index');
+	});
+
+	Route::resource('user-management', UserManagementController::class);
+});

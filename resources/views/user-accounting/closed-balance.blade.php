@@ -47,7 +47,7 @@
         </div>
     </div>
 
-    <div id="previewSection" class="card-body" style="display: none;">
+    <div id="previewSection" class="card-body">
         <div class="card text-center p-4 mb-4">
             <div class="card-body">
                 <h3 class="card-title mb-2">
@@ -69,6 +69,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @if(request('month_year'))
                         @foreach ($sumBalance as $balance)
                         <tr>
                             <td>{{ $balance->account_id }} - {{ $balance->account_name }}</td>
@@ -85,6 +86,11 @@
                             <td><strong>{{ number_format($sumBalance->sum('total_credit')) }}</strong></td>
                             <td><strong>{{ number_format($sumBalance->sum('balance_difference')) }}</strong></td>
                         </tr>
+                        @else
+                        <tr>
+                            <td colspan="5">Silakan pilih bulan dan tahun</td>
+                        </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -139,11 +145,6 @@
                 $('#lihatBukuBesarButton').prop('disabled', true);
                 $('#periode').text('Periode');
             }
-        });
-
-        // Show preview section when the filter form is submitted
-        $('form').on('submit', function(e) {
-            $('#previewSection').show();
         });
 
         // Handle button click to set the text in modal

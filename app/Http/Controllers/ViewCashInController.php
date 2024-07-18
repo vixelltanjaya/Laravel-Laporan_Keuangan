@@ -18,14 +18,18 @@ class ViewCashInController extends Controller
         $journalData = JournalEntry::joinDetailAndUsers($id);
         $detailJournal = DetailJournalEntry::where('id',$id)->first();
         
+        $journalEntry = $journalData->journalEntry;
+        $id = $journalEntry ? $journalEntry->id : null;
 
         Log::debug('evidence img:' .json_encode($journalData->details));
         Log::debug('evidence img:' .json_encode($detailJournal));
+        Log::debug('evidence code:' .json_encode($id));
 
         return view('user-accounting.view-cash-in', [
             'journalEntry' => $journalData->journalEntry,
             'details' => $journalData->details,
-            'detailJournal' => $detailJournal
+            'detailJournal' => $detailJournal,
+            'id' => $id
         ]);
     }
 
@@ -37,6 +41,7 @@ class ViewCashInController extends Controller
             // Update entri 
             $journalEntry->is_reversed = 1;
             $journalEntry->reversed_by = Auth::user()->name;
+            $journalEntry->reversed_at = now();
             $journalEntry->save();
 
             return redirect()->route('view-cash-in.index', ['id' => $id])->with('berhasil', 'Entri jurnal berhasil dibatalkan.');
