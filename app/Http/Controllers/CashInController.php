@@ -36,6 +36,7 @@ class CashInController extends Controller
             'master_transaction_id' => 'required|integer',
             'transaction_date' => 'required|date',
             'notes' => 'required|string',
+            'division' => 'required',
             'evidence_image' => 'sometimes|file|mimes:jpeg,png,jpg|max:2048',
         ]);
 
@@ -98,11 +99,12 @@ class CashInController extends Controller
                 // Create JournalEntry
                 $journalEntry = JournalEntry::create([
                     'description' => $request->notes,
+                    'entry_date' => $formattedDate,
                     'user_id' => auth()->user()->id,
                     'evidence_code' => $combinedEvidenceCode,
-                    'entry_date' => $formattedDate,
                     'is_reversed' => false,
                     'reversed_by' => null,
+                    'division_id' => $request->division ?? '',
                 ]);
 
                 Log::debug('Journal Entry created: ' . json_encode($journalEntry));

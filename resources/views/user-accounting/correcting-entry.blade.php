@@ -8,6 +8,25 @@
                 <div class="card-header pb-0">
                     <h6>Jurnal Koreksi</h6>
                 </div>
+
+                @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+
+                @if (session('berhasil'))
+                <div class="alert alert-success">
+                    <ul>
+                        <li>{{ session('berhasil') }}</li>
+                    </ul>
+                </div>
+                @endif
+
                 <div class="card-body">
                     <form id="journalForm" action="{{ route('correcting-entry.store', ['id' => $journalEntry->id]) }}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -31,8 +50,19 @@
                             </select>
                         </div>
                         <div class="mb-3">
+                            <label for="division" class="form-label">Divisi</label>
+                            <select class="form-control" id="division" name="division" required>
+                                <option value="">Pilih divisi / Kosongkan</option>
+                                @foreach($division as $divisions)
+                                <option value="{{ $divisions->id }}">
+                                    {{ $divisions->description }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="transaction_date">Tanggal Transaksi <span class="text-danger">*</span></label>
-                            <input type="date" class="form-control" name="transaction_date" value="{{ date('Y-m-d') }}">
+                            <input type="date" class="form-control" id="transaction_date" name="transaction_date" value="{{ date('Y-m-d') }}">
                         </div>
                         <div class="mb-3">
                             <label for="notes" class="form-label">Catatan Transaksi</label>
@@ -79,7 +109,8 @@
                                         </select>
                                     </div>
                                     <div class="col-md-3">
-                                        <input type="text" class="form-control" name="amount[]" oninput="formatNumber(this)" required>
+                                        <input type="text" class="form-control amount-input" name="formatted_amount[]" oninput="formatNumber(this)" required>
+                                        <input type="hidden" class="raw-amount-input" name="amount[]" />
                                     </div>
                                     <div class="col-md-1 d-flex flex-column justify-content-between">
                                         <button type="button" class="btn btn-info btn-sm mb-2 addRow">+</button>
@@ -121,17 +152,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
 <script>
-    function formatNumber(input) {
-        let value = input.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except the decimal point
-        let number = parseFloat(value);
-        if (!isNaN(number)) {
-            input.value = number.toLocaleString('en-US', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2
-            });
-        }
-    }
-
     $(document).ready(function() {
         $(document).on('click', '.addRow', function(e) {
             e.preventDefault();
@@ -174,7 +194,7 @@
             $('.journal-entries .form-group.row').each(function() {
                 let account = $(this).find('select[name="noAccount[]"]').val();
                 let sign = $(this).find('select[name="accountSign[]"]').val();
-                let amount = $(this).find('input[name="amount[]"]').val();
+                let amount = $(this).find('input[name="formatted_amount[]"]').val();
                 previewContent += `
                     <tr>
                         <td>${account}</td>
@@ -189,6 +209,31 @@
                 </div>
             `;
             $('#previewContent').html(previewContent);
+        });
+    });
+
+    function formatNumber(input) {
+        let value = input.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except the decimal point
+        let number = parseFloat(value);
+        if (!isNaN(number)) {
+            input.value = number.toLocaleString('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            });
+        }
+        updateRawValue(input);
+    }
+
+    function updateRawValue(input) {
+        const rawValue = input.value.replace(/,/g, ''); // Remove commas for raw value
+        const index = Array.from(document.querySelectorAll('.amount-input')).indexOf(input);
+        document.querySelectorAll('.raw-amount-input')[index].value = rawValue;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const amountInputs = document.querySelectorAll('.amount-input');
+        amountInputs.forEach(input => {
+            input.addEventListener('blur', () => formatNumber(input));
         });
     });
 </script>

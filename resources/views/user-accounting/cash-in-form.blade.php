@@ -56,10 +56,21 @@
                                 </select>
                             </div>
                             <div class="form-group col-md-6">
+                                <label for="division">Pilih Divisi</label>
+                                <select name="division" id="division" class="form-control" required>
+                                    <option value="">Pilih Divisi / Kosongkan</option>
+                                    @foreach($division as $divisions)
+                                    <option value="{{ $divisions->id }}">
+                                        {{ $divisions->description }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
                                 <label for="transaction_date">Tanggal Transaksi <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" name="transaction_date" value="{{ date('Y-m-d') }}">
                             </div>
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-6">
                                 <label for="notes">Catatan Transaksi <span class="text-danger">*</span></label>
                                 <textarea rows="2" class="form-control" name="notes" placeholder="Masukkan catatan ..."></textarea>
                             </div>
@@ -231,7 +242,7 @@
                 input.addEventListener('change', validateDebitCredit);
             });
         });
-        
+
         // Remove commas before form submission
         document.querySelector('form').addEventListener('submit', function(event) {
             var debitInputs = document.querySelectorAll('input[name^="debit["]');

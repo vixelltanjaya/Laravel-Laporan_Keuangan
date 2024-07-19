@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CoaModel;
 use App\Models\DetailMasterTransaction;
+use App\Models\Division;
 use App\Models\MasterTransaction;
 
 class CashInFormController extends Controller
@@ -17,11 +18,13 @@ class CashInFormController extends Controller
         ->where('prefix_code', '!=', 'BKK')
         ->get();
         $detailMasterTransaction = DetailMasterTransaction::joinJournalTrx();
+        $division = Division::all();
 
         return view('user-accounting.cash-in-form', [
             'chartOfAccounts' => $coa,
             'detailMasterTransaction' => $detailMasterTransaction,
             'masterTransaction' => $masterTransaction,
+            'division' => $division
         ]);
     }
 

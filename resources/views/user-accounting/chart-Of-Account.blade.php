@@ -88,7 +88,7 @@
                                         <button class="btn btn-link text-secondary" data-id="{{$coa->id}}" data-account_id="{{ $coa->account_id }}" data-account_name="{{ $coa->account_name }}" data-account_sign="{{ $coa->account_sign }}" data-account_type="{{ $coa->account_type }}" data-account_group="{{ $coa->account_group }}" data-bs-toggle="modal" data-bs-target="#editAccountModal">
                                             <i class="fas fa-user-edit"></i> Edit
                                         </button>
-                                        <button class="btn btn-link text-danger" data-id="{{ $coa->id }}" data-account_id="{{ $coa->account_id }}" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                        <button class="btn btn-link text-danger" data-id="{{ $coa->id }}" data-account_id="{{ $coa->account_id }}" data-account_name="{{ $coa->account_name }}" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
                                             <i class="fas fa-trash"></i> Hapus
                                         </button>
                                     </td>
@@ -281,11 +281,12 @@
             var button = $(event.relatedTarget);
             var id = button.data('id');
             var account_id = button.data('account_id');
+            var account_name = button.data('account_name');
 
             console.log('account id nya apa? ' + account_id);
 
             var modal = $(this);
-            var message = 'Apakah Anda yakin ingin menghapus nomor akun ' + account_id + ' ? Hal ini dapat berefek pada balance perusahaan';
+            var message = 'Apakah Anda yakin ingin menghapus nomor akun ' + account_id + ' - ' + account_name + ' ? Hal ini dapat berefek pada balance perusahaan';
             modal.find('.modal-body #deleteAccountMessage').text(message);
             modal.find('.modal-body #delete_account_id').val(account_id);
             $('#deleteAccountForm').attr('action', '/chart-of-account/' + id);

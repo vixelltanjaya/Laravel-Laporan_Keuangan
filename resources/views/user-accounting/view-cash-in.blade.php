@@ -41,13 +41,33 @@
                         </table>
                     </div>
 
-                    <p class="mb-1">Status: <strong>{{ $journalEntry->is_reversed ? 'Batal' : 'Baru' }}</strong></p>
+                    @if($journalEntry->is_reversed == 0)
+                    <p class="mb-1">Status: <strong>Baru</strong></p>
+                    @elseif($journalEntry->is_reversed == 1)
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Status: <strong>Koreksi</strong></p>
+                            <p class="mb-1">Kode Bukti Asal: <strong>{{ $journalEntry->evidence_code_origin }}</strong></p>
+                        </div>
+                        <div class="text-right">
+                            <p class="mb-1">Koreksi Oleh: <strong>{{ $journalEntry->reversed_by }}</strong></p>
+                            <p class="mb-1">Waktu Koreksi: <strong>{{ $journalEntry->reversed_at }}</strong></p>
+                        </div>
+                    </div>
+                    @elseif($journalEntry->is_reversed == 2)
+                    <p class="mb-1">Status: <strong>Terkoreksi</strong></p>
+                    @endif
                     <div class="d-flex justify-content-between">
                         @if($id)
-                        <a href="{{ route('correcting-entry.index', ['id' => $id]) }}" class="btn bg-gradient-dark">Jurnal Koreksi</a>
+                        @if($journalEntry->is_reversed == 1 || $journalEntry->is_reversed == 0)
+                        <a href="{{ route('correcting-entry.index', ['id' => $id]) }}" id="reversedJournalButton" class="btn bg-gradient-dark">Jurnal Koreksi</a>
+                        @elseif($journalEntry->is_reversed == 2)
+                        <a href="#" id="reversedJournalButton" class="btn bg-gradient-dark disabled">Jurnal Koreksi</a>
+                        @endif
                         @endif
                         <a href="{{ route('cash-in.index') }}" class="btn btn-secondary"><i class="fas fa-angle-left me-1"></i>Kembali</a>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -69,47 +89,14 @@
 </main>
 @endsection
 
-<!-- Modal -->
-<div class="modal fade" id="cancelJournalModal" tabindex="-1" aria-labelledby="cancelJournalModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cancelJournalModalLabel">Konfirmasi Pembatalan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Apakah Anda yakin ingin membatalkan jurnal ini?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
-                <form action="{{ route('view-cash-in.cancel', $journalEntry->id) }}" method="POST">
-                    @csrf
-                    @method('POST')
-                    <button type="submit" class="btn btn-danger">Ya, Batalkan</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#confirmCancelButton').on('click', function() {
-            // Perform the cancellation logic here
-            alert('Jurnal berhasil dibatalkan!');
-            // You can add an AJAX request here to handle the cancellation on the server side
-            $('#cancelJournalModal').modal('hide');
-        });
-    });
     document.addEventListener('DOMContentLoaded', function() {
-        var cancelJournalButton = document.getElementById('cancelJournalButton');
+        var reversedJournalButton = document.getElementById('reversedJournalButton');
         var isReversed = @json($journalEntry -> is_reversed);
 
-        if (isReversed) {
-            cancelJournalButton.classList.add('disabled');
-            cancelJournalButton.removeAttribute('data-bs-toggle');
-            cancelJournalButton.removeAttribute('data-bs-target');
+        if (isReversed === 2 || isReversed === 1) {
+            reversedJournalButton.classList.add('disabled');
         }
 
         // Get the image element

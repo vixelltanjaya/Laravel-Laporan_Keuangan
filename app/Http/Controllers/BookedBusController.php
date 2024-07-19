@@ -18,9 +18,9 @@ class BookedBusController extends Controller
     {
         $plat_nomor = $request->input('plat_nomor');
 
-        // Find by plat_nomor
+        $bookings = BookingBus::all();
         $bus = BisPariwisata::where('plat_nomor', $plat_nomor)->first();
-        return view('pesan-bus', compact('bus'));
+        return view('pesan-bus', compact('bus','bookings'));
     }
     /**
      * Show the form for creating a new resource.

@@ -108,18 +108,24 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <form action="{{ route('closed-balance.store') }}" method="POST">
+                @csrf
                 <div class="modal-header">
-                    @csrf
                     <h5 class="modal-title" id="tutupSaldoModalLabel">Tutup Saldo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="tutupSaldoModalBody">
-                    <!-- message from vanilla JS -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary">Tutup</button>
                 </div>
+                <!-- Input untuk data yang diperlukan -->
+                <input type="hidden" name="account_id" value="{{ $account_id }}">
+                <input type="hidden" name="beginning_balance" value="{{ $beginning_balance }}">
+                <input type="hidden" name="debit" value="{{ $debit }}">
+                <input type="hidden" name="credit" value="{{ $credit }}">
+                <input type="hidden" name="balance_difference" value="{{ $balance_difference }}">
+                <input type="hidden" name="month_year" value="{{ request('month_year') }}">
             </form>
         </div>
     </div>
@@ -133,14 +139,21 @@
         $('#month_year').on('change', function() {
             var monthYearValue = $('#month_year').val();
             if (monthYearValue) {
-                $('#lihatBukuBesarButton').prop('disabled', false);
+                // Get the year and month from the input value
+                var [year, month] = monthYearValue.split('-');
+                // Create a date object for the first day of the next month
+                var nextMonthDate = new Date(year, month, 1);
+                // Subtract one day to get the last date of the current month
+                var lastDate = new Date(nextMonthDate - 1);
 
-                // Format the month and year for the Periode display
-                var date = new Date(monthYearValue);
+                // Format the date for display
                 var monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-                var formattedMonthYear = "Periode " + monthNames[date.getMonth()] + " " + date.getFullYear();
+                var formattedMonthYear = "Periode " + monthNames[lastDate.getMonth()] + " " + lastDate.getFullYear();
 
+                console.log('Last Date of the Month: ' + lastDate.toDateString());
                 $('#periode').text(formattedMonthYear);
+
+                $('#lihatBukuBesarButton').prop('disabled', false);
             } else {
                 $('#lihatBukuBesarButton').prop('disabled', true);
                 $('#periode').text('Periode');
@@ -148,14 +161,28 @@
         });
 
         // Handle button click to set the text in modal
-        document.getElementById('tutupSaldoButton').addEventListener('click', function() {
+        $('#tutupSaldoButton').on('click', function() {
             var monthYearValue = $('#month_year').val();
-            var date = new Date(monthYearValue);
-            var monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            var formattedMonthYear = "Periode " + monthNames[date.getMonth()] + " " + date.getFullYear();
+            if (!monthYearValue) {
+                alert('Silakan pilih bulan dan tahun terlebih dahulu.');
+                return;
+            }
 
-            document.getElementById('tutupSaldoModalBody').innerHTML = 'Apakah anda yakin menutup Saldo pada ' + formattedMonthYear +
-                ' ? Anda tidak dapat mengubah transaksi setelah saldo bulan ' + formattedMonthYear + ' ditutup';
+            // Get the year and month from the input value
+            var [year, month] = monthYearValue.split('-');
+            // Create a date object for the first day of the next month
+            var nextMonthDate = new Date(year, month, 1);
+            // Subtract one day to get the last date of the current month
+            var lastDate = new Date(nextMonthDate - 1);
+
+            // Format the date for display
+            var monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            var formattedMonthYear = "Periode " + monthNames[lastDate.getMonth()] + " " + lastDate.getFullYear();
+
+            console.log('Last Date of the Month: ' + lastDate.toDateString());
+            // Set the confirmation message in the modal
+            $('#tutupSaldoModalBody').text('Apakah Anda yakin menutup saldo pada ' + formattedMonthYear +
+                ' ? Anda tidak dapat mengubah transaksi setelah saldo bulan ' + formattedMonthYear + ' ditutup');
         });
     });
 </script>
