@@ -25,23 +25,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
-
-                    @if (session('berhasil'))
-                    <div class="alert alert-success">
-                        <ul>
-                            <li>{{ session('berhasil') }}</li>
-                        </ul>
-                    </div>
-                    @endif
+                    @include('components.alert-danger-success')
                 </div>
             </div>
         </div>
@@ -139,14 +123,10 @@
         $('#month_year').on('change', function() {
             var monthYearValue = $('#month_year').val();
             if (monthYearValue) {
-                // Get the year and month from the input value
                 var [year, month] = monthYearValue.split('-');
-                // Create a date object for the first day of the next month
                 var nextMonthDate = new Date(year, month, 1);
-                // Subtract one day to get the last date of the current month
                 var lastDate = new Date(nextMonthDate - 1);
 
-                // Format the date for display
                 var monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
                 var formattedMonthYear = "Periode " + monthNames[lastDate.getMonth()] + " " + lastDate.getFullYear();
 
@@ -181,8 +161,8 @@
 
             console.log('Last Date of the Month: ' + lastDate.toDateString());
             // Set the confirmation message in the modal
-            $('#tutupSaldoModalBody').text('Apakah Anda yakin menutup saldo pada ' + formattedMonthYear +
-                ' ? Anda tidak dapat mengubah transaksi setelah saldo bulan ' + formattedMonthYear + ' ditutup');
+            $('#tutupSaldoModalBody').html('Apakah Anda yakin menutup saldo pada ' + formattedMonthYear +
+                ' ? <strong> Anda tidak dapat mengubah transaksi setelah saldo bulan ' + formattedMonthYear + ' </strong> ditutup');
         });
     });
 </script>

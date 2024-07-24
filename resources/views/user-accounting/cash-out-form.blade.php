@@ -11,23 +11,7 @@
             <div class="card border-none">
 
                 <div class="card-body">
-                    @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
-
-                    @if (session('gagal'))
-                    <div class="alert alert-danger">
-                        <ul>
-                            <li>{{ session('gagal') }}</li>
-                        </ul>
-                    </div>
-                    @endif
+                    @include('components.alert-danger-success')
 
                     <form action="{{ route('cash-out.store')}}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -56,10 +40,21 @@
                                 </select>
                             </div>
                             <div class="form-group col-md-6">
+                                <label for="division">Pilih Divisi</label>
+                                <select name="division" id="division" class="form-control">
+                                    <option value="0">Pilih Divisi / Kosongkan</option>
+                                    @foreach($divisions as $division)
+                                    <option value="{{ $division->id }}">
+                                        {{ $division->description }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
                                 <label for="transaction_date">Tanggal Transaksi <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" name="transaction_date" value="{{ date('Y-m-d') }}">
                             </div>
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-6">
                                 <label for="notes">Catatan Transaksi <span class="text-danger">*</span></label>
                                 <textarea rows="2" class="form-control" name="notes" placeholder="Masukkan catatan ..."></textarea>
                             </div>
@@ -231,7 +226,7 @@
                 input.addEventListener('change', validateDebitCredit);
             });
         });
-        
+
         // Remove commas before form submission
         document.querySelector('form').addEventListener('submit', function(event) {
             var debitInputs = document.querySelectorAll('input[name^="debit["]');

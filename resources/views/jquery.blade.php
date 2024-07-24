@@ -4,9 +4,9 @@
 
 
 @section('specificpagestyles')
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://unpkg.com/gijgo@1.9.14/js/gijgo.min.js" type="text/javascript"></script>
-    <link href="https://unpkg.com/gijgo@1.9.14/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://unpkg.com/gijgo@1.9.14/js/gijgo.min.js" type="text/javascript"></script>
+<link href="https://unpkg.com/gijgo@1.9.14/css/gijgo.min.css" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('container')
@@ -31,7 +31,7 @@
 
                 <div class="card-body">
                     <form action="{{ route('transaction.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
+                        @csrf
                         <!-- begin: Input Data -->
 
                         <div class=" row align-items-center">
@@ -51,14 +51,14 @@
                                 <select name="journal_master_id" id="journal_master_id" class="form-control" required>
                                     <option value="">Pilih jenis transaksi</option>
                                     @foreach($journalMasters as $journalMaster)
-                                        <option value="{{ $journalMaster->id }}">{{ $journalMaster->name }}</option>
+                                    <option value="{{ $journalMaster->id }}">{{ $journalMaster->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
 
                             <div class="form-group col-md-6">
                                 <label for="transaction_date">Tanggal Transaksi <span class="text-danger">*</span></label>
-                                <input type="date" class="form-control" name="transaction_date" >
+                                <input type="date" class="form-control" name="transaction_date">
                             </div>
 
                             <div class="form-group col-md-12">
@@ -76,70 +76,70 @@
                             </div>
 
                             @foreach($journalMasters as $journalMaster)
-                                <div id="journalDetails_{{ $journalMaster->id }}" style="display: none;">
-                                    <hr>
-                                    <div>
-                                        <div style="display: flex; align-items: center;">
-                                            <h4 style="color:#121F3E">Jurnal Akuntansi</h4>
-                                        </div>
-                                        <p style="color:#ABB3C4;">Masukkan nominal debit dan kredit dengan jumlah yang sama</p>
+                            <div id="journalDetails_{{ $journalMaster->id }}" style="display: none;">
+                                <hr>
+                                <div>
+                                    <div style="display: flex; align-items: center;">
+                                        <h4 style="color:#121F3E">Jurnal Akuntansi</h4>
                                     </div>
-                                    <div class="form-group row font-weight-bold text-center ">
-                                        <div class="col-md-6">
-                                            Jurnal
-                                        </div>
-                                        <div class="col-md-3">
-                                            Debit
-                                        </div>
-                                        <div class="col-md-3">
-                                            Kredit
-                                        </div>
-                                    </div>
-                                    @foreach($journalMaster->details as $index => $detail)
-                                        {{-- <input type="hidden" name="coa_id[]" value="{{ $detail->coa_id }}"> --}}
-                                        @if($detail->debit_or_credit == 'debit')
-                                            <div class="form-group row">
-                                                <div class="col-md-6 d-flex align-items-center">
-                                                    {{ $detail->coa->kode }}
-                                                    &emsp; 
-                                                    {{ $detail->coa->nama }}                                                
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input type="hidden" name="coa_id[{{ $index }}]" value="{{ $detail->coa_id }}">
-                                                    <input type="number" class="form-control" name="debit[{{ $index }}]" placeholder="Debit">
-                                                    <input type="hidden" class="form-control" name="credit[{{ $index }}]" placeholder="Debit" value="0">
-                                                </div>
-                                                <div class="col-md-3">
-                                                </div>
-                                            </div>
-                                        @elseif($detail->debit_or_credit == 'kredit')
-                                            <div class="form-group row">
-                                                <div class="col-md-6 d-flex align-items-center">
-                                                    &emsp;
-                                                    &emsp;
-                                                    {{ $detail->coa->kode }}
-                                                    &emsp;
-                                                    {{ $detail->coa->nama }}
-                                                </div>
-                                                <div class="col-md-3">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input type="hidden" name="coa_id[{{ $index }}]" value="{{ $detail->coa_id }}">
-                                                    <input type="number" class="form-control" name="credit[{{ $index }}]" placeholder="Credit">
-                                                    <input type="hidden" class="form-control" name="debit[{{ $index }}]" placeholder="Debit" value="0">
-                                                </div>
-                                            </div>
-                                        @endif
-                                    @endforeach
-                                                                                                                                
+                                    <p style="color:#ABB3C4;">Masukkan nominal debit dan kredit dengan jumlah yang sama</p>
                                 </div>
+                                <div class="form-group row font-weight-bold text-center ">
+                                    <div class="col-md-6">
+                                        Jurnal
+                                    </div>
+                                    <div class="col-md-3">
+                                        Debit
+                                    </div>
+                                    <div class="col-md-3">
+                                        Kredit
+                                    </div>
+                                </div>
+                                @foreach($journalMaster->details as $index => $detail)
+                                {{-- <input type="hidden" name="coa_id[]" value="{{ $detail->coa_id }}"> --}}
+                                @if($detail->debit_or_credit == 'debit')
+                                <div class="form-group row">
+                                    <div class="col-md-6 d-flex align-items-center">
+                                        {{ $detail->coa->kode }}
+                                        &emsp;
+                                        {{ $detail->coa->nama }}
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="hidden" name="coa_id[{{ $index }}]" value="{{ $detail->coa_id }}">
+                                        <input type="number" class="form-control" name="debit[{{ $index }}]" placeholder="Debit">
+                                        <input type="hidden" class="form-control" name="credit[{{ $index }}]" placeholder="Debit" value="0">
+                                    </div>
+                                    <div class="col-md-3">
+                                    </div>
+                                </div>
+                                @elseif($detail->debit_or_credit == 'kredit')
+                                <div class="form-group row">
+                                    <div class="col-md-6 d-flex align-items-center">
+                                        &emsp;
+                                        &emsp;
+                                        {{ $detail->coa->kode }}
+                                        &emsp;
+                                        {{ $detail->coa->nama }}
+                                    </div>
+                                    <div class="col-md-3">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="hidden" name="coa_id[{{ $index }}]" value="{{ $detail->coa_id }}">
+                                        <input type="number" class="form-control" name="credit[{{ $index }}]" placeholder="Credit">
+                                        <input type="hidden" class="form-control" name="debit[{{ $index }}]" placeholder="Debit" value="0">
+                                    </div>
+                                </div>
+                                @endif
+                                @endforeach
+
+                            </div>
 
                             @endforeach
 
-                            
-                            
+
+
                         </div>
-                        
+
                         <div id="journalDetailsContainer"></div>
                         <div id="errorAlert" class="alert alert-danger" style="display: none;">
                             <strong>Alert!</strong> Nominal debit dan kredit belum seimbang.
@@ -254,4 +254,14 @@
             </div>
         </div>
     </div>
+</div> -->
+
+<!-- form pesa bus -->
+<!-- <div>
+    <form action="{{ route('pesan-bus.store') }}" method="POST" class="d-inline">
+        @csrf
+        <input type="hidden" name="plat_nomor" value="{{ $bus->plat_nomor }}">
+        <button type="submit" class="btn btn-primary me-2">Melakukan Pemesanan</button>
+    </form>
+
 </div> -->

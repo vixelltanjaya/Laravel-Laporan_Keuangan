@@ -17,10 +17,14 @@ return new class extends Migration
             $table->date('entry_date');
             $table->bigInteger('user_id')->index();
             $table->string('evidence_code',14);
+            $table->integer('division_id')->index();
             $table->tinyInteger('is_reversed');
             $table->string('reversed_by',14)->index()->nullable();
             $table->timestamp('reversed_at')->nullable();
+            $table->string('evidence_code_origin',15);
             $table->timestamps();
+
+            $table->foreign('business_type_id')->references('id')->on('journal_entry')->onDelete('cascade');
         });
     }
 

@@ -51,10 +51,9 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-
         $validateData = $request->validate([
             'username' => 'required',
-            'email' => 'required|email|unique:employees,email',
+            'email' => 'unique:employees,email',
             'departemen' => 'required',
             'status_pegawai' => 'required'
         ]);
@@ -63,7 +62,7 @@ class EmployeeController extends Controller
             $employee = new Employee;
 
             $employee->username = $validateData['username'];
-            $employee->email = $validateData['email'];
+            $employee->email = $request->email ?? '';
             $employee->department = $validateData['departemen'];
             $employee->status = $validateData['status_pegawai'];
 

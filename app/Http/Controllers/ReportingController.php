@@ -14,7 +14,6 @@ class ReportingController extends Controller
     public function index()
     {
         $division = Division::all();
-        // $finanncialReport = CoaModel::joinAccountBalance();
 
         return view ('user-accounting.reporting', compact('division'));
     }

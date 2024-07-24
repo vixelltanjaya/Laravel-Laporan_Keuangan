@@ -150,6 +150,8 @@
                             <option value="akunting">Akunting</option>
                             <option value="administrasi">Administrasi</option>
                             <option value="personalia">Personalia</option>
+                            <option value="supir">Supir</option>
+                            <option value="kondektur">Kondektur</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -251,7 +253,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="importEmployeeModalLabel">Import Akun</h5>
+                <h5 class="modal-title" id="importEmployeeModalLabel">Import Pegawai</h5>
             </div>
             <form id="importEmployeeModalForm" method="POST" action="{{route('import-employee')}}" enctype="multipart/form-data">
                 @csrf
@@ -269,10 +271,5 @@
         </div>
     </div>
 </div>
-
-
-
-<!-- Bootstrap JavaScript -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
 @endsection

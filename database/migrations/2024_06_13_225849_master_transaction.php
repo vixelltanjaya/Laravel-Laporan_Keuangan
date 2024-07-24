@@ -16,13 +16,11 @@ return new class extends Migration
             $table->bigInteger('code')->index();
             $table->string('description',255);
             $table->integer('evidence_id')->index();
-            $table->integer('business_type_id')->index();
             $table->timestamps();
 
             $table->unique(['code']);
 
             $table->foreign('evidence_id')->references('id')->on('evidence_code')->onDelete('cascade');
-            $table->foreign('business_type_id')->references('id')->on('division')->onDelete('cascade');
         });
     }
 

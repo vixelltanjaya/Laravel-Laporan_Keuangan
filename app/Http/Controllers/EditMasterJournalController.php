@@ -20,7 +20,7 @@ class EditMasterJournalController extends Controller
         $detailJournal = MasterTransaction::joinDetailMasterTransaction($code);
   
         $masterJournal = MasterTransaction::where('code', $code)->firstOrFail();
-        $chartOfAccounts = CoaModel::all();
+        $chartOfAccounts = CoaModel::orderBy('account_id', 'asc')->get();
         $division = Division::all();
         $EvidenceCode = EvidenceCode::all();
 

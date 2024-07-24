@@ -17,6 +17,8 @@ return new class extends Migration
             $table->integer('tahun_kendaraan');
             $table->string('karoseri', 50);
             $table->string('no_rangka', 50);
+            $table->double('selling_price', 14,3);
+            $table->string('account_id', 50)->index();
             $table->timestamps();
         });
     }

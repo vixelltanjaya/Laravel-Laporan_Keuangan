@@ -34,8 +34,7 @@ class CoaModel extends Model
             ->leftJoin('detail_journal_entry as B', 'A.account_id', '=', 'B.account_id')
             ->leftJoin('account_balance as C', 'A.account_id', '=', 'C.account_id')
             ->leftJoin('journal_entry as D', 'B.entry_id', '=', 'D.id')
-            // ->where('D.is_reversed', '<>', 1)
-            ->whereRaw($dateFilter) 
+            ->whereRaw($dateFilter)
             ->select(
                 'A.account_id',
                 'A.account_name',
@@ -59,4 +58,46 @@ class CoaModel extends Model
         return $query->get();
     }
 
+    // func nya masih perlu diedit
+    public static function getIncomeStatement($request)
+    {
+        $accountIdStartsWith = ['4', '5'];
+        $transactionMonthStart = $request->input('transaction_month_start');
+        $transactionMonthEnd = $request->input('transaction_month_end');
+
+        $formattedStartDate = date('Y-m-d 00:00:00', strtotime($transactionMonthStart . '-01'));
+        $formattedEndDate = date('Y-m-d 23:59:59', strtotime("last day of $transactionMonthEnd"));
+
+        $divisionId = $request->input('division_id');
+
+        $query = DB::table('chart_of_account AS A')
+            ->leftJoin('detail_journal_entry AS B', 'A.account_id', '=', 'B.account_id')
+            ->leftJoin('journal_entry AS C', 'C.id', '=', 'B.entry_id')
+            ->leftJoin('division AS D', 'D.id', '=', 'C.division_id')
+            ->select(
+                'A.account_id',
+                'A.account_name',
+                'A.account_type',
+                DB::raw('SUM("B".debit) AS total_debit'),
+                DB::raw('SUM("B".credit) AS total_credit'),
+                'D.description'
+            )
+            ->whereIn(DB::raw('SUBSTRING("A".account_id, 1, 1)'), $accountIdStartsWith)
+            ->whereBetween('B.updated_at', [$formattedStartDate, $formattedEndDate])
+            ->groupBy('A.account_id', 'A.account_name', 'A.account_type', 'D.description');
+
+        // Tambahkan kondisi untuk `division_id` jika ada
+        if ($divisionId !== 'all') {
+            $query->where('C.division_id', '=', $divisionId);
+        }
+
+        // Log the query
+        Log::debug('Generated SQL Query: ' . $query->toSql());
+        Log::debug('Query Bindings: ', $query->getBindings());
+
+        // Urutkan hasil berdasarkan `account_id`
+        $results = $query->orderBy('A.account_id', 'ASC')->get();
+
+        return $results;
+    }
 }

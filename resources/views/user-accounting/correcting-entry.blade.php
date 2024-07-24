@@ -4,28 +4,13 @@
 <div class="container">
     <div class="row">
         <div class="col-12 mt-4">
+            <a href="{{ url()->previous() }}" type="button" class="btn btn-dark">Batal</a>
             <div class="card mb-4">
                 <div class="card-header pb-0">
                     <h6>Jurnal Koreksi</h6>
                 </div>
 
-                @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-
-                @if (session('berhasil'))
-                <div class="alert alert-success">
-                    <ul>
-                        <li>{{ session('berhasil') }}</li>
-                    </ul>
-                </div>
-                @endif
+                @include('components.alert-danger-success')
 
                 <div class="card-body">
                     <form id="journalForm" action="{{ route('correcting-entry.store', ['id' => $journalEntry->id]) }}" method="POST" enctype="multipart/form-data">
@@ -52,7 +37,7 @@
                         <div class="mb-3">
                             <label for="division" class="form-label">Divisi</label>
                             <select class="form-control" id="division" name="division" required>
-                                <option value="">Pilih divisi / Kosongkan</option>
+                                <option value="0">Pilih divisi / Kosongkan</option>
                                 @foreach($division as $divisions)
                                 <option value="{{ $divisions->id }}">
                                     {{ $divisions->description }}
@@ -122,7 +107,6 @@
                         <button type="submit" class="btn btn-primary">Submit</button>
                         <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#previewModal">Preview</button>
                         <button type="button" class="btn btn-default" id="resetButton">Reset</button>
-                        <a href="{{ url()->previous() }}" type="button" class="btn btn-info">Kembali</a>
                     </form>
                 </div>
             </div>

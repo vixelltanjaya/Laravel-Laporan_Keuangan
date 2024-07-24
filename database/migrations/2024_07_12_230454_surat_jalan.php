@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('surat_jalan', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('bis_pariwisata_id'); // Foreign key column
+            $table->unsignedBigInteger('bis_pariwisata_id'); 
             $table->string('evidence_image');
             $table->string('version', 9);
             $table->timestamps();

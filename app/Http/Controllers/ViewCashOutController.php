@@ -16,10 +16,21 @@ class ViewCashOutController extends Controller
         Log::debug('Id Journal Entry:', ['id' => $id]);
 
         $journalData = JournalEntry::joinDetailAndUsers($id);
+        $detailJournal = DetailJournalEntry::where('id', $id)->first();
 
-        return view('user-accounting.view-cash-out', [
+        $journalEntry = $journalData->journalEntry;
+        $id = $journalEntry ? $journalEntry->id : null;
+
+        Log::debug('journalData:' . json_encode($journalData->details));
+        Log::debug('detailJournal:' . json_encode($detailJournal));
+        Log::debug('Id :' . json_encode($id));
+
+        return view('user-accounting.view-cash-in', [
             'journalEntry' => $journalData->journalEntry,
-            'details' => $journalData->details
+            'details' => $journalData->details,
+            'detailJournal' => $detailJournal,
+            'id' => $id,
+            // 'no_ref_asal' => $journalEntry->no_ref_asal 
         ]);
     }
 

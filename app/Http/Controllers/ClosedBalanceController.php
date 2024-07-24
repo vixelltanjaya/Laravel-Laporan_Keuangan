@@ -21,7 +21,7 @@ class ClosedBalanceController extends Controller
 
         $monthYear = $request->input('month_year');
         if ($monthYear) {
-            $monthYear .= '-31';
+            $monthYear .= '';
         }
 
 
@@ -30,7 +30,7 @@ class ClosedBalanceController extends Controller
         $sumBalance = CoaModel::sumBalanceCoa($monthYear);
 
         // Asumsi mengambil nilai pertama dari $sumBalance
-        $firstBalance = $sumBalance->first(); // Jika menggunakan first(), pastikan tidak kosong
+        $firstBalance = $sumBalance->first();
 
         // Pastikan $firstBalance tidak kosong sebelum mengakses propertinya
         $account_id = $firstBalance->account_id ?? null;

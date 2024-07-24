@@ -18,7 +18,7 @@ class PariwisataController extends Controller
     {
         $bisPariwisata = BisPariwisata::joinSuratJalan();
 
-        Log::debug('apa evidence image nya ' .json_encode($bisPariwisata));
+        Log::debug('apa evidence image nya ' . json_encode($bisPariwisata));
 
         return view('pariwisata', [
             'bisPariwisata' => $bisPariwisata
@@ -32,14 +32,22 @@ class PariwisataController extends Controller
             'tahun_kendaraan' => 'required|integer',
             'karoseri' => 'required|string|max:50',
             'no_rangka' => 'required|string|max:50',
-            'evidence_image' => 'nullable|file|max:2048'
+            'selling_price' => 'required|numeric',
+            'evidence_image' => 'nullable|file|max:2048',
+            'evidence_image_bus' => 'nullable|file|max:2048'
         ]);
 
         try {
-            // Upload the file if present
+            // Upload the file surat jalan
             $evidenceImagePath = null;
             if ($request->hasFile('evidence_image')) {
                 $evidenceImagePath = $request->file('evidence_image')->store('evidence_images', 'public');
+            }
+
+            // Upload the file foto bis
+            $evidenceImageBusPath = null;
+            if ($request->hasFile('evidence_image_bus')) {
+                $evidenceImageBusPath = $request->file('evidence_image_bus')->store('bus_images', 'public');
             }
 
             // Create BisPariwisata entry
@@ -47,7 +55,9 @@ class PariwisataController extends Controller
                 'plat_nomor' => $request->plat_nomor,
                 'tahun_kendaraan' => $request->tahun_kendaraan,
                 'karoseri' => $request->karoseri,
+                'selling_price' => $request->selling_price,
                 'no_rangka' => $request->no_rangka,
+                'evidence_image_bus' => $evidenceImageBusPath
             ]);
 
             $latestSuratJalan = SuratJalan::where('bis_pariwisata_id', $bisPariwisata->id)
@@ -71,30 +81,52 @@ class PariwisataController extends Controller
         }
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
-        Log::debug('Req ID ' . json_encode($request->all));
+        Log::debug('Req ID ' . json_encode($request->all()));
         Log::debug('route ID ' . json_encode($id));
+
         try {
             $validateData = $request->validate([
-                'plat_nomor' => 'required|string|max:9',
+                'plat_nomor' => 'required|string|max:15',
                 'tahun_kendaraan' => 'required|integer',
-                'brand' => 'required|max:50',
-                'no_rangka' => 'required|max:50'
+                'karoseri' => 'required|max:50',
+                'no_rangka' => 'required|max:50',
+                'selling_price' => 'required|numeric',
+                'chart_of_account' => 'required|string|max:50',
+                'evidence_image' => 'nullable|file|max:2048',
+                'evidence_image_bus' => 'nullable|file|max:2048'
             ]);
 
+            Log::debug('validate data ' . json_encode($validateData));
             $pariwisata = BisPariwisata::findOrFail($id);
+
+            // Upload the file foto bis
+            $evidenceImageBusPath = null;
+            if ($request->hasFile('evidence_image_bus')) {
+                $evidenceImageBusPath = $request->file('evidence_image_bus')->store('bus_images', 'public');
+            }
+            // cek evidence_image
+            if ($request->hasFile('evidence_image')) {
+                $filePath = $request->file('evidence_image')->store('evidence_images', 'public');
+
+                // Insert a new record into surat_jalan table
+                SuratJalan::create([
+                    'bis_pariwisata_id' => $pariwisata->id,
+                    'evidence_image' => $filePath,
+                    'version' => SuratJalan::where('bis_pariwisata_id', $pariwisata->id)->count() + 1
+                ]);
+            }
 
             $pariwisata->plat_nomor = $validateData['plat_nomor'];
             $pariwisata->tahun_kendaraan = $validateData['tahun_kendaraan'];
-            $pariwisata->brand = $validateData['brand'];
+            $pariwisata->karoseri = $validateData['karoseri'];
             $pariwisata->no_rangka = $validateData['no_rangka'];
+            $pariwisata->selling_price = $validateData['selling_price'];
+            $pariwisata->account_id = $validateData['chart_of_account'];
+            $pariwisata->evidence_image_bus =  $evidenceImageBusPath;
 
-            Log::debug('route ID' . json_encode($pariwisata));
+            Log::debug('pariwisata' . json_encode($pariwisata));
 
             $pariwisata->save();
 

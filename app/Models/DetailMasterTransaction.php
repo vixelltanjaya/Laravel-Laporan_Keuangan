@@ -19,7 +19,7 @@ class DetailMasterTransaction extends Model
             ->join('master_transaction as B', 'B.code', '=', 'A.master_code')
             ->join('evidence_code as C', 'C.id', '=', 'B.evidence_id')
             ->join('chart_of_account as D', 'D.account_id', '=', 'A.gl_account')
-            ->orderBy('A.gl_account','asc')
+            ->orderBy('A.account_position','desc')
             ->select('A.master_code', 'A.gl_account', 'A.account_position', 'C.prefix_code', 'B.description', 'B.id', 'D.account_name')
             ->get();
         return $detailMasterTransaction;

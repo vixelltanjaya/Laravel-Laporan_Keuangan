@@ -15,8 +15,11 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('customer_id')->unsigned()->index();
             $table->boolean('is_booked');
+            $table->string('description',255);
             $table->bigInteger('bus_pariwisata_id')->unsigned()->index();
             $table->bigInteger('journal_entry_id')->unsigned()->index();
+            $table->date('start_book');
+            $table->date('end_book');
             $table->timestamps();
 
             // FK

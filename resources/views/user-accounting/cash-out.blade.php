@@ -16,68 +16,44 @@
                             <h5 class="mb-0">Uang Keluar</h5>
                         </div>
                         <div class="nav-item d-flex align-self-end">
-                            <a href="{{ route('cash-out-form.index') }}" class="btn bg-gradient-primary mb-0 me-2">+&nbsp;Add</a>
+                            <a href="{{ route('cash-out-form.index') }}" class="btn bg-gradient-primary mb-0 me-2">Form Uang Keluar</a>
                         </div>
                     </div>
                 </div>
-
-                @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-
-                @if (session('berhasil'))
-                <div class="alert alert-success">
-                    <ul>
-                        <li>{{ session('berhasil') }}</li>
-                    </ul>
-                </div>
-                @endif
-
+                @include('components.alert-danger-success')
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="hover" id="evidenceCodeTable">
+                        <table class="order-column stripe" id="cashOutTable">
                             <thead>
                                 <tr>
-                                    <th class="text-center">No</th>
+                                    <th>No</th>
                                     <th>Tanggal</th>
-                                    <th>Deskripsi</th>
-                                    <th>Status</th>
+                                    <th>Keterangan</th>
+                                    <th>Kode Transaksi</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
-
                             <tbody>
-                                @foreach ( $cashout as $co )
+                                @foreach ( $cashout as $cout )
                                 <tr>
-                                    <td class="text-center">
-                                        <p> {{$loop->iteration}} </p>
+                                    <td>
+                                        <p>{{$loop->iteration}}</p>
                                     </td>
                                     <td>
-                                        <p> {{$co->formatted_created_at}} </p>
+                                        <p>{{$cout->entry_date}}</p>
                                     </td>
                                     <td>
-                                        <p> {{$co->description}} </p>
+                                        <p>{{$cout->description}}</p>
                                     </td>
                                     <td>
-                                        <p> @if($co->is_reversed == 0)
-                                            Baru
-                                            @else
-                                            Batal
-                                            @endif
-                                        </p>
+                                        <p>{{$cout->evidence_code}}</p>
                                     </td>
-                                    <td class="ps-4">
+                                    <td>
                                         <p>
-                                        <a href="{{route('view-cash-out.index',['id' => $co->id])}}" class="btn btn-link" target="_blank">
+                                            <a href="{{route('view-cash-out.index',['id' => $cout->id])}}" class="btn btn-link text-info">
                                                 <i class="fas fa-eye"></i> Lihat
                                             </a>
-                                            <button class="btn btn-link btn-sm" onclick="printInvoice()">
+                                            <button class="btn btn-link btn-sm text-dark" onclick="printInvoice()">
                                                 <i class="fas fa-print"></i> Print
                                             </button>
                                         </p>
@@ -93,12 +69,14 @@
     </div>
 </main>
 
-
 <script>
     $(document).ready(function() {
-        $('#evidenceCodeTable').DataTable();
-
+        $('#cashOutTable').DataTable();
     });
+
+    function printInvoice() {
+        window.print();
+    }
 </script>
 
 @endsection

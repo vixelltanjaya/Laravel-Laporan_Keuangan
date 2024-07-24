@@ -91,7 +91,6 @@ class MasterJournalController extends Controller
         DB::beginTransaction();
 
         try {
-            // Find the master journal
             $masterJournal = MasterTransaction::findOrFail($id);
 
             // Update master journal
@@ -103,14 +102,14 @@ class MasterJournalController extends Controller
 
             Log::debug('master journal' .json_encode($masterJournal));
 
-            // Delete existing detail transactions
+            // Delete existing data detail transactions
             DB::table('detail_master_transaction')->where('master_code', $masterJournal->code)->delete();
 
-            // Save new detail transactions
+            // Save 
             $detailTransactions = [];
             foreach ($request->noAccount as $index => $noAccount) {
                 $detailTransactions[] = [
-                    'master_code' => $masterJournal->code, // or adjust based on your actual logic
+                    'master_code' => $masterJournal->code, 
                     'gl_account' => $noAccount,
                     'account_position' => $request->accountSign[$index],
                     'created_at' => now(),
@@ -120,7 +119,6 @@ class MasterJournalController extends Controller
 
             Log::debug('detail transaction ' .json_encode($detailTransactions));
 
-            // Insert new detail transactions into the database
             DB::table('detail_master_transaction')->insert($detailTransactions);
 
             // Commit the transaction

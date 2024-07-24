@@ -11,7 +11,7 @@ class CustomerController extends Controller
     public function index()
     {
         Log::info('masuk ke func index');
-        $customers = Customer::all();
+        $customers = Customer::orderBy('name','asc')->get();
         return view('customer', compact('customers'));
     }
 
@@ -19,6 +19,7 @@ class CustomerController extends Controller
     {
 
         Log::debug('name' .$request->name);
+
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -42,7 +43,7 @@ class CustomerController extends Controller
         Log::debug('Route ID: ' . json_encode($id));
 
         $request->validate([
-            'nama' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'no_telp' => 'required|string|numeric|digits_between:10,12',
             'alamat' => 'required|string|max:255',
             'email' => 'required|string|email'

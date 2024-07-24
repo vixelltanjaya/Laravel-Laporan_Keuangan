@@ -33,22 +33,4 @@ class ViewCashInController extends Controller
             // 'no_ref_asal' => $journalEntry->no_ref_asal 
         ]);
     }
-
-
-    public function cancel($id)
-    {
-        try {
-            $journalEntry = JournalEntry::findOrFail($id);
-
-            // Update entri 
-            $journalEntry->is_reversed = 1;
-            $journalEntry->reversed_by = Auth::user()->name;
-            $journalEntry->reversed_at = now();
-            $journalEntry->save();
-
-            return redirect()->route('view-cash-in.index', ['id' => $id])->with('berhasil', 'Entri jurnal berhasil dibatalkan.');
-        } catch (Exception $e) {
-            return redirect()->route('view-cash-in.index', ['id' => $id])->with('gagal', 'Entru gagal dibatalkan.' . $e->getMessage());
-        }
-    }
 }

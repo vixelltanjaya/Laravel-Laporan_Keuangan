@@ -1,127 +1,112 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
-<div class="row">
-    <div class="col-lg-12">
-        <div class="d-flex flex-wrap align-items-center justify-content-between my-3">
-        </div>
-        <div class="card">
-            <div class="card-body">
-                @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-
-                @if (session('berhasil'))
-                <div class="alert alert-success">
-                    <ul>
-                        <li>{{ session('berhasil') }}</li>
-                    </ul>
-                </div>
-                @endif
-
-                @if (session('gagal'))
-                <div class="alert alert-warning">
-                    <ul>
-                        <li>{{ session('gagal') }}</li>
-                    </ul>
-                </div>
-                @endif
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="card-title">Detail Transaksi</h5>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="mb-1">Deskripsi: <strong>{{ $journalEntry->description }}</strong></p>
-                        <p class="mb-1">Kode: <strong>{{ $journalEntry->evidence_code }}</strong></p>
+<main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title">Detail Transaksi</h5>
                     </div>
-                    <div class="text-right">
-                        <p class="mb-1">{{ \Carbon\Carbon::parse($journalEntry->created_at)->format('d M Y') }}</p>
-                        <p class="mb-1">Dibuat Oleh: <strong>{{ $journalEntry->user_name }}</strong></p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Deskripsi: <strong>{{ $journalEntry->description }}</strong></p>
+                            <p class="mb-1">Kode: <strong>{{ $journalEntry->evidence_code }}</strong></p>
+                        </div>
+                        <div class="text-right">
+                            <p class="mb-1">{{ \Carbon\Carbon::parse($journalEntry->created_at)->format('d M Y') }}</p>
+                            <p class="mb-1">Dibuat Oleh: <strong>{{ $journalEntry->user_name }}</strong></p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="table-responsive">
-                    <table class="table table-borderless">
-                        <thead>
-                            <tr>
-                                <th scope="col">Akun</th>
-                                <th scope="col">Debit</th>
-                                <th scope="col">Kredit</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($details as $detail)
-                            <tr>
-                                <td>{{ $detail->account_id }} - {{ $detail->account_name }}</td>
-                                <td>Rp{{ number_format($detail->debit, 0, ',', '.') }}</td>
-                                <td>Rp{{ number_format($detail->credit, 0, ',', '.') }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Akun</th>
+                                    <th scope="col">Debit</th>
+                                    <th scope="col">Kredit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($details as $detail)
+                                <tr>
+                                    <td>{{ $detail->account_id }} - {{ $detail->account_name }}</td>
+                                    <td>Rp{{ number_format($detail->debit, 0, ',', '.') }}</td>
+                                    <td>Rp{{ number_format($detail->credit, 0, ',', '.') }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
 
-                <p class="mb-1">Status: <strong>{{ $journalEntry->is_reversed ? 'Batal' : 'Baru' }}</strong></p>
-                <div class="d-flex justify-content-between">
-                    <button id="cancelJournalButton" type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelJournalModal">
-                        Batalkan Jurnal
-                    </button>
-                    <a href="{{ url()->previous() }}" class="btn btn-secondary">Kembali</a>
+                    @if($journalEntry->is_reversed == 0)
+                    <p class="mb-1">Status: <strong>Baru</strong></p>
+                    @elseif($journalEntry->is_reversed == 1)
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Status: <strong>Koreksi</strong></p>
+                            <p class="mb-1">Kode Bukti Asal: <strong>{{ $journalEntry->evidence_code_origin }}</strong></p>
+                        </div>
+                        <div class="text-right">
+                            <p class="mb-1">Koreksi Oleh: <strong>{{ $journalEntry->reversed_by }}</strong></p>
+                            <p class="mb-1">Waktu Koreksi: <strong>{{ $journalEntry->reversed_at }}</strong></p>
+                        </div>
+                    </div>
+                    @elseif($journalEntry->is_reversed == 2)
+                    <p class="mb-1">Status: <strong>Terkoreksi</strong></p>
+                    @endif
+                    <div class="d-flex justify-content-between">
+                        @if($id)
+                        @if($journalEntry->is_reversed == 1 || $journalEntry->is_reversed == 0)
+                        <a href="{{ route('correcting-entry.index', ['id' => $id]) }}" id="reversedJournalButton" class="btn bg-gradient-dark">Jurnal Koreksi</a>
+                        @elseif($journalEntry->is_reversed == 2)
+                        <a href="#" id="reversedJournalButton" class="btn bg-gradient-dark disabled">Jurnal Koreksi</a>
+                        @endif
+                        @endif
+                        <a href="{{ route('cash-out.index') }}" class="btn btn-secondary"><i class="fas fa-angle-left me-1"></i>Kembali</a>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- bukti transaksi -->
+    <div class="row">
+        <div class="col-12">
+            <!-- Add margin-top to create space between the card and the content above -->
+            <div class="card" style="width: 18rem; margin-top: 20px;">
+                <div class="card-body">
+                    <h5 class="card-title">Bukti Transaksi</h5>
+                    <img id="evidenceImage" data-image-path="{{ Storage::url($detailJournal->evidence_image) }}" alt="Evidence Image" class="img-fluid mb-3" style="max-width: 100%; height: auto;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
 @endsection
-
-<!-- Modal -->
-<div class="modal fade" id="cancelJournalModal" tabindex="-1" aria-labelledby="cancelJournalModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cancelJournalModalLabel">Konfirmasi Pembatalan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Apakah Anda yakin ingin membatalkan jurnal ini?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
-                <form action="{{ route('view-cash-out.cancel', $journalEntry->id) }}" method="POST">
-                    @csrf
-                    @method('POST')
-                    <button type="submit" class="btn btn-danger">Ya, Batalkan</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#confirmCancelButton').on('click', function() {
-            // Perform the cancellation logic here
-            alert('Jurnal berhasil dibatalkan!');
-            // You can add an AJAX request here to handle the cancellation on the server side
-            $('#cancelJournalModal').modal('hide');
-        });
-    });
-
     document.addEventListener('DOMContentLoaded', function() {
-        var cancelJournalButton = document.getElementById('cancelJournalButton');
-        var isReversed = @json($journalEntry->is_reversed);
+        var reversedJournalButton = document.getElementById('reversedJournalButton');
+        var isReversed = @json($journalEntry -> is_reversed);
 
-        if (isReversed) {
-            cancelJournalButton.classList.add('disabled');
-            cancelJournalButton.removeAttribute('data-bs-toggle');
-            cancelJournalButton.removeAttribute('data-bs-target');
+        if (isReversed === 2 || isReversed === 1) {
+            reversedJournalButton.classList.add('disabled');
         }
+
+        // Get the image element
+        var evidenceImage = document.getElementById('evidenceImage');
+
+        // Set the src attribute using the data-image-path
+        var imagePath = evidenceImage.getAttribute('data-image-path');
+        evidenceImage.src = imagePath;
+
+        console.log('Image path:', imagePath);
+        console.log('Evidence image element:', evidenceImage);
     });
 </script>

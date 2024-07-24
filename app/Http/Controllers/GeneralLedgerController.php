@@ -6,25 +6,27 @@ use App\Models\AccountBalance;
 use App\Models\CoaModel;
 use App\Models\JournalEntry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class GeneralLedgerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $monthYear = $request->input('month_year');
 
-        $chartOfAccounts = CoaModel::all();
-        $journalEntries = JournalEntry::all();
-        $accountBalances = AccountBalance::all();
+        $chartOfAccounts = CoaModel::sumBalanceCoa($monthYear);
+        $filteredAccounts = collect($chartOfAccounts);
 
-        return view('user-accounting.general-ledger',[
-            'chartOfAccounts' => $chartOfAccounts,
-            'journalEntries' => $journalEntries,
-            'accountBalances' => $accountBalances,
-        ]);
+        Log::debug('Filtered accounts: ', $filteredAccounts->toArray());
+
+        return view('user-accounting.general-ledger', compact('filteredAccounts', 'monthYear'));
     }
+
+
+
 
     /**
      * Show the form for creating a new resource.

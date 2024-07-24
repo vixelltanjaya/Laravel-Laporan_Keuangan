@@ -11,24 +11,7 @@
             <div class="card border-none">
 
                 <div class="card-body">
-                    @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
-
-                    @if (session('gagal'))
-                    <div class="alert alert-danger">
-                        <ul>
-                            <li>{{ session('gagal') }}</li>
-                        </ul>
-                    </div>
-                    @endif
-
+                @include('components.alert-danger-success')
                     <form action="{{ route('cash-in.store')}}" method="POST" enctype="multipart/form-data">
                         @csrf
 
@@ -58,7 +41,7 @@
                             <div class="form-group col-md-6">
                                 <label for="division">Pilih Divisi</label>
                                 <select name="division" id="division" class="form-control" required>
-                                    <option value="">Pilih Divisi / Kosongkan</option>
+                                    <option value="0">Pilih Divisi / Kosongkan</option>
                                     @foreach($division as $divisions)
                                     <option value="{{ $divisions->id }}">
                                         {{ $divisions->description }}

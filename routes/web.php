@@ -4,6 +4,7 @@ use App\Http\Controllers\AddDataPariwisataController;
 use App\Http\Controllers\AddEvidenceCodeController;
 use App\Http\Controllers\AddMasterJournalController;
 use App\Http\Controllers\AddUserController;
+use App\Http\Controllers\BookBusExternalController;
 use App\Http\Controllers\BookedBusController;
 use App\Http\Controllers\CashInController;
 use App\Http\Controllers\CashInFormController;
@@ -15,14 +16,17 @@ use App\Http\Controllers\ClosedBalanceController;
 use App\Http\Controllers\CorrectingEntryController;
 use App\Http\Controllers\CountPayrollController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\editDataPariwisataController;
 use App\Http\Controllers\EditMasterJournalController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EvidenceCodeController;
 use App\Http\Controllers\GeneralLedgerController;
+use App\Http\Controllers\GenerateFinancialStatementController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InfoUserController;
 use App\Http\Controllers\MasterJournalController;
 use App\Http\Controllers\PariwisataController;
+use App\Http\Controllers\PariwisataExternalController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ReportingController;
@@ -114,12 +118,10 @@ Route::group(['middleware' => 'auth'], function () {
 
 	Route::prefix('view-cash-in')->group(function () {
 		Route::get('{id}', [ViewCashInController::class, 'index'])->name('view-cash-in.index');
-		Route::post('cancel/{id}', [ViewCashInController::class, 'cancel'])->name('view-cash-in.cancel');
 	});
 
 	Route::prefix('view-cash-out')->group(function () {
 		Route::get('{id}', [ViewCashOutController::class, 'index'])->name('view-cash-out.index');
-		Route::post('cancel/{id}', [ViewCashOutController::class, 'cancel'])->name('view-cash-out.cancel');
 	});
 
 	Route::get('cash-out-form', [cashOutFormController::class, 'index'])->name('cash-out-form.index');
@@ -128,16 +130,12 @@ Route::group(['middleware' => 'auth'], function () {
 
 	Route::resource('cash-in',  CashInController::class)->only(
 		'index',
-		'store',
-		'update',
-		'destroy'
+		'store'
 	);
 
 	Route::resource('cash-out',  CashOutController::class)->only(
 		'index',
-		'store',
-		'update',
-		'destroy'
+		'store'
 	);
 
 	Route::get('virtual-reality', function () {
@@ -148,18 +146,17 @@ Route::group(['middleware' => 'auth'], function () {
 		return view('static-sign-in');
 	})->name('sign-in');
 
-	Route::resource('reporting', ReportingController::class)->only(['index']);
+	Route::get('reporting', [ReportingController::class, 'index'])->name('reporting.index');;
+	
+	Route::prefix('financial-statement')->group(function(){
+		Route::post('/income', [GenerateFinancialStatementController::class, 'income'])->name('generate-financial-statement.income');
+		Route::post('/balance', [GenerateFinancialStatementController::class, 'balance'])->name('generate-financial-statement.balance');
+		Route::post('/cash', [GenerateFinancialStatementController::class, 'cash'])->name('generate-financial-statement.cash');
+	});
 
 	Route::resource('general-ledger', GeneralLedgerController::class);
 
 	Route::resource('customer', CustomerController::class)->only(['index', 'store', 'update', 'destroy']);
-
-	Route::resource('pariwisata', PariwisataController::class)->only(['index', 'store', 'update', 'destroy']);
-	Route::resource('pesan-bus', BookedBusController::class)->only(['index', 'store', 'update', 'destroy']);
-
-	Route::get('add-data-pariwisata', function () {
-		return view('add-data-pariwisata');
-	});
 
 	Route::resource('master-journal', MasterJournalController::class)->only('index', 'store', 'update', 'destroy');
 
@@ -181,7 +178,13 @@ Route::group(['middleware' => 'auth'], function () {
 		return view('user-accounting.add-evidence-code');
 	});
 
-	
+	Route::resource('pariwisata', PariwisataController::class)->only(['index', 'store', 'update', 'destroy']);
+	Route::get('add-data-pariwisata', [AddDataPariwisataController::class, 'index'])->name('add-data-pariwisata.index');
+	Route::get('edit-data-pariwisata/{id}', [editDataPariwisataController::class, 'index'])->name('edit-data-pariwisata.index');
+	// Route::put('pariwisata/{id}', [editDataPariwisataController::class, 'update'])->name('pariwisata.update');
+
+	Route::get('/pesan-bus/list', [BookedBusController::class, 'listBook'])->name('pesan-bus.list');
+	Route::resource('pesan-bus', BookedBusController::class);
 
 	Route::get('/logout', [SessionsController::class, 'destroy']);
 	Route::get('/user-profile', [InfoUserController::class, 'create']);
@@ -191,6 +194,15 @@ Route::group(['middleware' => 'auth'], function () {
 	});
 });
 
+
+Route::prefix('book-bus-external')->group(function () {
+	Route::get('/', [BookBusExternalController::class, 'index'])->name('book-bus-external.index');
+	Route::get('/list', [BookBusExternalController::class, 'listBook'])->name('book-bus-external.list');
+});
+Route::get('pariwisata-external', [PariwisataExternalController::class, 'index'])->name('pariwisata-external.index');
+Route::get('/landing-page', function () {
+	return view('customer.landing-page-cust');
+});
 
 
 Route::group(['middleware' => 'guest'], function () {
@@ -210,7 +222,6 @@ Route::get('/login', function () {
 
 Route::group(['middleware' => ['auth', 'check.role:1']], function () {
 	Route::resource('add-role', RoleController::class)->only(['index', 'store']);
-
 	Route::prefix('add-user')->group(function () {
 		Route::get('destroy', [AddUserController::class, 'destroy'])->name('add-user.destroy');
 		Route::get('update', [AddUserController::class, 'update'])->name('add-user.update');
