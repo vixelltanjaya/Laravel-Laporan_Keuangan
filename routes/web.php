@@ -97,8 +97,6 @@ Route::group(['middleware' => 'auth'], function () {
 
 	route::resource('payroll', PayrollController::class);
 
-	route::resource('count-payroll', CountPayrollController::class);
-
 	Route::resource('employee', EmployeeController::class)->only(
 		'index',
 		'store',
