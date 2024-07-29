@@ -15,7 +15,7 @@
                             <p class="mb-1">Kode: <strong>{{ $journalEntry->evidence_code }}</strong></p>
                         </div>
                         <div class="text-right">
-                            <p class="mb-1">{{ \Carbon\Carbon::parse($journalEntry->created_at)->format('d M Y') }}</p>
+                            <p class="mb-1">Dibuat Tanggal: <strong>{{ \Carbon\Carbon::parse($journalEntry->created_at)->format('d M Y') }}</strong></p>
                             <p class="mb-1">Dibuat Oleh: <strong>{{ $journalEntry->user_name }}</strong></p>
                         </div>
                     </div>

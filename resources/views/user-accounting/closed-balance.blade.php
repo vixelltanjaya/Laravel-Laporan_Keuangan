@@ -46,10 +46,10 @@
                     <thead>
                         <tr>
                             <th>Akun</th>
-                            <th>Saldo Awal</th>
+                            <th>Saldo Awal Bulan</th>
                             <th>Debit</th>
                             <th>Kredit</th>
-                            <th>Saldo Akhir</th>
+                            <th>Saldo Akhir Bulan</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -104,12 +104,14 @@
                     <button type="submit" class="btn btn-primary">Tutup</button>
                 </div>
                 <!-- Input untuk data yang diperlukan -->
-                <input type="hidden" name="account_id" value="{{ $account_id }}">
-                <input type="hidden" name="beginning_balance" value="{{ $beginning_balance }}">
-                <input type="hidden" name="debit" value="{{ $debit }}">
-                <input type="hidden" name="credit" value="{{ $credit }}">
-                <input type="hidden" name="balance_difference" value="{{ $balance_difference }}">
-                <input type="hidden" name="month_year" value="{{ request('month_year') }}">
+                @foreach($sumBalance as $index => $account)
+                <input type="hidden" name="balances[{{ $index }}][account_id]" value="{{ $account->account_id }}">
+                <input type="hidden" name="balances[{{ $index }}][beginning_balance]" value="{{ $account->beginning_balance }}">
+                <input type="hidden" name="balances[{{ $index }}][debit]" value="{{ $account->total_debit }}">
+                <input type="hidden" name="balances[{{ $index }}][credit]" value="{{ $account->total_credit }}">
+                <input type="hidden" name="balances[{{ $index }}][balance_difference]" value="{{ $account->balance_difference }}">
+                <input type="hidden" name="balances[{{ $index }}][month_year]" value="{{ request('month_year') }}">
+                @endforeach
             </form>
         </div>
     </div>

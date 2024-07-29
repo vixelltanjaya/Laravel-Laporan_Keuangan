@@ -19,8 +19,8 @@
                         </div>
                     </div>
                     <div class="card-body p-3 pb-0">
-                        <div class="col-md-10">
-                            <img src="{{ Storage::url($pariwisata->evidence_image_bus) }}" alt="Bis Pariwisata" class="img-fluid">
+                    <div class="col-md-10">
+                            <img src="{{ Storage::url($pariwisata->evidence_image_bus) }}" alt="Bus Pariwisata" class="img-fluid" style="width: 300x; height: 200px;">
                         </div>
                         <h5 class="mt-3">Medium Bus</h5>
                         <p class="mb-1">menampung hingga 33 penumpang</p>

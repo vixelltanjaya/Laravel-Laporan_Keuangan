@@ -148,7 +148,7 @@ class BookedBusController extends Controller
             $debitEntry->account_id = $debitAccountId;
             $debitEntry->debit = $amount;
             $debitEntry->credit = 0;
-            $debitEntry->evidence_image = $booking->evidence_image;
+            $debitEntry->evidence_image = $booking->evidence_image ?? '';
             $debitEntry->save();
             Log::debug('debit Entry ' . json_encode($debitEntry));
 
@@ -158,7 +158,7 @@ class BookedBusController extends Controller
             $creditEntry->account_id = $creditAccountId;
             $creditEntry->debit = 0;
             $creditEntry->credit = $amount;
-            $creditEntry->evidence_image = $booking->evidence_image;
+            $creditEntry->evidence_image = $booking->evidence_image ?? '';
             $creditEntry->save();
             Log::debug('credit Entry ' . json_encode($creditEntry));
 

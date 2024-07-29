@@ -59,4 +59,19 @@ class BisPariwisata extends Model
             ->select('A.account_id', 'B.account_name', 'B.account_id', 'A.id')
             ->get();
     }
+
+    public static function getSalesOnBothLine()
+    {
+        return DB::table('chart_of_account as A')
+            ->leftJoin('detail_journal_entry as B', 'A.account_id', '=', 'B.account_id')
+            ->leftJoin('journal_entry as C', 'C.id', '=', 'B.entry_id')
+            ->select(
+                'A.account_id',
+                'A.account_name',
+                DB::raw('SUM("B".credit) as total_credit')
+            )
+            ->where(DB::raw('SUBSTRING("A".account_name, 1, 14)'), '=', 'Pendapatan Bis')
+            ->groupBy('A.account_id', 'A.account_name')
+            ->get();
+    }
 }

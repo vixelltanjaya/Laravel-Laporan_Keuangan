@@ -33,48 +33,13 @@
                         </p>
                     </div>
                     <table class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <td><strong>Perhitungan</strong></td>
-                                <td>Jumlah</td>
-                                <td></td>
-                            </tr>
-                            @foreach($incomeStatement['revenue'] as $revenue)
-                            <tr>
-                                <td>{{ $revenue['description'] }}</td>
-                                <td>{{ $revenue['amount'] }}</td>
-                                <td></td>
-                            </tr>
-                            @endforeach
-                            <tr>
-                                <td><strong>Total Pendapatan</strong></td>
-                                <td>{{ $incomeStatement['total_revenue'] }}</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Beban</strong></td>
-                                <td>Jumlah</td>
-                                <td></td>
-                            </tr>
-                            @foreach($incomeStatement['expenses'] as $expense)
-                            <tr>
-                                <td>{{ $expense['description'] }}</td>
-                                <td>{{ $expense['amount'] }}</td>
-                                <td></td>
-                            </tr>
-                            @endforeach
-                            <tr>
-                                <td><strong>Total Beban</strong></td>
-                                <td>{{ $incomeStatement['total_expenses'] }}</td>
-                                <td></td>
-                            </tr>
-                            <!-- Laba Bersih Section -->
-                            <tr>
-                                <td><strong>Laba Bersih</strong></td>
-                                <td>{{ $incomeStatement['net_income'] }}</td>
-                                <td></td>
-                            </tr>
-                        </tbody>
+                        @if(isset($reportType) && $reportType === 'income')
+                        @include('reporting.laporan-laba-rugi')
+                        @elseif(isset($reportType) && $reportType === 'balance')
+                        @include('reporting.laporan-posisi-keuangan')
+                        @else
+                        Laporan Arus Kas
+                        @endif
                     </table>
                 </div>
             </div>
@@ -88,7 +53,9 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('printButton').addEventListener('click', () => {
-            const { jsPDF } = window.jspdf;
+            const {
+                jsPDF
+            } = window.jspdf;
 
             const doc = new jsPDF();
             const element = document.querySelector('.card-body');

@@ -16,6 +16,7 @@ use App\Http\Controllers\ClosedBalanceController;
 use App\Http\Controllers\CorrectingEntryController;
 use App\Http\Controllers\CountPayrollController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\editDataPariwisataController;
 use App\Http\Controllers\EditMasterJournalController;
 use App\Http\Controllers\EmployeeController;
@@ -58,9 +59,15 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 Route::group(['middleware' => 'auth'], function () {
 
 	Route::get('/', [HomeController::class, 'home']);
-	Route::get('dashboard', function () {
+	Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+	Route::get('/login', function () {
 		return view('dashboard');
-	})->name('dashboard');
+	});
+
+
+	Route::get('/logout', [SessionsController::class, 'destroy']);
+	Route::get('/user-profile', [InfoUserController::class, 'create']);
+	Route::post('/user-profile', [InfoUserController::class, 'store']);
 
 	Route::get('/email/verify', function () {
 		return view('auth.verify-email');
@@ -154,7 +161,10 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::post('/cash', [GenerateFinancialStatementController::class, 'cash'])->name('generate-financial-statement.cash');
 	});
 
-	Route::resource('general-ledger', GeneralLedgerController::class);
+	Route::prefix('general-ledger')->group(function () {
+		Route::get('/', [GeneralLedgerController::class, 'index'])->name('general-ledger.index');
+		Route::get('/filter', [GeneralLedgerController::class, 'getRequest'])->name('general-ledger.getRequest');
+	});
 
 	Route::resource('customer', CustomerController::class)->only(['index', 'store', 'update', 'destroy']);
 
@@ -185,16 +195,31 @@ Route::group(['middleware' => 'auth'], function () {
 
 	Route::get('/pesan-bus/list', [BookedBusController::class, 'listBook'])->name('pesan-bus.list');
 	Route::resource('pesan-bus', BookedBusController::class);
-
-	Route::get('/logout', [SessionsController::class, 'destroy']);
-	Route::get('/user-profile', [InfoUserController::class, 'create']);
-	Route::post('/user-profile', [InfoUserController::class, 'store']);
-	Route::get('/login', function () {
-		return view('dashboard');
-	});
 });
 
 
+
+// role
+Route::group(['middleware' => ['auth', 'check.role:1']], function () {
+	Route::resource('add-role', RoleController::class)->only(['index', 'store']);
+	Route::prefix('add-user')->group(function () {
+		Route::get('destroy', [AddUserController::class, 'destroy'])->name('add-user.destroy');
+		Route::get('update', [AddUserController::class, 'update'])->name('add-user.update');
+		Route::post('store', [AddUserController::class, 'store'])->name('add-user.store');
+		Route::get('/', [AddUserController::class, 'index'])->name('add-user.index');
+	});
+	
+	Route::prefix('user-management')->group(function () {
+		Route::get('/', [UserManagementController::class, 'index'])->name('user-management.index');
+		Route::post('store', [UserManagementController::class, 'store'])->name('user-management.store');
+		Route::put('roleUpdate', [UserManagementController::class, 'updateRole'])->name('user-management.updateRole');
+		Route::put('updateUser', [UserManagementController::class, 'updateUser'])->name('user-management.updateUser');
+		Route::delete('roleDestroy', [UserManagementController::class, 'roleDestroy'])->name('user-management.roleDestroy');
+		Route::delete('userDestroy', [UserManagementController::class, 'userDestroy'])->name('user-management.userDestroy');
+	});
+});
+
+// user external
 Route::prefix('book-bus-external')->group(function () {
 	Route::get('/', [BookBusExternalController::class, 'index'])->name('book-bus-external.index');
 	Route::get('/list', [BookBusExternalController::class, 'listBook'])->name('book-bus-external.list');
@@ -220,14 +245,4 @@ Route::get('/login', function () {
 	return view('session/login-session');
 })->name('login');
 
-Route::group(['middleware' => ['auth', 'check.role:1']], function () {
-	Route::resource('add-role', RoleController::class)->only(['index', 'store']);
-	Route::prefix('add-user')->group(function () {
-		Route::get('destroy', [AddUserController::class, 'destroy'])->name('add-user.destroy');
-		Route::get('update', [AddUserController::class, 'update'])->name('add-user.update');
-		Route::post('store', [AddUserController::class, 'store'])->name('add-user.store');
-		Route::get('/', [AddUserController::class, 'index'])->name('add-user.index');
-	});
 
-	Route::resource('user-management', UserManagementController::class);
-});

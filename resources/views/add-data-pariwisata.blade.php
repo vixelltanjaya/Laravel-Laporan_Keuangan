@@ -36,7 +36,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="selling_price" class="form-label">Harga DP Sewa</label>
+                                    <label for="selling_price" class="form-label">Harga Sewa</label>
                                     <input type="text" class="form-control" id="selling_price" name="selling_price" required>
                                 </div>
                                 <div class="col-md-6 mb-3">

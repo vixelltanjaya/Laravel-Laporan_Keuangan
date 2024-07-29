@@ -30,4 +30,5 @@ class AddUserController extends Controller
     
         return redirect()->route('user-management.index')->with('berhasil', 'User added successfully.');
     }
+
 }

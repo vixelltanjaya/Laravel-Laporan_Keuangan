@@ -7,72 +7,50 @@ use App\Models\CoaModel;
 use App\Models\JournalEntry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class GeneralLedgerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display the general ledger page.
      */
-    public function index(Request $request)
+    public function index()
     {
+        // kasih kosong agar tidak error saat masuk ke page
+        $monthYear = null;
+        $chartOfAccounts = collect();
+        $filteredAccounts = collect();
+
+        return view('user-accounting.general-ledger', compact(
+            'monthYear',
+            'chartOfAccounts',
+            'filteredAccounts'
+        ));
+    }
+
+    /**
+     * Handle the filtered request for general ledger.
+     */
+    public function getRequest(Request $request)
+    {
+        Log::debug('get request: ' . json_encode($request->all()));
         $monthYear = $request->input('month_year');
 
-        $chartOfAccounts = CoaModel::sumBalanceCoa($monthYear);
-        $filteredAccounts = collect($chartOfAccounts);
+        $chartOfAccounts = CoaModel::getRequestTrx($request)->groupBy('account_id');
 
-        Log::debug('Filtered accounts: ', $filteredAccounts->toArray());
+        // Process entries to calculate the amount based on account_sign
+        $processedAccounts = $chartOfAccounts->map(function ($entries) {
+            return $entries->map(function ($entry) {
+                $accountSign = Str::lower($entry->account_sign);
+                $entry->amount = $accountSign === 'debit'
+                    ? $entry->debit - $entry->credit
+                    : $entry->credit - $entry->debit;
+                return $entry;
+            });
+        });
 
-        return view('user-accounting.general-ledger', compact('filteredAccounts', 'monthYear'));
-    }
+        Log::debug('Processed accounts: ', $processedAccounts->toArray());
 
-
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return view('user-accounting.general-ledger', compact('processedAccounts', 'monthYear'));
     }
 }

@@ -92,7 +92,6 @@
                             <div class="form-group col-md-6">
                                 <label for="division_id">Tipe Bisnis <span class="text-danger">*</span></label>
                                 <select name="division_id" id="division_id" class="form-control" required>
-                                    <option value="" disabled selected>Pilih Tipe Bisnis</option>
                                     <option value="all">All</option>
                                     @foreach ($division as $divisi)
                                     <option value="{{ $divisi->id }}">{{ $divisi->description }}</option>
@@ -122,7 +121,6 @@
                             <div class="form-group col-md-6">
                                 <label for="division_id">Tipe Bisnis <span class="text-danger">*</span></label>
                                 <select name="division_id" id="division_id" class="form-control" required>
-                                    <option value="" disabled selected>Pilih Tipe Bisnis</option>
                                     <option value="all">All</option>
                                     @foreach ($division as $divisi)
                                     <option value="{{ $divisi->id }}">{{ $divisi->description }}</option>
@@ -152,7 +150,6 @@
                             <div class="form-group col-md-6">
                                 <label for="division_id">Tipe Bisnis <span class="text-danger">*</span></label>
                                 <select name="division_id" id="division_id" class="form-control" required>
-                                    <option value="" disabled selected>Pilih Tipe Bisnis</option>
                                     <option value="all">All</option>
                                     @foreach ($division as $divisi)
                                     <option value="{{ $divisi->id }}">{{ $divisi->description }}</option>

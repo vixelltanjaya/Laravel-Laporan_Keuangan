@@ -13,7 +13,7 @@
                         <div class="nav-item d-flex align-self-end">
                             <button id="printButton" class="btn btn-dark active mb-0 text-white me-2" disabled>
                                 <i class="fas fa-print me-1"></i>Print</button>
-                            <button id="lihatBukuBesarButton" type="submit" class="btn btn-primary active mb-0" disabled>
+                            <button id="lihatBukuBesarButton" type="button" class="btn btn-primary active mb-0" disabled>
                                 Lihat Buku Besar
                             </button>
                         </div>
@@ -23,7 +23,7 @@
                 <div class="card-body">
                     <div class="row mb-4">
                         <div class="col-md-4">
-                            <form id="filterForm" method="GET" action="{{ route('general-ledger.index') }}">
+                            <form id="filterForm" method="GET" action="{{ route('general-ledger.getRequest') }}">
                                 <label for="month_year" class="form-label">Bulan dan Tahun</label>
                                 <input type="month" id="month_year" name="month_year" class="form-control" value="{{ $monthYear ?? '' }}">
                             </form>
@@ -38,46 +38,57 @@
                     <div class="card-header pb-0 p-3">
                         <div class="text-center">
                             <h5 class="mb-0">Buku Besar</h5>
+                            <h5 class="mb-0">Detail Transaksi</h5>
+                            <h4 id="periode" class="card-subtitle text-muted mb-3">
+                                {{ request('month_year') ? date('F Y', strtotime(request('month_year') . '-01')) : '' }}
+                            </h4>
                         </div>
                     </div>
-                    <h5 class="mb-3 text-center">Detail Transaksi</h5>
                     <div class="table-responsive">
+                        @foreach ($processedAccounts as $account_id => $accountData)
                         <table class="table table-bordered">
                             <thead>
-                                @foreach ($filteredAccounts as $coa)
                                 <tr>
-                                    <th colspan="3" style="background-color: gray; color: #fff; text-align: left;">Akun: {{$coa->account_name}}</th>
-                                    <th colspan="3" style="background-color: gray; color: #fff; text-align: right;">Akun: {{$coa->account_id}}</th>
+                                    <th colspan="3" style="background-color: gray; color: #fff; text-align: left;">
+                                        Akun: {{ $accountData->first()->account_name }}
+                                    </th>
+                                    <th colspan="3" style="background-color: gray; color: #fff; text-align: right;">
+                                        Akun: {{ $account_id }}
+                                    </th>
                                 </tr>
                                 <tr>
-                                    <th>Nomor Bukti</th>
                                     <th>Tanggal</th>
                                     <th>Keterangan</th>
+                                    <th>Nomor Bukti</th>
                                     <th>Debit</th>
                                     <th>Kredit</th>
                                     <th>Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @if (isset($coa->journalEntries) && count($coa->journalEntries) > 0)
-                                @foreach($coa->journalEntries as $entry)
+                                @php $totalAmount = 0; @endphp
+                                @forelse($accountData as $entry)
                                 <tr>
-                                    <td>{{ $entry->evidence_code }}</td>
-                                    <td>{{ $entry->entry_date }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($entry->created_at)->format('Y/m/d') }}</td>
                                     <td>{{ $entry->description }}</td>
-                                    <td>{{ $entry->debit }}</td>
-                                    <td>{{ $entry->credit }}</td>
-                                    <td>{{ $entry->amount }}</td>
+                                    <td>{{ $entry->evidence_code }}</td>
+                                    <td>{{ number_format($entry->debit, 2) }}</td>
+                                    <td>{{ number_format($entry->credit, 2) }}</td>
+                                    <td>{{ number_format($entry->amount, 2) }}</td>
                                 </tr>
-                                @endforeach
-                                @else
+                                @php $totalAmount += $entry->amount; @endphp
+                                @empty
                                 <tr>
                                     <td colspan="6">No Journal Entries</td>
                                 </tr>
-                                @endif
-                                @endforeach
+                                @endforelse
+                                <tr>
+                                    <td colspan="5" style="text-align: right;"><strong>Total:</strong></td>
+                                    <td><strong>{{ number_format($totalAmount, 2) }}</strong></td>
+                                </tr>
                             </tbody>
                         </table>
+                        @endforeach
                     </div>
                 </div>
             </div>

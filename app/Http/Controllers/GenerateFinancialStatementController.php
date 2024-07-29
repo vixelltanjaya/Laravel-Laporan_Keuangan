@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CoaModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -11,24 +12,146 @@ class GenerateFinancialStatementController extends Controller
 
     public function income(Request $request)
     {
-        Log::debug('req id ' .json_encode($request->all()));
-        $reportType = 'income'; 
-        $incomeStatement = CoaModel::getIncomeStatement($request);
+        Log::debug('req id ' . json_encode($request->all()));
+        $reportType = 'income';
+        $incomeStatement = CoaModel::getSumRequestTrx($request);
 
-        Log::debug('income statement' .json_encode($incomeStatement));
-        return view('user-accounting.generate-financial-statement', compact(['reportType', 'incomeStatement']));
+        Log::debug('income statement' . json_encode($incomeStatement));
+        return view('user-accounting.generate-financial-statement', compact([
+            'reportType',
+            'incomeStatement',
+            'netIncome'
+        ]));
     }
 
     public function balance(Request $request)
     {
-        $reportType = 'balance'; 
-        return view('user-accounting.generate-financial-statement', compact('reportType', 'monthYear'));
+        Log::debug('req id ' . json_encode($request->all()));
+
+        $reportType = 'balance';
+        $balanceSheet = CoaModel::getSumRequestTrx($request);
+
+        $endDate = $request->input('transaction_month_end');
+        // $month = $request->input('month'); 
+        // $year = $request->input('year');   
+
+        // Calculate net income values
+        $netIncomeResults = $this->countNetIncome($request);
+
+        Log::debug('balance sheet' . json_encode($balanceSheet));
+        // Log::debug('Net Income Current Month: ' . $netIncomeResults['netIncomeCurrentMonth']);
+        Log::debug('Net Income YTD: ' . $netIncomeResults['netIncomeYTD']);
+
+        return view('user-accounting.generate-financial-statement', [
+            'reportType' => $reportType,
+            'balanceSheet' => $balanceSheet,
+            // 'netIncomeCurrentMonth' => $netIncomeResults['netIncomeCurrentMonth'],
+            'netIncomeYTD' => $netIncomeResults['netIncomeYTD'],
+        ]);
     }
+
     
+    protected function countNetIncome($request)
+    {
+        $startDate = $request->input('transaction_month_start'); // e.g., '2024-01'
+        $endDate = $request->input('transaction_month_end'); // e.g., '2024-12'
+
+        // jadikan year n month
+        $startYear = Carbon::parse($startDate)->year;
+        $startMonth = Carbon::parse($startDate)->month;
+
+        $endYear = Carbon::parse($endDate)->year;
+        $endMonth = Carbon::parse($endDate)->month;
+
+        $incomeStatement = CoaModel::getSumRequestTrx($request);
+
+        // Filter transactions for the selected period
+        $incomeStatementPeriod = $incomeStatement->filter(function ($item) use ($startYear, $startMonth, $endYear, $endMonth) {
+            $transactionDate = Carbon::parse($item->balance_time);
+            return (
+                ($transactionDate->year > $startYear || ($transactionDate->year == $startYear && $transactionDate->month >= $startMonth)) &&
+                ($transactionDate->year < $endYear || ($transactionDate->year == $endYear && $transactionDate->month <= $endMonth))
+            );
+        });
+
+        // // Filter transactions for the selected month (current month)
+        // $incomeStatementMonth = $incomeStatement->filter(function ($item) use ($startMonth, $endMonth) {
+        //     $transactionDate = Carbon::parse($item->updated_at);
+        //     return ($transactionDate->month == $startMonth && $transactionDate->month == $endMonth);
+        // });
+
+        // Log::debug('incomeStatementMonth: ' . $startMonth .' '.$endMonth);
+
+        // Filter transactions for the selected year
+        $incomeStatementYear = $incomeStatement->filter(function ($item) use ($startYear, $endYear) {
+            $transactionDate = Carbon::parse($item->balance_time);
+            return ($transactionDate->year >= $startYear && $transactionDate->year <= $endYear);
+        });
+
+        // Calculate revenue and expense for the entire period
+        $revenue = $incomeStatementPeriod->filter(function ($item) {
+            return str_starts_with($item->account_id, '4');
+        })->sum(function ($item) {
+            return $item->total_credit - $item->total_debit;
+        });
+
+        $expense = $incomeStatementPeriod->filter(function ($item) {
+            return str_starts_with($item->account_id, '5');
+        })->sum(function ($item) {
+            return $item->total_debit - $item->total_credit;
+        });
+
+        // // Calculate revenue and expense for the current month
+        // $revenueCurrentMonth = $incomeStatementMonth->filter(function ($item) {
+        //     return str_starts_with($item->account_id, '4');
+        // })->sum(function ($item) {
+        //     return $item->total_credit - $item->total_debit;
+        // });
+
+        // $expenseCurrentMonth = $incomeStatementMonth->filter(function ($item) {
+        //     return str_starts_with($item->account_id, '5');
+        // })->sum(function ($item) {
+        //     return $item->total_debit - $item->total_credit;
+        // });
+
+        // Calculate revenue and expense for the current year
+        $revenueCurrentYear = $incomeStatementYear->filter(function ($item) {
+            return str_starts_with($item->account_id, '4');
+        })->sum(function ($item) {
+            return $item->total_credit - $item->total_debit;
+        });
+
+        $expenseCurrentYear = $incomeStatementYear->filter(function ($item) {
+            return str_starts_with($item->account_id, '5');
+        })->sum(function ($item) {
+            return $item->total_debit - $item->total_credit;
+        });
+
+        // Calculate net income
+        $netIncome = $revenue - $expense;
+        // $netIncomeCurrentMonth = $revenueCurrentMonth - $expenseCurrentMonth;
+        $netIncomeYTD = $revenueCurrentYear - $expenseCurrentYear;
+
+        Log::debug('Revenue: ' . $revenue);
+        Log::debug('Expense: ' . $expense);
+        // Log::debug('Revenue for Current Month: ' . $revenueCurrentMonth);
+        // Log::debug('Expense for Current Month: ' . $expenseCurrentMonth);
+        Log::debug('Revenue for Current Year: ' . $revenueCurrentYear);
+        Log::debug('Expense for Current Year: ' . $expenseCurrentYear);
+
+        return [
+            'netIncome' => $netIncome,
+            // 'netIncomeCurrentMonth' => $netIncomeCurrentMonth,
+            'netIncomeYTD' => $netIncomeYTD
+        ];
+    }
+
+
+
 
     public function cash(Request $request)
     {
-        $reportType = 'cash'; 
+        $reportType = 'cash';
         return view('user-accounting.generate-financial-statement', compact('reportType', 'monthYear'));
     }
 
@@ -196,4 +319,5 @@ class GenerateFinancialStatementController extends Controller
     //         'akunPasiva' => $akunPasiva,
     //     ]);
     // }
+
 }

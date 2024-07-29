@@ -17,7 +17,6 @@
                                 <h5 class="mb-0">Penggajian</h5>
                             </div>
                             <div>
-                                <a href="{{route('count-payroll.index')}}" class="btn btn-secondary btn-sm"> Hitung Gaji </a>
                                 <a href="#" class="btn btn-primary btn-sm">
                                     <i class="fas fa-download me-1"></i>Unduh
                                 </a>
@@ -33,25 +32,7 @@
                             </div>
                         </form>
                     </div> -->
-                    @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
-
-
-                    @if (session('berhasil'))
-                    <div class="alert alert-success">
-                        <ul>
-                            <li>{{ session('berhasil') }}</li>
-                        </ul>
-                    </div>
-                    @endif
-
+                    @include('components.alert-danger-success')
                     <div class="card-body px-0 pt-0 pb-2">
                         <div class="table-responsive p-0">
                             <table id="payrollTable" class="table align-items-center mb-0">
@@ -64,16 +45,16 @@
                                             Name
                                         </th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Gaji Bruto
+                                            Gaji
                                         </th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Potongan Pajak
+                                            Honor
                                         </th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Gaji Neto
+                                            Diupdate Pada Tanggal
                                         </th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Update Date
+                                            Aksi
                                         </th>
                                     </tr>
                                 </thead>
@@ -85,6 +66,12 @@
                                         </td>
                                         <td class="text-center">
                                             <p class="text-xs font-weight-bold mb-0">{{ $employee->username }}</p>
+                                        </td>
+                                        <td class="text-center">
+                                            <p class="text-xs font-weight-bold mb-0">{{ $employee->gaji ?? $employee->honor }}</p>
+                                        </td>
+                                        <td class="text-center">
+                                            <p class="text-xs font-weight-bold mb-0">{{ $employee->updated_at }}</p>
                                         </td>
                                     </tr>
                                     @endforeach

@@ -26,6 +26,7 @@ class MasterTransaction extends Model
             ->join('detail_master_transaction as B', 'A.code', '=', 'B.master_code')
             ->join('chart_of_account as C', 'C.account_id', '=', 'B.gl_account')
             ->where('A.code','=',$code)
+            ->orderBy('C.account_sign','asc')
             ->get();
     }
 }

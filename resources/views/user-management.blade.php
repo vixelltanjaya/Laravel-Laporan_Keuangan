@@ -25,7 +25,6 @@
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Deskripsi</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Dibuat Tanggal</th>
-                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
                                     </tr>
                                 </thead>
                                 @foreach ($UserManagement as $userManagements)
@@ -45,14 +44,6 @@
                                         </td>
                                         <td class="text-center">
                                             <span class="text-secondary text-xs font-weight-bold">{{ \Carbon\Carbon::parse($userManagements->created_at)->format('Y-m-d') }}</span>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="#" class="mx-3" data-bs-toggle="modal" data-bs-target="#editUserModal" data-bs-original-title="Edit user">
-                                                <i class="fas fa-user-edit text-secondary"></i>
-                                            </a>
-                                            <span data-bs-toggle="modal" data-bs-target="#deleteUserModal">
-                                                <i class="cursor-pointer fas fa-trash text-secondary"></i>
-                                            </span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -77,6 +68,7 @@
                                 <tr>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Name</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Description</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -87,6 +79,14 @@
                                     </td>
                                     <td>
                                         <p class="badge bg-gradient-light text-dark">{{ $roles->description }}</p>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="mx-3" data-bs-toggle="modal" data-bs-target="#editRoleModal" data-id="{{ $roles->id }}" data-name="{{ $roles->name }}" data-description="{{ $roles->description }}">
+                                            <i class="fas fa-user-edit text-secondary"></i>
+                                        </a>
+                                        <span data-bs-toggle="modal" data-bs-target="#deleteRoleModal" data-id="{{ $roles->id }}" data-name="{{ $roles->name }}">
+                                            <i class="cursor-pointer fas fa-trash text-secondary"></i>
+                                        </span>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -112,6 +112,7 @@
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Username</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Email</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Dibuat pada</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -128,6 +129,14 @@
                                     </td>
                                     <td>
                                         <p>{{ \Carbon\Carbon::parse($user->created_at)->format('Y-m-d') }}</p>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="mx-3" data-bs-toggle="modal" data-bs-target="#editUserModal" data-id="{{ $user->id }}" data-name="{{ $user->name }}" data-username="{{ $user->username }}" data-email="{{ $user->email }}">
+                                            <i class="fas fa-user-edit text-secondary"></i>
+                                        </a>
+                                        <span data-bs-toggle="modal" data-bs-target="#deleteUserModal" data-id="{{ $user->id }}" data-name="{{ $user->name }}">
+                                            <i class="cursor-pointer fas fa-trash text-secondary"></i>
+                                        </span>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -207,9 +216,175 @@
     </div>
 </div>
 
-<script>
-</script>
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm" action="{{ route('user-management.updateUser') }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" id="editUserId" name="user_id">
+                    <div class="mb-3">
+                        <label for="editUserName" class="form-label">User Name</label>
+                        <input type="text" class="form-control" id="editUserName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUserUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="editUserUsername" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUserEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editUserEmail" name="email" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="editUserForm" class="btn btn-primary">Update User</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Edit Role Modal -->
+<div class="modal fade" id="editRoleModal" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editRoleModalLabel">Edit Role</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editRoleForm" action="{{ route('user-management.updateRole') }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="mb-3">
+                        <label for="editRoleName" class="form-label">Role Name</label>
+                        <input type="text" class="form-control" id="editRoleName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editRoleDescription" class="form-label">Deskripsi</label>
+                        <input type="text" class="form-control" id="editRoleDescription" name="description" required>
+                    </div>
+                    <input type="hidden" id="editRoleId" name="role_id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="editRoleForm" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Role Modal -->
+<div class="modal fade" id="deleteRoleModal" tabindex="-1" aria-labelledby="deleteRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteRoleModalLabel">Delete Role</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this role?</p>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteRoleForm" action="{{ route('user-management.roleDestroy', ['role' => 'ROLE_ID']) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" id="deleteRoleId" name="role_id">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete User Modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteUserModalLabel">Delete User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this user?</p>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteUserForm" action="{{ route('user-management.userDestroy', ['user' => 'USER_ID']) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" id="deleteUserId" name="user_id">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 @endsection
+
+
+<script>
+    // Edit Role
+    document.addEventListener('DOMContentLoaded', function() {
+        var editUserModal = document.getElementById('editUserModal');
+        editUserModal.addEventListener('show.bs.modal', function(event) {
+            var button = event.relatedTarget;
+            var userId = button.getAttribute('data-id');
+            var userName = button.getAttribute('data-name');
+            var userUsername = button.getAttribute('data-username');
+            var userEmail = button.getAttribute('data-email');
+
+            var modal = editUserModal;
+            modal.querySelector('#editUserId').value = userId;
+            modal.querySelector('#editUserName').value = userName;
+            modal.querySelector('#editUserUsername').value = userUsername;
+            modal.querySelector('#editUserEmail').value = userEmail;
+        });
+
+        var deleteUserModal = document.getElementById('deleteUserModal');
+        deleteUserModal.addEventListener('show.bs.modal', function(event) {
+            var button = event.relatedTarget;
+            var userId = button.getAttribute('data-id');
+            var userName = button.getAttribute('data-name');
+
+            var modal = deleteUserModal;
+            modal.querySelector('#deleteUserId').value = userId;
+            modal.querySelector('.modal-body p').textContent = `Are you sure you want to delete ${userName}?`;
+
+            var editRoleModal = document.getElementById('editRoleModal');
+            editRoleModal.addEventListener('show.bs.modal', function(event) {
+                var button = event.relatedTarget;
+                var roleId = button.getAttribute('data-id');
+                var roleName = button.getAttribute('data-name');
+                var roleDescription = button.getAttribute('data-description');
+
+                var modal = editRoleModal;
+                modal.querySelector('#editRoleId').value = roleId;
+                modal.querySelector('#editRoleName').value = roleName;
+                modal.querySelector('#editRoleDescription').value = roleDescription;
+            });
+
+            var deleteRoleModal = document.getElementById('deleteRoleModal');
+            deleteRoleModal.addEventListener('show.bs.modal', function(event) {
+                var button = event.relatedTarget;
+                var roleId = button.getAttribute('data-id');
+                var roleName = button.getAttribute('data-name');
+
+                var modal = deleteRoleModal;
+                modal.querySelector('#deleteRoleId').value = roleId;
+                modal.querySelector('.modal-body p').textContent = `Are you sure you want to delete the role ${roleName}?`;
+            });
+        });
+    });
+</script>

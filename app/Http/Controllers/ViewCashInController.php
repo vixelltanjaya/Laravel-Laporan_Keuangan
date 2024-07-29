@@ -16,7 +16,7 @@ class ViewCashInController extends Controller
         Log::debug('Id Journal Entry:', ['id' => $id]);
 
         $journalData = JournalEntry::joinDetailAndUsers($id);
-        $detailJournal = DetailJournalEntry::where('id', $id)->first();
+        $detailJournal = DetailJournalEntry::where('entry_id', $id)->first();
 
         $journalEntry = $journalData->journalEntry;
         $id = $journalEntry ? $journalEntry->id : null;

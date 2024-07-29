@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\payroll;
 use Illuminate\Http\Request;
 
 class PayrollController extends Controller
@@ -14,7 +15,7 @@ class PayrollController extends Controller
     {
 
 
-        $employees = Employee::all();
+        $employees = Employee::joinPayroll();
 
         return view('user-admin.payroll',[
             'employees'=>$employees
