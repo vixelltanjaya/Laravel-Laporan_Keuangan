@@ -57,10 +57,16 @@
                         @foreach ($sumBalance as $balance)
                         <tr>
                             <td>{{ $balance->account_id }} - {{ $balance->account_name }}</td>
-                            <td>{{ number_format($balance->beginning_balance) }}</td>
+                            <td>{{ number_format($balance->beginning_balance_next_month) }}</td>
                             <td>{{ number_format($balance->total_debit) }}</td>
                             <td>{{ number_format($balance->total_credit) }}</td>
-                            <td>{{ number_format($balance->balance_difference) }}</td>
+                            <td>
+                                @if(strtolower($balance->account_sign) === 'debit')
+                                {{ number_format($balance->beginning_balance_next_month + $balance->total_debit - $balance->total_credit) }}
+                                @else
+                                {{ number_format($balance->beginning_balance_next_month +  $balance->total_credit - $balance->total_debit) }}
+                                @endif
+                            </td>
                         </tr>
                         @endforeach
                         <tr>
@@ -68,21 +74,24 @@
                             <td></td>
                             <td><strong>{{ number_format($sumBalance->sum('total_debit')) }}</strong></td>
                             <td><strong>{{ number_format($sumBalance->sum('total_credit')) }}</strong></td>
-                            <td><strong>{{ number_format($sumBalance->sum('balance_difference')) }}</strong></td>
+                            <td><strong>{{ number_format($totalSum) }}</strong></td>
                         </tr>
-                        @else
-                        <tr>
-                            <td colspan="5">Silakan pilih bulan dan tahun</td>
-                        </tr>
-                        @endif
                     </tbody>
                 </table>
+
+                <div class="text-center mt-3">
+                    <button type="button" id="tutupSaldoButton" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#tutupSaldoModal" @if($isClose || $isPastOneMonth) disabled @endif>
+                        Tutup Saldo
+                    </button>
+                </div>
+
+                @else
+                <tr>
+                    <td colspan="5">Silakan pilih bulan dan tahun</td>
+                </tr>
+                @endif
+
             </div>
-        </div>
-        <div class="text-center mt-3">
-            <button type="button" id="tutupSaldoButton" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#tutupSaldoModal">
-                Tutup Saldo
-            </button>
         </div>
     </div>
 </main>
@@ -106,7 +115,7 @@
                 <!-- Input untuk data yang diperlukan -->
                 @foreach($sumBalance as $index => $account)
                 <input type="hidden" name="balances[{{ $index }}][account_id]" value="{{ $account->account_id }}">
-                <input type="hidden" name="balances[{{ $index }}][beginning_balance]" value="{{ $account->beginning_balance }}">
+                <input type="hidden" name="balances[{{ $index }}][beginning_balance_next_month]" value="{{ $account->beginning_balance_next_month }}">
                 <input type="hidden" name="balances[{{ $index }}][debit]" value="{{ $account->total_debit }}">
                 <input type="hidden" name="balances[{{ $index }}][credit]" value="{{ $account->total_credit }}">
                 <input type="hidden" name="balances[{{ $index }}][balance_difference]" value="{{ $account->balance_difference }}">

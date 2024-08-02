@@ -29,6 +29,7 @@ use App\Http\Controllers\MasterJournalController;
 use App\Http\Controllers\PariwisataController;
 use App\Http\Controllers\PariwisataExternalController;
 use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\PelunasanPariwisataController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ReportingController;
 use App\Http\Controllers\ResetController;
@@ -55,15 +56,19 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 |
 */
 
-
+// buat role mana aja yang boleh dan yang tidak
 Route::group(['middleware' => 'auth'], function () {
 
 	Route::get('/', [HomeController::class, 'home']);
-	Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+	Route::prefix('dashboard')->group(function () {
+		Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+		Route::get('/listBookDashboard', [DashboardController::class, 'listbookDashboard'])->name('listBookDashboard');
+	});
 	Route::get('/login', function () {
 		return view('dashboard');
 	});
 
+	Route::get('/list-penjualan-harian-vs-pariwisata', [DashboardController::class, 'listPenjualanHarianVsPariwisata'])->name('listPenjualanHarianVsPariwisata');
 
 	Route::get('/logout', [SessionsController::class, 'destroy']);
 	Route::get('/user-profile', [InfoUserController::class, 'create']);
@@ -152,11 +157,11 @@ Route::group(['middleware' => 'auth'], function () {
 	})->name('sign-in');
 
 	Route::get('reporting', [ReportingController::class, 'index'])->name('reporting.index');;
-	
-	Route::prefix('financial-statement')->group(function(){
+
+	Route::prefix('financial-statement')->group(function () {
 		Route::post('/income', [GenerateFinancialStatementController::class, 'income'])->name('generate-financial-statement.income');
 		Route::post('/balance', [GenerateFinancialStatementController::class, 'balance'])->name('generate-financial-statement.balance');
-		Route::post('/cash', [GenerateFinancialStatementController::class, 'cash'])->name('generate-financial-statement.cash');
+		Route::post('/perubahanModal', [GenerateFinancialStatementController::class, 'perubahanModal'])->name('generate-financial-statement.perubahanModal');
 	});
 
 	Route::prefix('general-ledger')->group(function () {
@@ -178,6 +183,11 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::post('store/{id}', [CorrectingEntryController::class, 'store'])->name('correcting-entry.store');
 	});
 
+	Route::prefix('pelunasan-pariwisata')->group(function () {
+		Route::get('{id}', [PelunasanPariwisataController::class, 'index'])->name('pelunasan-pariwisata.index');
+		Route::post('store/{id}', [PelunasanPariwisataController::class, 'store'])->name('pelunasan-pariwisata.store');
+	});
+
 	Route::resource('evidence-code', EvidenceCodeController::class)->only(['index', 'store', 'update', 'destroy']);
 
 	Route::resource('closed-balance', ClosedBalanceController::class);
@@ -191,13 +201,18 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('edit-data-pariwisata/{id}', [editDataPariwisataController::class, 'index'])->name('edit-data-pariwisata.index');
 	// Route::put('pariwisata/{id}', [editDataPariwisataController::class, 'update'])->name('pariwisata.update');
 
-	Route::get('/pesan-bus/list', [BookedBusController::class, 'listBook'])->name('pesan-bus.list');
-	Route::resource('pesan-bus', BookedBusController::class);
+	Route::prefix('pesan-bus')->group(function () {
+		Route::get('/list', [BookedBusController::class, 'listBook'])->name('pesan-bus.list');
+		Route::get('/', [BookedBusController::class, 'index'])->name('pesan-bus.index');
+		Route::post('/', [BookedBusController::class, 'store'])->name('pesan-bus.store');
+		Route::put('/', [BookedBusController::class, 'update'])->name('pesan-bus.update');
+		Route::delete('/{id}', [BookedBusController::class, 'destroy'])->name('pesan-bus.destroy');
+	});
 });
 
 
 
-// role
+// role SuperAdmin
 Route::group(['middleware' => ['auth', 'check.role:1']], function () {
 	Route::resource('add-role', RoleController::class)->only(['index', 'store']);
 	Route::prefix('add-user')->group(function () {
@@ -206,7 +221,7 @@ Route::group(['middleware' => ['auth', 'check.role:1']], function () {
 		Route::post('store', [AddUserController::class, 'store'])->name('add-user.store');
 		Route::get('/', [AddUserController::class, 'index'])->name('add-user.index');
 	});
-	
+
 	Route::prefix('user-management')->group(function () {
 		Route::get('/', [UserManagementController::class, 'index'])->name('user-management.index');
 		Route::post('store', [UserManagementController::class, 'store'])->name('user-management.store');
@@ -242,5 +257,3 @@ Route::group(['middleware' => 'guest'], function () {
 Route::get('/login', function () {
 	return view('session/login-session');
 })->name('login');
-
-

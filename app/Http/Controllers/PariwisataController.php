@@ -95,7 +95,7 @@ class PariwisataController extends Controller
                 'selling_price' => 'required|numeric',
                 'chart_of_account' => 'required|string|max:50',
                 'evidence_image' => 'nullable|file|max:2048',
-                'evidence_image_bus' => 'nullable|file|max:2048'
+                'evidence_image_bus' => 'file|max:2048'
             ]);
 
             Log::debug('validate data ' . json_encode($validateData));
@@ -105,6 +105,7 @@ class PariwisataController extends Controller
             $evidenceImageBusPath = null;
             if ($request->hasFile('evidence_image_bus')) {
                 $evidenceImageBusPath = $request->file('evidence_image_bus')->store('bus_images', 'public');
+                $pariwisata->evidence_image_bus = $evidenceImageBusPath;
             }
             // cek evidence_image
             if ($request->hasFile('evidence_image')) {
@@ -124,7 +125,6 @@ class PariwisataController extends Controller
             $pariwisata->no_rangka = $validateData['no_rangka'];
             $pariwisata->selling_price = $validateData['selling_price'];
             $pariwisata->account_id = $validateData['chart_of_account'];
-            $pariwisata->evidence_image_bus =  $evidenceImageBusPath;
 
             Log::debug('pariwisata' . json_encode($pariwisata));
 

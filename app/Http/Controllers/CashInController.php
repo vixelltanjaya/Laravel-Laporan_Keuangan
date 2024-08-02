@@ -19,7 +19,8 @@ class CashInController extends Controller
     public function index()
     {
         $cashin = JournalEntry::whereRaw("substring(evidence_code from 1 for 3) != 'BKK'")
-            ->get();
+        ->orderBy('created_at','desc')    
+        ->get();
 
         Log::debug('isi cash in' . json_encode($cashin));
 

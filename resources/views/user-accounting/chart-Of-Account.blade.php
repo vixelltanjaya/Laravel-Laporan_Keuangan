@@ -25,30 +25,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
-
-                    @if (session('berhasil'))
-                    <div class="alert alert-success">
-                        <ul>
-                            <li>{{ session('berhasil') }}</li>
-                        </ul>
-                    </div>
-                    @endif
-                    @if (session('gagal'))
-                    <div class="alert alert-danger">
-                        <ul>
-                            <li>{{ session('gagal') }}</li>
-                        </ul>
-                    </div>
-                    @endif
+                    @include('components.alert-danger-success');
                     <div class="table-responsive">
                         <table class="hover compact stripe" style="width:100%" id="accountTable">
                             <thead>
@@ -86,10 +63,10 @@
                                     </td>
                                     <td class="d-flex justify-content-between">
                                         <button class="btn btn-link text-secondary" data-id="{{$coa->id}}" data-account_id="{{ $coa->account_id }}" data-account_name="{{ $coa->account_name }}" data-account_sign="{{ $coa->account_sign }}" data-account_type="{{ $coa->account_type }}" data-account_group="{{ $coa->account_group }}" data-bs-toggle="modal" data-bs-target="#editAccountModal">
-                                            <i class="fas fa-user-edit"></i> Edit
+                                            <i class="ri-edit-line"></i> Edit
                                         </button>
                                         <button class="btn btn-link text-danger" data-id="{{ $coa->id }}" data-account_id="{{ $coa->account_id }}" data-account_name="{{ $coa->account_name }}" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
-                                            <i class="fas fa-trash"></i> Hapus
+                                            <i class="ri-delete-bin-line"></i> Hapus
                                         </button>
                                     </td>
                                 </tr>
@@ -163,7 +140,11 @@
                 <form id="editAccountForm" method="POST" action="{{ route('chart-of-account.update', ['chart_of_account' => ':id']) }}">
                     @method('PATCH')
                     @csrf
-                    <input type="hidden" id="edit_account_id" name="id">
+                    <input type="hidden" id="edit_account_code" name="id">
+                    <div class="form-group">
+                        <label for="edit_account_id">Kode Akuntansi</label>
+                        <input type="text" class="form-control" id="edit_account_id" name="account_id" required>
+                    </div>
                     <div class="form-group">
                         <label for="edit_account_name">Nama Akun</label>
                         <input type="text" class="form-control" id="edit_account_name" name="account_name" required>
@@ -261,8 +242,8 @@
             var account_group = button.data('account_group');
 
             var modal = $(this);
-            modal.find('.modal-body #edit_account_id').val(id);
-            modal.find('.modal-body #edit_account_code').val(account_id);
+            modal.find('.modal-body #edit_account_code').val(id);
+            modal.find('.modal-body #edit_account_id').val(account_id);
             modal.find('.modal-body #edit_account_name').val(account_name);
             modal.find('.modal-body #edit_account_type').val(account_type);
             modal.find('.modal-body #edit_account_sign').val(account_sign);

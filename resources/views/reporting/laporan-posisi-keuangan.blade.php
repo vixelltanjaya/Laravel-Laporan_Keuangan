@@ -1,7 +1,7 @@
 <tbody>
     <tr>
         <td><strong>Aset</strong></td>
-        <td><strong>2023</strong></td>
+        <td><strong></strong></td>
         <td><strong>{{ request('transaction_month_end') ? date('F Y', strtotime(request('transaction_month_end') . '-01')) : '' }}</strong></td>
     </tr>
     <!-- Asset -->
@@ -11,13 +11,13 @@
         <td></td>
     </tr>
     @foreach($balanceSheet as $balance)
-        @if(strtolower($balance->account_group) === 'lancar' || strtolower($balance->account_group) === 'aset lancar')
-            <tr>
-                <td>{{ $balance->account_name }}</td>
-                <td></td>
-                <td>{{ number_format($balance->total_amount, 2) }}</td>
-            </tr>
-        @endif
+    @if(strtolower($balance->account_group) === 'lancar' || strtolower($balance->account_group) === 'aset lancar')
+    <tr>
+        <td>{{ $balance->account_name }}</td>
+        <td></td>
+        <td>{{ number_format($balance->total_amount, 2) }}</td>
+    </tr>
+    @endif
     @endforeach
     <tr>
         <td><strong>Total Aset Lancar</strong></td>
@@ -32,13 +32,13 @@
         <td></td>
     </tr>
     @foreach($balanceSheet as $balance)
-        @if(strtolower($balance->account_group) === 'tetap' || strtolower($balance->account_group) === 'aset tetap')
-            <tr>
-                <td>{{ $balance->account_name }}</td>
-                <td></td>
-                <td>{{ number_format($balance->total_amount, 2) }}</td>
-            </tr>
-        @endif
+    @if(strtolower($balance->account_group) === 'tetap' || strtolower($balance->account_group) === 'aset tetap')
+    <tr>
+        <td>{{ $balance->account_name }}</td>
+        <td></td>
+        <td>{{ number_format($balance->total_amount, 2) }}</td>
+    </tr>
+    @endif
     @endforeach
     <tr>
         <td><strong>Total Aset Tetap</strong></td>
@@ -51,7 +51,7 @@
         <td><strong>Total Aset</strong></td>
         <td></td>
         <td><strong>{{ number_format($balanceSheet->filter(function($item) {
-            return strtolower($item->account_type) === 'aset' || strtolower($item->account_type) === 'a set';
+            return strtolower($item->account_type) === 'aset' || strtolower($item->account_type) === 'aset';
         })->sum('total_amount'), 2) }}</strong></td>
     </tr>
     <tr>
@@ -76,13 +76,13 @@
         <td></td>
     </tr>
     @foreach($balanceSheet as $balance)
-        @if(strtolower($balance->account_group) === 'jangka panjang' || strtolower($balance->account_group) === 'jangka panjang')
-            <tr>
-                <td>{{ $balance->account_name }}</td>
-                <td></td>
-                <td>{{ number_format($balance->total_amount, 2) }}</td>
-            </tr>
-        @endif
+    @if(strtolower($balance->account_group) === 'jangka panjang' || strtolower($balance->account_group) === 'jangka panjang')
+    <tr>
+        <td>{{ $balance->account_name }}</td>
+        <td></td>
+        <td>{{ number_format($balance->total_amount, 2) }}</td>
+    </tr>
+    @endif
     @endforeach
     <tr>
         <td><strong>Total Kewajiban</strong></td>
@@ -102,25 +102,43 @@
         <td></td>
     </tr>
     @foreach($balanceSheet as $balance)
-        @if(strtolower($balance->account_group) === 'ekuitas')
-            <tr>
-                <td>{{ $balance->account_name }}</td>
-                <td>{{ number_format($balance->total_amount, 2) }}</td>
-                <td></td>
-            </tr>
-        @endif
+    @if(strtolower($balance->account_group) === 'ekuitas')
+    <tr>
+        <td>{{ $balance->account_name }}</td>
+        <td>{{ number_format($balance->total_amount, 2) }}</td>
+        <td></td>
+    </tr>
+    @endif
     @endforeach
     <tr>
-        <td>Laba</td>
+        <td>Saldo Laba</td>
         <td></td>
         <td>{{ number_format(
-            $balanceSheet->filter(function($item) {
+            $labaTahunBerjalan->filter(function($item) {
                 return strtolower($item->account_type) === 'pendapatan';
             })->sum('total_amount') -
-            $balanceSheet->filter(function($item) {
+            $labaTahunBerjalan->filter(function($item) {
                 return strtolower($item->account_type) === 'beban';
             })->sum('total_amount'), 2
         ) }}</td>
+    </tr>
+    <tr>
+        <td>Laba Berjalan</td>
+        <td></td>
+        <td>{{ number_format(
+        ($balanceSheet->filter(function($item) {
+            return strtolower($item->account_type) === 'pendapatan';
+        })->sum('total_amount') -
+        $balanceSheet->filter(function($item) {
+            return strtolower($item->account_type) === 'beban';
+        })->sum('total_amount')) - 
+        ($labaTahunBerjalan->filter(function($item) {
+            return strtolower($item->account_type) === 'pendapatan';
+        })->sum('total_amount') -
+        $labaTahunBerjalan->filter(function($item) {
+            return strtolower($item->account_type) === 'beban';
+        })->sum('total_amount')), 2
+    ) }}</td>
     </tr>
     <tr>
         <td><strong>Total Ekuitas</strong></td>
@@ -133,7 +151,7 @@
                 return strtolower($item->account_type) === 'beban';
             })->sum('total_amount'), 2
         ) }}</strong></td>
-    </tr> 
+    </tr>
     <tr>
         <td><strong>Total Kewajiban dan Ekuitas</strong></td>
         <td></td>

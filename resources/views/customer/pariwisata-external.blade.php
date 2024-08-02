@@ -32,7 +32,8 @@
                             <li>TV</li>
                         </ul>
                         <p class="mb-1">Nomor Plat: <strong>{{ $pariwisata->plat_nomor }}</strong></p>
-                        <p class="mb-1">Harga Sewa: <strong>{{ $pariwisata->selling_price }}</strong> <small>/ Per hari </small></p>
+                        <p class="mb-1">Harga Sewa/hari : <strong>{{ number_format($pariwisata->selling_price, 0, ',', '.') }}</strong></p>
+
                         <!-- Hidden Inputs -->
                         <input type="hidden" name="plat_nomor" value="{{ $pariwisata->plat_nomor }}">
                         <input type="hidden" name="tahun_kendaraan" value="{{ $pariwisata->tahun_kendaraan }}">

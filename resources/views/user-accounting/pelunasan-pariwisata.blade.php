@@ -1,19 +1,20 @@
 @extends('layouts.user_type.auth')
 
 @section('content')
+
 <div class="container">
     <div class="row">
         <div class="col-12 mt-4">
             <a href="{{ url()->previous() }}" type="button" class="btn btn-dark">Batal</a>
             <div class="card mb-4">
                 <div class="card-header pb-0">
-                    <h6>Jurnal Koreksi</h6>
+                    <h6>
+                        Pelunasan Transaksi
+                    </h6>
                 </div>
-
                 @include('components.alert-danger-success')
-
                 <div class="card-body">
-                    <form id="journalForm" action="{{ route('correcting-entry.store', ['id' => $journalEntry->id]) }}" method="POST" enctype="multipart/form-data">
+                    <form id="journalPelunasan" action="{{ route('pelunasan-pariwisata.store', ['id' => $journalEntry->id]) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="mb-3">
                             <label for="created_by" class="form-label">Dibuat Oleh</label>
@@ -28,10 +29,11 @@
                             <select class="form-control" id="no_ref" name="no_ref" required>
                                 <option value="" disabled selected>Select No Ref</option>
                                 @foreach($prefixCode as $code)
-                                <option value="{{ $code->prefix_code }}">
+                                <option value="{{ $code->prefix_code}}">
                                     {{ $code->prefix_code }} - {{ $code->code_title }}
                                 </option>
                                 @endforeach
+                            </select>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -39,7 +41,7 @@
                             <select class="form-control" id="division" name="division" required>
                                 <option value="0">Pilih divisi / Kosongkan</option>
                                 @foreach($division as $divisions)
-                                <option value="{{ $divisions->id }}">
+                                <option value="{{ $divisions->id }}" {{$journalEntry->division_id == $divisions->id ? 'selected' : ''}}>
                                     {{ $divisions->description }}
                                 </option>
                                 @endforeach
@@ -78,19 +80,23 @@
                                 </div>
                             </div>
                             <div class="journal-entries">
+                                @if ($details && $details->count())
+                                @foreach($details as $index => $detail)
                                 <div class="form-group row">
                                     <div class="col-md-5">
                                         <select class="form-control" name="noAccount[]" required>
                                             <option value="" disabled selected>Nomor Akun</option>
                                             @foreach($accounts as $coa)
-                                            <option value="{{ $coa->account_id }}">{{ $coa->account_id }} - {{ $coa->account_name }}</option>
+                                            <option value="{{ $coa->account_id }}" {{$detail->account_id == $coa->account_id ? 'selected' : ''}}>
+                                                {{ $coa->account_id }} - {{ $coa->account_name }}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="col-md-3">
                                         <select class="form-control" name="accountSign[]" required>
-                                            <option value="debit">Debit</option>
-                                            <option value="credit">Kredit</option>
+                                            <option value="debit"{{ $detail->account_sign == 'debit' ? 'selected' : '' }}>Debit</option>
+                                            <option value="credit"{{ $detail->account_sign == 'kredit' ? 'selected' : '' }}>Kredit</option>
                                         </select>
                                     </div>
                                     <div class="col-md-3">
@@ -98,9 +104,13 @@
                                         <input type="hidden" class="raw-amount-input" name="amount[]" />
                                     </div>
                                     <div class="col-md-1 d-flex flex-column justify-content-between">
+                                        @if ($index == 0)
                                         <button type="button" class="btn btn-info btn-sm mb-2 addRow">+</button>
+                                        @endif
                                     </div>
                                 </div>
+                                @endforeach
+                                @endif
                             </div>
                         </div>
 
@@ -132,6 +142,7 @@
     </div>
 </div>
 
+
 @endsection
 
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css">
@@ -143,7 +154,7 @@
             e.preventDefault();
             const entry = $(this).closest('.form-group.row').clone();
             entry.find('.addRow').removeClass('addRow').addClass('removeRow').removeClass('btn-info').addClass('btn-danger').text('-');
-            entry.find('input').val(''); 
+            entry.find('input').val('');
             entry.find('select').val('');
             entry.appendTo('.journal-entries');
             validateBalance(); // Validate balance on adding new row
@@ -226,11 +237,11 @@
     function validateBalance() {
         let debitTotal = 0;
         let creditTotal = 0;
-        
+
         $('.journal-entries .form-group.row').each(function() {
             let sign = $(this).find('select[name="accountSign[]"]').val();
             let amount = parseFloat($(this).find('.raw-amount-input').val()) || 0;
-            
+
             if (sign === 'debit') {
                 debitTotal += amount;
             } else if (sign === 'credit') {

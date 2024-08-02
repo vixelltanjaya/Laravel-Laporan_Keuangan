@@ -41,8 +41,15 @@
                         </table>
                     </div>
 
-                    @if($journalEntry->is_reversed == 0)
+                    @if($journalEntry->is_reversed == 0 && empty($journalEntry->evidence_code_origin))
                     <p class="mb-1">Status: <strong>Baru</strong></p>
+                    @elseif($journalEntry->is_reversed == 0  && !empty($journalEntry->evidence_code_origin))
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Status: <strong>Baru</strong></p>
+                            <p class="mb-1">Kode Bukti Asal: <strong>{{ $journalEntry->evidence_code_origin }}</strong></p>
+                        </div>
+                    </div>
                     @elseif($journalEntry->is_reversed == 1)
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -58,16 +65,23 @@
                     <p class="mb-1">Status: <strong>Terkoreksi</strong></p>
                     @endif
                     <div class="d-flex justify-content-between">
-                        @if($id)
-                        @if($journalEntry->is_reversed == 1 || $journalEntry->is_reversed == 0)
-                        <a href="{{ route('correcting-entry.index', ['id' => $id]) }}" id="reversedJournalButton" class="btn bg-gradient-dark">Jurnal Koreksi</a>
-                        @elseif($journalEntry->is_reversed == 2)
-                        <a href="#" id="reversedJournalButton" class="btn bg-gradient-dark disabled">Jurnal Koreksi</a>
-                        @endif
-                        @endif
-                        <a href="{{ route('cash-in.index') }}" class="btn btn-secondary"><i class="fas fa-angle-left me-1"></i>Kembali</a>
+                        <div class="d-flex">
+                            @if($id)
+                            @if($journalEntry->is_reversed == 1 || $journalEntry->is_reversed == 0)
+                            <a href="{{ route('correcting-entry.index', ['id' => $id]) }}" id="reversedJournalButton" class="btn bg-gradient-dark me-2">Jurnal Koreksi</a>
+                            @elseif($journalEntry->is_reversed == 2)
+                            <a href="#" id="reversedJournalButton" class="btn bg-gradient-dark me-2 disabled">Jurnal Koreksi</a>
+                            @endif
+                            @if($hasAccount2101)
+                            <a href="{{ route('pelunasan-pariwisata.index', ['id' => $id]) }}" id="pelunasanJournalButton" class="btn btn-info">Pelunasan</a>
+                            @endif
+                            @endif
+                        </div>
+                        <div class="flex-grow-1"></div>
+                        <div>
+                            <a href="{{ route('cash-in.index') }}" class="btn btn-secondary"><i class="fas fa-angle-left me-1"></i>Kembali</a>
+                        </div>
                     </div>
-
                 </div>
             </div>
         </div>

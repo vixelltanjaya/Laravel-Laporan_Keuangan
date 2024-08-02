@@ -30,10 +30,13 @@ class ChartOfAccountController extends Controller
             'account_name' => 'required|string|max:255',
             'account_sign' => 'required|string|max:14',
             'account_type' => 'required|string|max:14',
-            'account_group' => 'required|string|max:14',
+            'account_group' => 'nullable|string|max:14',
         ]);
 
-        CoaModel::create($request->all());
+        $data = $request->all();
+        $data['account_group'] = $request->input('account_group') ?? '';
+
+        CoaModel::create($data);
 
         return redirect()->route('chart-of-account.index')->with('berhasil', 'Akun berhasil ditambahkan.');
     }
@@ -45,8 +48,9 @@ class ChartOfAccountController extends Controller
         Log::debug('Route ID: ' . json_encode($id));
 
         $request->validate([
+            'account_id' => 'required|string|max:50',
             'account_name' => 'required|string|max:255',
-            'account_sign' => 'required|string|max:255',
+            'account_sign' => 'required|string|max:50',
             'account_type' => 'required|string|max:255',
             'account_group' => 'required|string|max:255',
         ]);
@@ -54,6 +58,7 @@ class ChartOfAccountController extends Controller
         try {
             $coa = CoaModel::findOrFail($id);
 
+            $coa->account_id = $request->account_id;
             $coa->account_name = $request->account_name;
             $coa->account_sign = $request->account_sign;
             $coa->account_type = $request->account_type;

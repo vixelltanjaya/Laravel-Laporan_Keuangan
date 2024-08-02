@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CoaModel;
 use App\Models\DetailJournalEntry;
 use App\Models\JournalEntry;
 use Exception;
@@ -19,7 +20,16 @@ class ViewCashInController extends Controller
         $detailJournal = DetailJournalEntry::where('entry_id', $id)->first();
 
         $journalEntry = $journalData->journalEntry;
+        $details = $journalData->details;
         $id = $journalEntry ? $journalEntry->id : null;
+        
+        $hasAccount2101 = false;
+        foreach($details as $detail) {
+            if($detail->account_id == 2101) {
+                $hasAccount2101 = true;
+                break;
+            }
+        }
 
         Log::debug('journalData:' . json_encode($journalData->details));
         Log::debug('detailJournal:' . json_encode($detailJournal));
@@ -30,6 +40,7 @@ class ViewCashInController extends Controller
             'details' => $journalData->details,
             'detailJournal' => $detailJournal,
             'id' => $id,
+            'hasAccount2101' => $hasAccount2101,
             // 'no_ref_asal' => $journalEntry->no_ref_asal 
         ]);
     }

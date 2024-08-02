@@ -43,11 +43,37 @@ class BookingBus extends Model
                 'B.description',
                 'A.plat_nomor',
                 'B.start_book',
-                'B.end_book'
+                'B.end_book',
+                'B.id',
+                'B.fleet_departure',
+                'B.fleet_arrivals'
             )
             ->join('bis_pariwisata as A', 'A.id', '=', 'B.bus_pariwisata_id')
             ->join('customer as C', 'C.id', '=', 'B.customer_id')
             ->where('A.plat_nomor', $platNomor)
+            ->orderBy('B.start_book','desc')
+            ->get();
+    }
+
+    public static function joinBusAndCustomerDashboard()
+    {
+        return DB::table('booking_bus as B')
+            ->select(
+                'C.name',
+                'C.alamat',
+                'C.no_telp',
+                'A.plat_nomor',
+                'A.selling_price',
+                'B.is_booked',
+                'B.journal_entry_id',
+                'B.bus_pariwisata_id',
+                'B.description',
+                'A.plat_nomor',
+                'B.start_book',
+                'B.end_book'
+            )
+            ->join('bis_pariwisata as A', 'A.id', '=', 'B.bus_pariwisata_id')
+            ->join('customer as C', 'C.id', '=', 'B.customer_id')
             ->get();
     }
 }

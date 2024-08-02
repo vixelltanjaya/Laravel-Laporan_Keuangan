@@ -104,10 +104,10 @@
                                     </td>
                                     <td class="text-center">
                                         <a href="#" class="mx-3" data-bs-toggle="modal" data-bs-target="#editUserModal{{$employee->id}}" data-bs-original-title="Edit user">
-                                            <i class="fas fa-user-edit text-secondary"></i>
+                                            <i class="ri-edit-line text-secondary">Edit</i>
                                         </a>
                                         <span data-bs-toggle="modal" data-bs-target="#deleteUserModal{{$employee->id}}">
-                                            <i class="cursor-pointer fas fa-trash text-secondary"></i>
+                                            <i class="cursor-pointer ri-delete-bin-line text-danger">Hapus</i>
                                         </span>
                                     </td>
                                 </tr>

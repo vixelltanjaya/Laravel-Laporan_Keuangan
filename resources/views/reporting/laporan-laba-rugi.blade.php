@@ -8,7 +8,7 @@
     @foreach($incomeStatement as $item)
         @if(strtolower($item->account_type) === 'pendapatan')
             <tr>
-                <td>{{ $item->account_name }} {{ $item->description ? '(' . $item->description . ')' : '' }}</td>
+                <td>{{ $item->account_name }}</td>
                 <td>{{ number_format($item->total_amount, 2) }}</td>
                 <td></td>
             </tr>

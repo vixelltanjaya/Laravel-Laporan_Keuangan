@@ -22,6 +22,7 @@ class CashOutController extends Controller
     public function index()
     {
         $cashout = JournalEntry::whereRaw("substring(evidence_code from 1 for 3) != 'BKM'")
+            ->orderBy('created_at', 'desc')
             ->get();
         Log::debug('isi cash out' . json_encode($cashout));
         // set format d/m/y

@@ -44,7 +44,7 @@
                                     <label for="chart_of_account" class="form-label">Nomor Akun</label>
                                     <select class="form-control" id="chart_of_account" name="chart_of_account">
                                         @foreach ($chartOfAccounts as $coa)
-                                        <option value="{{ $coa->account_id }}">
+                                        <option value="{{ $coa->account_id }}" {{ $pariwisata->account_id == $coa->account_id ? 'selected' : '' }}>
                                             {{ $coa->account_id }} - {{ $coa->account_name }}
                                         </option>
                                         @endforeach

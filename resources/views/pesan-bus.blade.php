@@ -53,8 +53,88 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header pb-0 text-center">
+                        <h6>
+                            Tabel Keberangkatan
+                        </h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Description</th>
+                                        <th>Start Book</th>
+                                        <th>End Book</th>
+                                        <th>Kendaraan Keluar</th>
+                                        <th>Kendaraan Balik</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                @foreach ($bookPlat as $booking )
+                                <tbody>
+                                    <tr>
+                                        <td>{{$booking->name}}</td>
+                                        <td>{{$booking->description}}</td>
+                                        <td>{{ \Carbon\Carbon::parse($booking->start_book)->format('d-m-Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($booking->end_book)->format('d-m-Y') }}</td>
+                                        <td>{{ $booking->fleet_departure }}</td>
+                                        <td>{{ $booking->fleet_arrivals }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#jamModal" data-bs-booking-id="{{ $booking->id }}" data-bs-fleet-departure="{{ $booking->fleet_departure }}" data-bs-fleet-arrivals="{{ $booking->fleet_arrivals }}">
+                                                Set Jam
+                                            </button>
+                                            <form action="{{ route('pesan-bus.destroy', $booking->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this booking?')">
+                                                    Batal
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                @endforeach
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </main>
+
+<!-- Modal Set Jam-->
+<div class="modal fade" id="jamModal" tabindex="-1" aria-labelledby="jamModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="jamModalLabel">Update Jam Keberangkatan dan Kedatangan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateJamForm" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="mb-3">
+                        <label for="fleet_departure" class="form-label">Jam Keberangkatan</label>
+                        <input type="datetime-local" class="form-control" id="fleet_departure" name="fleet_departure">
+                    </div>
+                    <div class="mb-3">
+                        <label for="fleet_arrivals" class="form-label">Jam Kedatangan</label>
+                        <input type="datetime-local" class="form-control" id="fleet_arrivals" name="fleet_arrivals">
+                    </div>
+                    <input type="hidden" id="bus-id" name="bus_pariwisata_id">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- modal -->
 <div id="modal-action" class="modal" tabindex="-1" role="dialog">
@@ -68,14 +148,14 @@
             </div>
             <div class="modal-body">
                 <form id="event-form">
-                    @csrf <!-- CSRF token -->
-                    <input type="hidden" id="bus-id" name="bus_pariwisata_id" value="{{ $bus->id }}">
+                    @csrf
+                    <input type="hidden" id="bus-id" name="bus_pariwisata_id">
                     <div class="mb-3">
                         <label for="start-date" class="form-label">Start Date</label>
                         <input type="date" class="form-control" id="start-date" name="start_date">
                     </div>
                     <div class="mb-3">
-                        <label for="end-date" class="form-label">End Date <small class="form-text text-muted"> (Plus 1 hari dari end date aslinya) </small></label>
+                        <label for="end-date" class="form-label">End Date</label>
                         <input type="date" class="form-control" id="end-date" name="end_date">
                     </div>
                     <div class="mb-3">
@@ -228,6 +308,20 @@
                     alert('Failed to save event.');
                 }
             });
+        });
+        var jamModal = document.getElementById('jamModal');
+        jamModal.addEventListener('show.bs.modal', function(event) {
+            var button = event.relatedTarget;
+            var bookingId = button.getAttribute('data-bs-booking-id');
+            var fleetDeparture = button.getAttribute('data-bs-fleet-departure');
+            var fleetArrivals = button.getAttribute('data-bs-fleet-arrivals');
+
+            var form = document.getElementById('updateJamForm');
+            form.action = `/pesan-bus/?plat_nomor=${encodeURIComponent(platNomor)}`;
+            console.log('apa plat nomor' .platNomor);
+            document.getElementById('fleet_departure').value = fleetDeparture;
+            document.getElementById('fleet_arrivals').value = fleetArrivals;
+            document.getElementById('bus-id').value = bookingId;
         });
     });
 </script>

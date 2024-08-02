@@ -58,16 +58,21 @@
                     <p class="mb-1">Status: <strong>Terkoreksi</strong></p>
                     @endif
                     <div class="d-flex justify-content-between">
-                        @if($id)
-                        @if($journalEntry->is_reversed == 1 || $journalEntry->is_reversed == 0)
-                        <a href="{{ route('correcting-entry.index', ['id' => $id]) }}" id="reversedJournalButton" class="btn bg-gradient-dark">Jurnal Koreksi</a>
-                        @elseif($journalEntry->is_reversed == 2)
-                        <a href="#" id="reversedJournalButton" class="btn bg-gradient-dark disabled">Jurnal Koreksi</a>
-                        @endif
-                        @endif
+                        <div class="d-flex">
+                            @if($id)
+                            @if($journalEntry->is_reversed == 1 || $journalEntry->is_reversed == 0)
+                            <a href="{{ route('correcting-entry.index', ['id' => $id]) }}" id="reversedJournalButton" class="btn bg-gradient-dark me-2">Jurnal Koreksi</a>
+                            @elseif($journalEntry->is_reversed == 2)
+                            <a href="#" id="reversedJournalButton" class="btn bg-gradient-dark me-2 disabled">Jurnal Koreksi</a>
+                            @endif
+                            @if($hasAccount2101)
+                            <a href="#" id="pelunasanJournalButton" class="btn btn-info">Pelunasan</a>
+                            @endif
+                            @endif
+                        </div>
+                        <div class="flex-grow-1"></div>
                         <a href="{{ route('cash-out.index') }}" class="btn btn-secondary"><i class="fas fa-angle-left me-1"></i>Kembali</a>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -76,7 +81,6 @@
     <!-- bukti transaksi -->
     <div class="row">
         <div class="col-12">
-            <!-- Add margin-top to create space between the card and the content above -->
             <div class="card" style="width: 18rem; margin-top: 20px;">
                 <div class="card-body">
                     <h5 class="card-title">Bukti Transaksi</h5>

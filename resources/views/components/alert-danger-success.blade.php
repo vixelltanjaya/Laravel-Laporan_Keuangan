@@ -14,3 +14,10 @@
     </ul>
 </div>
 @endif
+@if (session('gagal'))
+<div class="alert alert-danger">
+    <ul>
+        <li>{{ session('gagal') }}</li>
+    </ul>
+</div>
+@endif

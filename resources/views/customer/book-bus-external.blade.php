@@ -90,6 +90,7 @@
                         <label for="description" class="form-label">Description</label>
                         <textarea class="form-control" id="description" name="description"></textarea>
                     </div>
+                    <input type="hidden" id="plat_nomor" name="plat_nomor" value="{{ $bus->plat_nomor }}">
                 </form>
             </div>
             <div class="modal-footer">
@@ -148,10 +149,27 @@
             },
             dateClick: function(info) {
                 var selectedDate = new Date(info.dateStr);
+                selectedDate.setHours(0, 0, 0, 0);
+
                 var today = new Date();
                 today.setHours(0, 0, 0, 0);
+
                 if (selectedDate < today) {
                     alert("Tanggal yang dipilih sudah lewat.");
+                    return;
+                }
+
+                // Check if the selected date already has events
+                var hasEvents = calendar.getEvents().some(function(event) {
+                    var eventStart = new Date(event.start);
+                    eventStart.setHours(0, 0, 0, 0);
+                    return eventStart.getTime() === selectedDate.getTime();
+                });
+
+                console.log('Has events: ', hasEvents); // Log the result for debugging
+
+                if (hasEvents) {
+                    alert("Tanggal yang dipilih sudah ada booking.");
                     return;
                 }
                 $('#start-date').val(info.dateStr);
@@ -167,8 +185,9 @@
             var endDate = document.getElementById('end-date').value;
             var noTelp = document.getElementById('no_telp').value;
             var description = document.getElementById('description').value;
+            var platNomor = document.getElementById('plat_nomor').value;
 
-            var message = `Nama: ${namaCustomer}\nTanggal Berangkat: ${startDate}Tanggal Pulang: ${endDate}\nNo Telepon: ${noTelp}\nDescription: ${description}`;
+            var message = `Nama: ${namaCustomer}\nTanggal Berangkat: ${startDate} \n Tanggal Pulang: ${endDate}\nNo Telepon: ${noTelp}\nDescription: ${description}\nPlat nomor: ${platNomor}`;
             var whatsappUrl = `https://wa.me/6287832412825?text=${encodeURIComponent(message)}`; // testing only using dev phone number
 
             window.open(whatsappUrl, '_blank');

@@ -37,11 +37,12 @@ class BookBusExternalController extends Controller
             // Ensure start_book and end_book are formatted correctly
             $startDate = $booking->start_book ? Carbon::parse($booking->start_book)->format('Y-m-d') : 'N/A';
             $endDate = $booking->end_book ? Carbon::parse($booking->end_book)->format('Y-m-d') : 'N/A';
+            $tomorrow = date('Y-m-d',strtotime($endDate . "+1 days"));
 
             $events[] = [
                 'title' => $booking->name,
                 'start' => $startDate,
-                'end' => $endDate,
+                'end' => $tomorrow,
                 'description' => $booking->description ?? 'Tidak ada deskripsi',
             ];
         }

@@ -65,10 +65,10 @@
                                     </td>
                                     <td class="ps-4">
                                         <button class="btn btn-link text-secondary font-weight-bold text-small" data-id="{{ $evidence->id }}" data-prefix_code="{{ $evidence->prefix_code }}" data-code_title="{{ $evidence->code_title }}" data-bs-toggle="modal" data-bs-target="#editEvidenceCodeModal">
-                                            <i class="fas fa-user-edit"></i>
+                                            <i class="ri-edit-line">Edit</i>
                                         </button>
-                                        <button class="btn btn-link text-secondary" data-id="{{ $evidence->id }}" data-prefix_code="{{ $evidence->prefix_code }}" data-bs-toggle="modal" data-bs-target="#deleteEvidenceCodeModal">
-                                            <i class="fas fa-trash"></i>
+                                        <button class="btn btn-link text-danger" data-id="{{ $evidence->id }}" data-prefix_code="{{ $evidence->prefix_code }}" data-bs-toggle="modal" data-bs-target="#deleteEvidenceCodeModal">
+                                            <i class="ri-delete-bin-line">Hapus</i>
                                         </button>
                                     </td>
                                 </tr>

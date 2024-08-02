@@ -22,7 +22,7 @@
                             @elseif(isset($reportType) && $reportType === 'balance')
                             Laporan Posisi Keuangan
                             @else
-                            Laporan Arus Kas
+                            Laporan Perubahan Modal
                             @endif
                         </p>
                         <p class="mb-0" id="reportPeriod">
@@ -38,7 +38,7 @@
                         @elseif(isset($reportType) && $reportType === 'balance')
                         @include('reporting.laporan-posisi-keuangan')
                         @else
-                        Laporan Arus Kas
+                        @include('reporting.laporan-perubahan-modal')
                         @endif
                     </table>
                 </div>

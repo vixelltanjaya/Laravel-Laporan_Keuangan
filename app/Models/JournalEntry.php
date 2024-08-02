@@ -27,9 +27,12 @@ class JournalEntry extends Model
                 'A.reversed_at',
                 'C.name AS user_name',
                 'A.created_at',
-                'A.evidence_code_origin'
+                'A.evidence_code_origin',
+                'D.description',
+                'A.division_id'
             )
             ->leftJoin('users AS C', 'A.user_id', '=', 'C.id')
+            ->leftJoin('division AS D', 'A.division_id', '=', 'D.id')
             ->where('A.id', $id)
             ->first();
 
@@ -42,7 +45,8 @@ class JournalEntry extends Model
                 'B.credit',
                 'B.evidence_image',
                 'B.entry_id',
-                'A.account_name'
+                'A.account_name',
+                'A.account_sign'
             )
             ->leftJoin('chart_of_account AS A', 'B.account_id', '=', 'A.account_id') 
             ->where('B.entry_id', $id)

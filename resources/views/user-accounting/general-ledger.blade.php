@@ -68,12 +68,12 @@
                             <tbody>
                                 @php $totalAmount = 0; @endphp
                                 @forelse($accountData as $entry)
-                                <tr>
+                                <tr @if(isset($entry->readonly)) style="background-color: #f5f5f5;" @endif>
                                     <td>{{ \Carbon\Carbon::parse($entry->created_at)->format('Y/m/d') }}</td>
                                     <td>{{ $entry->description }}</td>
                                     <td>{{ $entry->evidence_code }}</td>
-                                    <td>{{ number_format($entry->debit, 2) }}</td>
-                                    <td>{{ number_format($entry->credit, 2) }}</td>
+                                    <td>{{ $entry->debit ? number_format($entry->debit, 2) : '' }}</td>
+                                    <td>{{ $entry->credit ? number_format($entry->credit, 2) : '' }}</td>
                                     <td>{{ number_format($entry->amount, 2) }}</td>
                                 </tr>
                                 @php $totalAmount += $entry->amount; @endphp

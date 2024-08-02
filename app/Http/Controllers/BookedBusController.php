@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\DetailJournalEntry;
 use App\Models\JournalEntry;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -22,10 +23,17 @@ class BookedBusController extends Controller
     {
         $plat_nomor = $request->input('plat_nomor');
 
+        if (!$plat_nomor) {
+            return redirect()->route('pariwisata.index')->with('error', 'Plat nomor tidak diberikan.');
+        }
+
+        $bookPlat = BookingBus::joinBusAndCustomer($plat_nomor);
         $bookings = BookingBus::all();
         $customers = Customer::all();
         $bus = BisPariwisata::where('plat_nomor', $plat_nomor)->first();
-        return view('pesan-bus', compact('bus', 'bookings', 'customers'));
+
+        Log::debug('bookPlat' . $bookPlat);
+        return view('pesan-bus', compact(['bus', 'bookings', 'customers', 'bookPlat']));
     }
 
     public function listBook(Request $request)
@@ -36,19 +44,18 @@ class BookedBusController extends Controller
             return response()->json(['error' => 'Plat nomor tidak diberikan'], 400);
         }
 
-        // Retrieve bookings based on plat_nomor
         $bookings = BookingBus::joinBusAndCustomer($platNomor);
         $events = [];
 
         foreach ($bookings as $booking) {
-            // Ensure start_book and end_book are formatted correctly
             $startDate = $booking->start_book ? Carbon::parse($booking->start_book)->format('Y-m-d') : 'N/A';
             $endDate = $booking->end_book ? Carbon::parse($booking->end_book)->format('Y-m-d') : 'N/A';
+            $tomorrow = date('Y-m-d', strtotime($endDate . "+1 days"));
 
             $events[] = [
                 'title' => $booking->name,
                 'start' => $startDate,
-                'end' => $endDate,
+                'end' => $tomorrow,
                 'description' => $booking->description ?? 'Tidak ada deskripsi',
             ];
         }
@@ -88,7 +95,6 @@ class BookedBusController extends Controller
 
             if ($request->hasFile('evidence_image')) {
                 $path = $request->file('evidence_image')->store('evidence_images');
-                $booking->evidence_image = $path;
             }
             $booking->save();
             Log::debug('bookings ' . json_encode($booking));
@@ -148,7 +154,7 @@ class BookedBusController extends Controller
             $debitEntry->account_id = $debitAccountId;
             $debitEntry->debit = $amount;
             $debitEntry->credit = 0;
-            $debitEntry->evidence_image = $booking->evidence_image ?? '';
+            $debitEntry->evidence_image = $path ?? '';
             $debitEntry->save();
             Log::debug('debit Entry ' . json_encode($debitEntry));
 
@@ -158,7 +164,7 @@ class BookedBusController extends Controller
             $creditEntry->account_id = $creditAccountId;
             $creditEntry->debit = 0;
             $creditEntry->credit = $amount;
-            $creditEntry->evidence_image = $booking->evidence_image ?? '';
+            $creditEntry->evidence_image = $path ?? '';
             $creditEntry->save();
             Log::debug('credit Entry ' . json_encode($creditEntry));
 
@@ -173,38 +179,41 @@ class BookedBusController extends Controller
         }
     }
 
-
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function update(Request $request)
     {
-        //
+        Log::debug('Request data: ' . json_encode($request->all()));
+
+        $request->validate([
+            'fleet_departure' => 'nullable|date_format:Y-m-d\TH:i',
+            'fleet_arrivals' => 'nullable|date_format:Y-m-d\TH:i',
+        ]);
+
+        try {
+            $booking = BookingBus::find($request->bus_pariwisata_id);
+            $booking->fleet_departure = $request->fleet_departure;
+            $booking->fleet_arrivals = $request->fleet_arrivals;
+            $booking->save();
+
+            $platNomor = $request->input('plat_nomor');
+            return redirect()->route('pesan-bus.index', ['plat_nomor' => $platNomor])
+                ->with('berhasil', 'Jam keberangkatan dan kedatangan berhasil diupdate.');
+        } catch (Exception $e) {
+            Log::error('Error updating booking: ' . $e->getMessage());
+            return redirect()->route('pesan-bus.index',['plat_nomor' => $platNomor])->with('gagal', 'Terjadi kesalahan saat mengupdate jam keberangkatan dan kedatangan.');
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function destroy($id)
     {
-        //
-    }
+        Log::debug('route' . $id);
+        try {
+            $booking = BookingBus::findOrFail($id);
+            $booking->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+            return redirect()->route('pariwisata.index')->with('berhasil', 'Booking berhasil dihapus.');
+        } catch (\Exception $e) {
+            Log::error('Error deleting booking: ' . $e->getMessage());
+            return redirect()->route('pariwisata.index')->with('gagal', 'Terjadi kesalahan saat menghapus booking.');
+        }
     }
 }

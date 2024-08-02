@@ -29,7 +29,7 @@
           <span class="nav-link-text ms-1">Dashboard</span>
         </a>
       </li>
-
+      @if (Auth::user()->role_id == 1 || Auth::user()->role_id == 6)
       <li class="nav-item mt-2">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Admin</h6>
       </li>
@@ -37,7 +37,8 @@
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('customer') ? 'active' : '') }}" href="{{ url('customer') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-user ps-2 pe-2 text-center text-dark {{ (Request::is('customer ') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="ni ni-user-run ps-2 pe-2 text-center text-dark {{ (Request::is('customer ') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <svg class="text-dark" width="16px" height="16px" viewBox="0 0 46 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <title>customer-support</title> <g id="Basic-Elements" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Rounded-Icons" transform="translate(-1717.000000, -291.000000)" fill="#FFFFFF" fill-rule="nonzero"> <g id="Icons-with-opacity" transform="translate(1716.000000, 291.000000)"> <g id="customer-support" transform="translate(1.000000, 0.000000)"> <path class="color-background" d="M45,0 L26,0 C25.447,0 25,0.447 25,1 L25,20 C25,20.379 25.214,20.725 25.553,20.895 C25.694,20.965 25.848,21 26,21 C26.212,21 26.424,20.933 26.6,20.8 L34.333,15 L45,15 C45.553,15 46,14.553 46,14 L46,1 C46,0.447 45.553,0 45,0 Z" id="Path" opacity="0.59858631"></path> <path class="color-foreground" d="M22.883,32.86 C20.761,32.012 17.324,31 13,31 C8.676,31 5.239,32.012 3.116,32.86 C1.224,33.619 0,35.438 0,37.494 L0,41 C0,41.553 0.447,42 1,42 L25,42 C25.553,42 26,41.553 26,41 L26,37.494 C26,35.438 24.776,33.619 22.883,32.86 Z" id="Path"></path> <path class="color-foreground" d="M13,28 C17.432,28 21,22.529 21,18 C21,13.589 17.411,10 13,10 C8.589,10 5,13.589 5,18 C5,22.529 8.568,28 13,28 Z" id="Path"></path> </g> </g> </g> </g> </svg> 
           </div>
           <span class="nav-link-text ms-1">Customer</span>
         </a>
@@ -46,17 +47,18 @@
       <li class="nav-item pb-2">
         <a class="nav-link {{ (Request::is('pariwisata') ? 'active' : '') }}" href="{{ url('pariwisata') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-bus ps-2 pe-2 text-center text-dark {{ (Request::is('pariwisata ') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="ni ni-bus-front-12 ps-2 pe-2 text-center text-dark {{ (Request::is('pariwisata ') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Bis Pariwisata</span>
         </a>
       </li>
+      @endif
 
-
+      @if (Auth::user()->role_id == 1 || Auth::user()->role_id == 6)
       <li class="nav-item mt-2">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Personalia</h6>
       </li>
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <a class="nav-link {{ (Request::is('user-profile') ? 'active' : '') }} " href="{{ url('user-profile') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
             <svg width="12px" height="12px" viewBox="0 0 46 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -76,19 +78,21 @@
           </div>
           <span class="nav-link-text ms-1">User Profile</span>
         </a>
-      </li>
+      </li> -->
+    
 
       <!-- Employee -->
       <li class="nav-item pb-2">
         <a class="nav-link {{ (Request::is('employee') ? 'active' : '') }}" href="{{ url('employee') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fas fa-lg fa-list-ul ps-2 pe-2 text-center text-dark {{ (Request::is('employee ') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class=" ni ni-single-02 ps-2 pe-2 text-center text-dark {{ (Request::is('employee ') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Pegawai</span>
         </a>
       </li>
+      @endif
 
-
+      @if (Auth::user()->role_id == 1 || Auth::user()->role_id == 5 || Auth::user()->role_id == 6)
       <li class="nav-item mt-2">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Accounting</h6>
       </li>
@@ -141,7 +145,7 @@
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('cash-in') ? 'active' : '') }}" href="{{ url('cash-in') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fas fa-stream fa-lg ps-2 pe-2 text-center text-dark {{ (Request::is('cash-in ') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="ni ni-money-coins ps-2 pe-2 text-center text-dark {{ (Request::is('cash-in ') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Uang Masuk</span>
         </a>
@@ -151,7 +155,7 @@
       <li class="nav-item">
         <a class="nav-link {{ (Request::is('cash-out') ? 'active' : '') }}" href="{{ url('cash-out') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fas fa-cash-register	 fa-lg ps-2 pe-2 text-center text-dark {{ (Request::is('cash-out ') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="ni ni-cart fa-lg ps-2 pe-2 text-center text-dark {{ (Request::is('cash-out ') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Uang Keluar</span>
         </a>
@@ -204,7 +208,7 @@
       <li class="nav-item pb-2">
         <a class="nav-link {{ (Request::is('closed-balance') ? 'active' : '') }}" href="{{ url('closed-balance') }}">
           <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fa fa-calendar fa-lg ps-2 pe-2 text-center text-dark {{ (Request::is('closed-balance') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+            <i style="font-size: 1rem;" class="ni ni-calendar-grid-58 ps-2 pe-2 text-center text-dark {{ (Request::is('closed-balance') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
           </div>
           <span class="nav-link-text ms-1">Tutup Buku</span>
         </a>
@@ -259,6 +263,7 @@
           <span class="nav-link-text ms-1">Reporting</span>
         </a>
       </li>
+      @endif
 
       @if (Auth::user()->role_id == 1)
       <li class="nav-item mt-3">

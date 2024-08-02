@@ -18,7 +18,7 @@
             <ul class="navbar-nav  justify-content-end">
                 <li class="nav-item d-flex align-items-center me-3">
                     <!-- admin nanti diganti dengan role sesuai dengan loginnya -->
-                    <i class="fa fa-user-circle me-sm-2" aria-hidden="true"></i>
+                    <i class="ni ni-circle-08 me-sm-2" aria-hidden="true"></i>
                     <span class="d-sm-inline d-none">{{ auth()->user()->username }}</span>
                     
                 </li>

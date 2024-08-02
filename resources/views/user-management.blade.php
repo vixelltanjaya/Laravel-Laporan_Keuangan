@@ -22,8 +22,8 @@
                                     <tr>
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">NO</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Role</th>
-                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Deskripsi</th>
-                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nama</th>
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Username</th>
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Name</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Dibuat Tanggal</th>
                                     </tr>
                                 </thead>
@@ -34,10 +34,10 @@
                                             <p class="text-xs font-weight-bold mb-0">{{$loop->iteration}}</p>
                                         </td>
                                         <td class="text-center">
-                                            <p class="text-xs font-weight-bold mb-0">{{$userManagements->name}}</p>
+                                            <p class="text-xs font-weight-bold mb-0">{{$userManagements->role_name}}</p>
                                         </td>
                                         <td class="text-center">
-                                            <p class="text-xs font-weight-bold mb-0">{{$userManagements->role_description}}</p>
+                                            <p class="text-xs font-weight-bold mb-0">{{$userManagements->username}}</p>
                                         </td>
                                         <td class="text-center">
                                             <p class="text-xs font-weight-bold mb-0">{{$userManagements->name}}</p>
@@ -81,11 +81,8 @@
                                         <p class="badge bg-gradient-light text-dark">{{ $roles->description }}</p>
                                     </td>
                                     <td>
-                                        <a href="#" class="mx-3" data-bs-toggle="modal" data-bs-target="#editRoleModal" data-id="{{ $roles->id }}" data-name="{{ $roles->name }}" data-description="{{ $roles->description }}">
-                                            <i class="fas fa-user-edit text-secondary"></i>
-                                        </a>
                                         <span data-bs-toggle="modal" data-bs-target="#deleteRoleModal" data-id="{{ $roles->id }}" data-name="{{ $roles->name }}">
-                                            <i class="cursor-pointer fas fa-trash text-secondary"></i>
+                                            <i class="cursor-pointer ri-delete-bin-line text-danger"> Hapus </i>
                                         </span>
                                     </td>
                                 </tr>
@@ -131,11 +128,8 @@
                                         <p>{{ \Carbon\Carbon::parse($user->created_at)->format('Y-m-d') }}</p>
                                     </td>
                                     <td>
-                                        <a href="#" class="mx-3" data-bs-toggle="modal" data-bs-target="#editUserModal" data-id="{{ $user->id }}" data-name="{{ $user->name }}" data-username="{{ $user->username }}" data-email="{{ $user->email }}">
-                                            <i class="fas fa-user-edit text-secondary"></i>
-                                        </a>
                                         <span data-bs-toggle="modal" data-bs-target="#deleteUserModal" data-id="{{ $user->id }}" data-name="{{ $user->name }}">
-                                            <i class="cursor-pointer fas fa-trash text-secondary"></i>
+                                            <i class="cursor-pointer ri-delete-bin-line text-danger"> Hapus </i>
                                         </span>
                                     </td>
                                 </tr>
@@ -211,72 +205,6 @@
                         <button type="submit" class="btn btn-primary">Save</button>
                     </div>
                 </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Edit User Modal -->
-<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editUserForm" action="{{ route('user-management.updateUser') }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" id="editUserId" name="user_id">
-                    <div class="mb-3">
-                        <label for="editUserName" class="form-label">User Name</label>
-                        <input type="text" class="form-control" id="editUserName" name="name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editUserUsername" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="editUserUsername" name="username" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editUserEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="editUserEmail" name="email" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="editUserForm" class="btn btn-primary">Update User</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Edit Role Modal -->
-<div class="modal fade" id="editRoleModal" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editRoleModalLabel">Edit Role</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editRoleForm" action="{{ route('user-management.updateRole') }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    <div class="mb-3">
-                        <label for="editRoleName" class="form-label">Role Name</label>
-                        <input type="text" class="form-control" id="editRoleName" name="name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editRoleDescription" class="form-label">Deskripsi</label>
-                        <input type="text" class="form-control" id="editRoleDescription" name="description" required>
-                    </div>
-                    <input type="hidden" id="editRoleId" name="role_id">
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="editRoleForm" class="btn btn-primary">Save Changes</button>
             </div>
         </div>
     </div>

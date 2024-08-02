@@ -79,10 +79,10 @@
                                     </td>
                                     <td class="ps-4">
                                         <a class="btn btn-link text-secondary font-weight-bold" data-id="{{ $customer->id }}" data-name="{{ $customer->name }}" data-no_telp="{{ $customer->no_telp }}" data-alamat="{{ $customer->alamat }}" data-email="{{ $customer->email }}" data-bs-toggle="modal" data-bs-target="#editCustomerModal">
-                                            <i class="fas fa-user-edit text-secondary font-weight-bold text-small"></i> Edit
+                                            <i class="ri-edit-line text-secondary font-weight-bold text-small"></i> Edit
                                         </a>
                                         <button class="btn btn-link text-danger font-weight-bold text-large" data-id="{{ $customer->id }}" data-name="{{ $customer->name }}" data-bs-toggle="modal" data-bs-target="#deleteCustomerModal">
-                                            <i class="fas fa-trash"></i> Hapus
+                                            <i class="ri-delete-bin-line"></i> Hapus
                                         </button>
                                     </td>
                                 </tr>

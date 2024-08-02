@@ -11,7 +11,7 @@
             <div class="card border-none">
 
                 <div class="card-body">
-                @include('components.alert-danger-success')
+                    @include('components.alert-danger-success')
                     <form action="{{ route('cash-in.store')}}" method="POST" enctype="multipart/form-data">
                         @csrf
 
@@ -112,13 +112,7 @@
                         </div>
                         @endforeach
 
-                        <div id="journalDetailsContainer"></div>
-                        <div id="errorAlert" class="alert alert-danger" style="display: none;">
-                            <strong>Alert!</strong> Nominal debit dan kredit belum seimbang.
-                        </div>
-                        <div id="successAlert" class="alert alert-success" style="display: none;">
-                            <strong>Success!</strong> Nominal debit dan kredit sudah seimbang.
-                        </div>
+                        @include('components.alert-amount-balance')
 
                         <div class="mt-2">
                             <button type="submit" class="btn btn-primary mr-2" id="submitButton" disabled>Submit</button>
