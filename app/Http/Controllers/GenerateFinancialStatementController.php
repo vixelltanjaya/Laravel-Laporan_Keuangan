@@ -2,42 +2,49 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\NetIncomeExport;
 use App\Models\CoaModel;
+use App\Models\DetailJournalEntry;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Collection;
+
 
 class GenerateFinancialStatementController extends Controller
 {
 
     public function income(Request $request)
     {
-        Log::debug('req id ' . json_encode($request->all()));
+        Log::debug('income request: ' . json_encode($request->all()));
         $reportType = 'income';
-        $incomeStatement = CoaModel::getSumRequestTrx($request);
 
-        Log::debug('income statement' . json_encode($incomeStatement));
+        session()->put('export_request', $request->all());
+
+        // Pass the $request object directly to the function
+        $incomeStatement = CoaModel::getSumRequestTrx($request);
+        Log::debug('income incomeStatement: ' . json_encode($incomeStatement));
+
         return view('user-accounting.generate-financial-statement', compact([
             'reportType',
             'incomeStatement',
         ]));
     }
-
     public function balance(Request $request)
     {
         Log::debug('req id ' . json_encode($request->all()));
 
         $reportType = 'balance';
         $balanceSheet = CoaModel::getSumRequestTrx($request);
+        $netIncomeResults = $this->countNetIncome($request);
 
-        $labaTahunBerjalan = CoaModel::getNetIncomeYTD($request);
-
-        Log::debug('labaTahunBerjalan' . json_encode($labaTahunBerjalan));
 
         return view('user-accounting.generate-financial-statement', [
             'reportType' => $reportType,
             'balanceSheet' => $balanceSheet,
-            'labaTahunBerjalan' => $labaTahunBerjalan,
+            'labaTahunBerjalan' => $netIncomeResults,
         ]);
     }
 
@@ -45,104 +52,149 @@ class GenerateFinancialStatementController extends Controller
     {
         $reportType = 'perubahanModal';
         $netIncomeResults = $this->countNetIncome($request);
-        $perubahanModal = CoaModel::getSumRequestTrx($request);
 
         dd($netIncomeResults);
 
-        return view('user-accounting.generate-financial-statement', compact('reportType','netIncomeResults','perubahanModal'));
+        return view('user-accounting.generate-financial-statement', compact('reportType', 'netIncomeResults'));
     }
-    
-    protected function countNetIncome($request)
+
+    public function countNetIncome($request)
     {
+        Log::debug('func count' . json_encode($request->all()));
+
         $startDate = $request->input('transaction_month_start');
         $endDate = $request->input('transaction_month_end');
-    
+
+        // untuk filter date satu
+        if (!$endDate) {
+            $endDateToStart = Carbon::now()->startOfMonth()->format('Y-m-01');
+        } else {
+            $endDateToStart = Carbon::parse($endDate)->startOfMonth()->format('Y-m-01');
+        }
+
+        Log::debug('endDateToStart' . json_encode($endDateToStart));
+        Log::debug('end date' . json_encode($endDate));
+
         // Format Year and Month
         $startYear = Carbon::parse($startDate)->year;
         $startMonth = Carbon::parse($startDate)->month;
-    
+
         $endYear = Carbon::parse($endDate)->year;
         $endMonth = Carbon::parse($endDate)->month;
-    
+
+        // current month
+        $startDateParsed = Carbon::parse($endDateToStart);
+        $endDateParsed = Carbon::parse($endDate)->endOfDay();
+        Log::debug('start date parsed' . json_encode($startDateParsed));
+        Log::debug('end date parsed' . json_encode($endDateParsed));
+
         // Get all transactions
         $incomeStatement = CoaModel::getSumRequestTrx($request);
-    
+        $currentMonthIncome = DetailJournalEntry::all();
+
         // Filter transactions for the entire period
         $incomeStatementPeriod = $incomeStatement->filter(function ($item) use ($startYear, $endYear) {
             $transactionDate = Carbon::parse($item->balance_time);
             return ($transactionDate->year <= $endYear);
         });
-    
+
         // Filter transactions for the current month
-        $incomeStatementMonth = $incomeStatement->filter(function ($item) use ($startMonth, $endMonth) {
-            $transactionDate = Carbon::parse($item->balance_time);
-            return ($transactionDate->month == $startMonth && $transactionDate->year == Carbon::now()->year);
+        $incomeStatementMonth = $currentMonthIncome->filter(function ($item) use ($startDateParsed, $endDateParsed) {
+            $transactionDate = Carbon::parse($item->updated_at);
+            return $transactionDate->between($startDateParsed, $endDateParsed);
         });
-    
+
+        Log::debug('income statement month' . json_encode($incomeStatementMonth));
+
         // Filter transactions for the current year
         $incomeStatementYear = $incomeStatement->filter(function ($item) use ($startYear) {
             $transactionDate = Carbon::parse($item->balance_time);
             return ($transactionDate->year == $startYear);
         });
-    
+
+        Log::debug('income statement year' . json_encode($incomeStatementYear));
+
         // Calculate revenue and expense for the entire period
         $revenue = $incomeStatementPeriod->filter(function ($item) {
             return str_starts_with($item->account_id, '4');
         })->sum(function ($item) {
             return $item->total_credit - $item->total_debit;
         });
-    
+
         $expense = $incomeStatementPeriod->filter(function ($item) {
             return str_starts_with($item->account_id, '5');
         })->sum(function ($item) {
             return $item->total_debit - $item->total_credit;
         });
-    
+
         // Calculate revenue and expense for the current month
         $revenueCurrentMonth = $incomeStatementMonth->filter(function ($item) {
             return str_starts_with($item->account_id, '4');
         })->sum(function ($item) {
-            return $item->total_credit - $item->total_debit;
+            return $item->credit - $item->debit;
         });
-    
+
         $expenseCurrentMonth = $incomeStatementMonth->filter(function ($item) {
             return str_starts_with($item->account_id, '5');
         })->sum(function ($item) {
-            return $item->total_debit - $item->total_credit;
+            return $item->debit - $item->credit;
         });
-    
+
         // Calculate revenue and expense for the current year
         $revenueCurrentYear = $incomeStatementYear->filter(function ($item) {
             return str_starts_with($item->account_id, '4');
         })->sum(function ($item) {
             return $item->total_credit - $item->total_debit;
         });
-    
+
         $expenseCurrentYear = $incomeStatementYear->filter(function ($item) {
             return str_starts_with($item->account_id, '5');
         })->sum(function ($item) {
             return $item->total_debit - $item->total_credit;
         });
-    
+
         // Calculate net income
         $netIncome = $revenue - $expense; // Akumulatif
         $netIncomeCurrentMonth = $revenueCurrentMonth - $expenseCurrentMonth; // Bulanan
         $netIncomeYTD = $revenueCurrentYear - $expenseCurrentYear; // Tahunan
-    
+
         Log::debug('Revenue: ' . $revenue);
         Log::debug('Expense: ' . $expense);
         Log::debug('Revenue for Current Month: ' . $revenueCurrentMonth);
         Log::debug('Expense for Current Month: ' . $expenseCurrentMonth);
         Log::debug('Revenue for Current Year: ' . $revenueCurrentYear);
         Log::debug('Expense for Current Year: ' . $expenseCurrentYear);
-    
+
         return [
             'netIncome' => $netIncome,
             'netIncomeCurrentMonth' => $netIncomeCurrentMonth,
             'netIncomeYTD' => $netIncomeYTD
         ];
     }
+
+    public function exportIncomeStatement(Request $request)
+{
+    $requestData = session()->get('export_request');
+    $request = new Request($requestData);
+
+    $startDate = $request->input('transaction_month_start');
+    $endDate = $request->input('transaction_month_end');
     
+    $transactionPeriod = CarbonPeriod::create($startDate, $endDate);
+    
+    $months = collect($transactionPeriod->map(function ($date) {
+        return $date->format('F-Y');
+    }))->unique()->toArray();
+
+    Log::debug('exportIncomeStatement request: ' . json_encode($request->all()));
+
+    $incomeStatement = CoaModel::getSumRequestTrx($request);
+    Log::debug('exportIncomeStatement incomeStatement: ' . json_encode($incomeStatement));
+
+    session()->forget('export_request');
+
+    return Excel::download(new NetIncomeExport($incomeStatement, $months), 'net_income.xlsx');
+}
 
 
     // public function incomeStatement($startDate, $endDate)

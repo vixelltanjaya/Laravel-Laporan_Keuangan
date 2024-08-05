@@ -7,11 +7,15 @@
             <a href="{{ url()->previous() }}" class="btn btn-default">Batal</a>
             <div class="card">
                 <div class="card-header pb-0 px-3">
-                    <div class="text-left mb-4">
+                    <div class="btn-group">
                         <button id="printButton" class="btn btn-dark">
-                            <i class="fas fa-print"></i> Print to PDF
+                            <i class="ri-printer-line"></i> Print to PDF
                         </button>
                     </div>
+                    <form action="{{ route('export.income-statement') }}" method="GET" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-info">Export Laporan Laba Rugi</button>
+                    </form>
                 </div>
                 <div class="card-body pt-4 p-3 text-center">
                     <div class="text-center mb-4">

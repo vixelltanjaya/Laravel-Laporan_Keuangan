@@ -70,6 +70,15 @@
         <td></td>
         <td></td>
     </tr>
+    @foreach($balanceSheet as $balance)
+    @if(strtolower($balance->account_group) === 'kewajiban lancar' || strtolower($balance->account_group) === 'Kewajiban Lancar')
+    <tr>
+        <td>{{ $balance->account_name }}</td>
+        <td></td>
+        <td>{{ number_format($balance->total_amount, 2) }}</td>
+    </tr>
+    @endif
+    @endforeach
     <tr>
         <td><strong>Kewajiban Tidak Lancar</strong></td>
         <td></td>
@@ -113,32 +122,17 @@
     <tr>
         <td>Saldo Laba</td>
         <td></td>
-        <td>{{ number_format(
-            $labaTahunBerjalan->filter(function($item) {
-                return strtolower($item->account_type) === 'pendapatan';
-            })->sum('total_amount') -
-            $labaTahunBerjalan->filter(function($item) {
-                return strtolower($item->account_type) === 'beban';
-            })->sum('total_amount'), 2
-        ) }}</td>
+        <td>{{ number_format($labaTahunBerjalan['netIncome'], 0, ',', '.') }}</td>
     </tr>
     <tr>
-        <td>Laba Berjalan</td>
+        <td>Laba Tahun Berjalan</td>
         <td></td>
-        <td>{{ number_format(
-        ($balanceSheet->filter(function($item) {
-            return strtolower($item->account_type) === 'pendapatan';
-        })->sum('total_amount') -
-        $balanceSheet->filter(function($item) {
-            return strtolower($item->account_type) === 'beban';
-        })->sum('total_amount')) - 
-        ($labaTahunBerjalan->filter(function($item) {
-            return strtolower($item->account_type) === 'pendapatan';
-        })->sum('total_amount') -
-        $labaTahunBerjalan->filter(function($item) {
-            return strtolower($item->account_type) === 'beban';
-        })->sum('total_amount')), 2
-    ) }}</td>
+        <td>{{ number_format($labaTahunBerjalan['netIncomeYTD'], 0, ',', '.') }}</td>
+    </tr>
+    <tr>
+        <td>Laba Bulan Berjalan</td>
+        <td></td>
+        <td>{{ number_format($labaTahunBerjalan['netIncomeCurrentMonth'], 0, ',', '.') }}</td>
     </tr>
     <tr>
         <td><strong>Total Ekuitas</strong></td>

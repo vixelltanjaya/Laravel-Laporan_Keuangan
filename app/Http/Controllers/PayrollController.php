@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\payroll;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PayrollController extends Controller
@@ -14,33 +15,32 @@ class PayrollController extends Controller
     public function index()
     {
 
+        $employees = Employee::joinPayroll()->get()->map(function ($employee) {
+            $employee->formatted_gaji = number_format($employee->gaji, 0, ',', '.');
+            $employee->formatted_updated_at = Carbon::parse($employee->updated_at)->format('d-m-Y');
+            return $employee;
+        });
 
-        $employees = Employee::joinPayroll();
-
-        return view('user-admin.payroll',[
-            'employees'=>$employees
-        ]);
+        return view('user-admin.payroll', compact('employees'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'employee_id' => 'required|exists:employees,id',
+            'gaji' => 'required|numeric',
+        ]);
+
+        $payroll = new Payroll();
+        $payroll->employees_id = $request->employee_id;
+        $payroll->gaji = $request->gaji;
+        $payroll->save();
+
+        return redirect()->back()->with('berhasil', 'Payroll information added successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //

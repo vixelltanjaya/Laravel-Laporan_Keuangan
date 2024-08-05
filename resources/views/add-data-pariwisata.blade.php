@@ -44,7 +44,7 @@
                                     <select class="form-control" id="chart_of_account" name="chart_of_account">
                                         <option value="">Select coa</option>
                                         @foreach ($chartOfAccounts as $coa)
-                                        <option value="{{ $coa->id }}">{{ $coa->account_id }} - {{ $coa->account_name }}</option>
+                                        <option value="{{ $coa->account_id }}">{{ $coa->account_id }} - {{ $coa->account_name }}</option>
                                         @endforeach
                                     </select>
                                 </div>

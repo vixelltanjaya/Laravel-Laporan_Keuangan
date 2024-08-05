@@ -27,6 +27,7 @@ class PariwisataController extends Controller
 
     public function store(Request $request)
     {
+        Log::debug('request' .json_encode($request->all()));
         $request->validate([
             'plat_nomor' => 'required|string|max:15',
             'tahun_kendaraan' => 'required|integer',
@@ -34,7 +35,8 @@ class PariwisataController extends Controller
             'no_rangka' => 'required|string|max:50',
             'selling_price' => 'required|numeric',
             'evidence_image' => 'nullable|file|max:2048',
-            'evidence_image_bus' => 'nullable|file|max:2048'
+            'evidence_image_bus' => 'nullable|file|max:2048',
+            'chart_of_account' => 'required|string|max:50',
         ]);
 
         try {
@@ -57,8 +59,11 @@ class PariwisataController extends Controller
                 'karoseri' => $request->karoseri,
                 'selling_price' => $request->selling_price,
                 'no_rangka' => $request->no_rangka,
-                'evidence_image_bus' => $evidenceImageBusPath
+                'evidence_image_bus' => $evidenceImageBusPath,
+                'account_id' => $request->chart_of_account
             ]);
+
+            Log::debug('bis pariwisata' .json_encode($bisPariwisata));
 
             $latestSuratJalan = SuratJalan::where('bis_pariwisata_id', $bisPariwisata->id)
                 ->orderBy('version', 'desc')
@@ -148,9 +153,9 @@ class PariwisataController extends Controller
 
             Log::debug('array pariwisata' . json_encode($pariwisata));
 
-            return redirect()->route('pariwisata.index')->with('berhasil', 'Evidence Code berhasil dihapus');
+            return redirect()->route('pariwisata.index')->with('berhasil', 'Data Bis berhasil dihapus');
         } catch (Throwable $e) {
-            return redirect()->route('pariwisata.index')->with('gagal', 'Terjadi kesalahan saat menghapus Evidence Code' . $e->getMessage());
+            return redirect()->route('pariwisata.index')->with('gagal', 'Terjadi kesalahan saat menghapus Data Bis' . $e->getMessage());
         }
     }
 }

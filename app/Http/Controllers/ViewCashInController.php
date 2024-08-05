@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CoaModel;
 use App\Models\DetailJournalEntry;
 use App\Models\JournalEntry;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,10 +23,10 @@ class ViewCashInController extends Controller
         $journalEntry = $journalData->journalEntry;
         $details = $journalData->details;
         $id = $journalEntry ? $journalEntry->id : null;
-        
+
         $hasAccount2101 = false;
-        foreach($details as $detail) {
-            if($detail->account_id == 2101) {
+        foreach ($details as $detail) {
+            if ($detail->account_id == 2101) {
                 $hasAccount2101 = true;
                 break;
             }
@@ -43,5 +44,40 @@ class ViewCashInController extends Controller
             'hasAccount2101' => $hasAccount2101,
             // 'no_ref_asal' => $journalEntry->no_ref_asal 
         ]);
+    }
+
+    public function generatePdf($id)
+    {
+        Log::info('route id: ' . $id);
+        $id = intval($id);
+
+        $journalData = JournalEntry::joinDetailAndUsers($id);
+        $detailJournal = DetailJournalEntry::where('entry_id', $id)->first();
+        $bookingData = JournalEntry::joinBookingBus($id);
+
+        $journalEntry = $journalData->journalEntry;
+        $details = $journalData->details;
+
+        $evidenceCode = substr($journalEntry->evidence_code, 2, 12);
+        $invoice = 'INV/' . $evidenceCode;
+        
+        Log::info('invoices ' . $invoice);
+        Log::info('bookingData ' .json_encode($bookingData));
+        Log::info('Journal Entry: ', (array) $journalEntry);
+        Log::info('Detail Journal: ', (array) $detailJournal);
+        Log::info('details: ', (array) $details);
+
+        $data = [
+            'journalEntry' => $journalEntry,
+            'details' => $details,
+            'detailJournal' => $detailJournal,
+            'invoices' => $invoice,
+            'bookingData' => $bookingData 
+        ];
+
+        // Load the view and pass the data
+        $pdf = Pdf::loadView('invoice_pdf', $data);
+
+        return $pdf->download('invoice.pdf');
     }
 }

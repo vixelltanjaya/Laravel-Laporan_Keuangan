@@ -57,6 +57,7 @@ class CoaModel extends Model
                 'A.account_id',
                 'A.account_name',
                 'A.account_sign',
+                'A.account_type',
                 DB::raw('COALESCE("C"."beginning_balance", 0) AS "beginning_balance"'),
                 DB::raw('COALESCE(SUM(CAST("B"."debit" AS NUMERIC)), 0) AS "total_debit"'),
                 DB::raw('COALESCE(SUM(CAST("B"."credit" AS NUMERIC)), 0) AS "total_credit"'),
@@ -71,7 +72,7 @@ class CoaModel extends Model
                 DB::raw('COALESCE("C".ending_balance, 0) AS "beginning_balance_next_month"'),
                 DB::raw('SUBSTRING("C".balance_time FROM 1 FOR 6) AS balance_time')
             )
-            ->groupBy('A.account_id', 'A.account_name', 'C.beginning_balance', 'A.account_sign', 'C.ending_balance', 'C.balance_time')
+            ->groupBy('A.account_id', 'A.account_name', 'C.beginning_balance', 'A.account_sign', 'C.ending_balance', 'C.balance_time', 'A.account_type')
             ->orderBy('A.account_id', 'ASC');
 
         Log::debug('SQL Query: ' . $query->toSql());
@@ -79,7 +80,6 @@ class CoaModel extends Model
 
         return $query->get();
     }
-
     public static function getSumRequestTrx($request)
     {
         $accountIdStartsWith = ['1', '2', '3', '4', '5'];
@@ -95,8 +95,9 @@ class CoaModel extends Model
         $formattedStartDate = date('Y-m-d 00:00:00', strtotime($transactionMonthStart . '-01'));
         $formattedEndDate = date('Y-m-d 23:59:59', strtotime("last day of $transactionMonthEnd"));
 
+        Log::debug('formattedStartDate: ' . json_encode($formattedStartDate));
+        Log::debug('formattedEndDate: ' . json_encode($formattedEndDate));
 
-        Log::debug('formattedStartDate' .json_encode($formattedStartDate));
         $divisionId = $request->input('division_id');
 
         // Base query
@@ -113,15 +114,15 @@ class CoaModel extends Model
                 DB::raw('SUM("B".debit) AS total_debit'),
                 DB::raw('SUM("B".credit) AS total_credit'),
                 DB::raw('
-            CASE
-                WHEN "A".account_type = \'Aset\' OR "A".account_type = \'aset\' THEN SUM("B".debit) - SUM("B".credit)
-                WHEN "A".account_type = \'Kewajiban\' OR "A".account_type = \'kewajiban\' THEN SUM("B".credit) - SUM("B".debit)
-                WHEN "A".account_type = \'Ekuitas\' OR "A".account_type = \'ekuitas\' THEN SUM("B".credit) - SUM("B".debit)
-                WHEN "A".account_type = \'Pendapatan\' OR "A".account_type = \'pendapatan\' THEN SUM("B".credit) - SUM("B".debit)
-                WHEN "A".account_type = \'Beban\' OR "A".account_type = \'beban\' THEN SUM("B".debit) - SUM("B".credit)
-                ELSE 0
-            END AS total_amount
-            ')
+        CASE
+            WHEN LOWER ("A".account_type) = \'aset\' THEN SUM("B".debit) - SUM("B".credit)
+            WHEN LOWER ("A".account_type) = \'kewajiban\' THEN SUM("B".credit) - SUM("B".debit)
+            WHEN LOWER ("A".account_type) = \'ekuitas\' THEN SUM("B".credit) - SUM("B".debit)
+            WHEN LOWER ("A".account_type) = \'pendapatan\' THEN SUM("B".credit) - SUM("B".debit)
+            WHEN LOWER ("A".account_type) = \'beban\' THEN SUM("B".debit) - SUM("B".credit)
+            ELSE 0
+        END AS total_amount
+        ')
             )
             ->whereIn(DB::raw('SUBSTRING("A".account_id, 1, 1)'), $accountIdStartsWith)
             ->whereBetween('B.updated_at', [$formattedStartDate, $formattedEndDate]);
@@ -149,7 +150,6 @@ class CoaModel extends Model
 
         return $results;
     }
-
     public static function getRequestTrx($request)
     {
         $monthYear = $request->input('month_year');
@@ -183,7 +183,6 @@ class CoaModel extends Model
 
         return $results->get();
     }
-
     public static function getNetIncomeYTD($request)
     {
         $transactionMonthStart = $request->input('transaction_month_start');
@@ -192,10 +191,10 @@ class CoaModel extends Model
         $getLastDate = date('Y-m-d', strtotime("last day of $transactionMonthEnd "));
         $balanceTimeFirst = date('Ymd', strtotime($transactionMonthStart . '-01'));
 
-        Log::debug('transactionMonthStart ' .$transactionMonthStart);
-        Log::debug('transactionMonthEnd ' .$transactionMonthEnd);
-        Log::debug('getLastDate ' .$getLastDate);
-        Log::debug('balanceTimeFirst ' .$balanceTimeFirst);
+        Log::debug('transactionMonthStart ' . $transactionMonthStart);
+        Log::debug('transactionMonthEnd ' . $transactionMonthEnd);
+        Log::debug('getLastDate ' . $getLastDate);
+        Log::debug('balanceTimeFirst ' . $balanceTimeFirst);
 
         try {
             $balanceTimeLast = Carbon::createFromFormat('Y-m-d', $getLastDate)
@@ -225,7 +224,7 @@ class CoaModel extends Model
             '),
                 'A.balance_time'
             )
-            ->whereBetween('A.balance_time', [$balanceTimeFirst,$balanceTimeLast])
+            ->whereBetween('A.balance_time', [$balanceTimeFirst, $balanceTimeLast])
             ->groupBy('A.account_id', 'B.account_sign', 'B.account_type', 'A.balance_time')
             ->orderBy('A.account_id', 'ASC');
 

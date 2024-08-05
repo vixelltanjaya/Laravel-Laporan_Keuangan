@@ -65,9 +65,9 @@
                                     </td>
                                     <td class="ps-4">
                                         <button class="btn btn-link text-secondary font-weight-bold text-small" data-id="{{ $evidence->id }}" data-prefix_code="{{ $evidence->prefix_code }}" data-code_title="{{ $evidence->code_title }}" data-bs-toggle="modal" data-bs-target="#editEvidenceCodeModal">
-                                            <i class="ri-edit-line">Edit</i>
+                                        <i class="ri-edit-line">Edit</i>
                                         </button>
-                                        <button class="btn btn-link text-danger" data-id="{{ $evidence->id }}" data-prefix_code="{{ $evidence->prefix_code }}" data-bs-toggle="modal" data-bs-target="#deleteEvidenceCodeModal">
+                                        <button class="btn btn-link text-danger" data-id="{{ $evidence->id }}" data-code_title="{{ $evidence->code_title }}" data-bs-toggle="modal" data-bs-target="#deleteEvidenceCodeModal">
                                             <i class="ri-delete-bin-line">Hapus</i>
                                         </button>
                                     </td>
@@ -89,7 +89,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editEvidenceCodeModalLabel">Edit Evidence</h5>
+                <h5 class="modal-title" id="editEvidenceCodeModalLabel">Edit Kode Bukti Transaksi</h5>
             </div>
             <div class="modal-body">
                 <form id="editEvidenceCodeForm" method="POST" action="{{ route('evidence-code.update', ['evidence_code' => ':id']) }}">
@@ -101,7 +101,7 @@
                         <input type="text" class="form-control" id="edit_prefix_code" name="prefix_code" required>
                     </div>
                     <div class="form-group">
-                        <label for="edit_code_title">Judul Kode</label>
+                        <label for="edit_code_title">Deskripsi Kode</label>
                         <input type="text" class="form-control" id="edit_code_title" name="code_title" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Simpan</button>
@@ -166,12 +166,12 @@
         $('#deleteEvidenceCodeModal').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget);
             var id = button.data('id');
-            var prefix_code = button.data('prefix_code');
+            var code_title = button.data('code_title');
 
-            console.log("Apakah id masuk sini ?" + prefix_code);
+            console.log("Apakah id masuk sini ?" + code_title);
 
             var modal = $(this);
-            var message = 'Apakah Anda yakin ingin menghapus data ' + prefix_code + ' ?';
+            var message = 'Apakah Anda yakin ingin menghapus data ' + code_title + ' ?';
             modal.find('.modal-body #deleteEvidenceCodeMessage').text(message);
             modal.find('.modal-body #delete_evidence_code_id').val(id);
             $('#deleteEvidenceCodeForm').attr('action', '/evidence-code/' + id);

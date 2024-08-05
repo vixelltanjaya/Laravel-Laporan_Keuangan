@@ -32,7 +32,7 @@
                             <li>TV</li>
                         </ul>
                         <p class="mb-1">Nomor Plat: <strong>{{ $pariwisata->plat_nomor }}</strong></p>
-                        <p class="mb-1">Harga Sewa/hari : <strong>{{ number_format($pariwisata->selling_price, 0, ',', '.') }}</strong></p>
+                        <p class="mb-1">Harga Sewa/hari : <strong>{{ number_format($pariwisata->selling_price, 0, ',', '.') }}</strong> <small> (untuk daerah Jateng dan DIY)</small></p>
 
                         <!-- Hidden Inputs -->
                         <input type="hidden" name="plat_nomor" value="{{ $pariwisata->plat_nomor }}">
@@ -62,7 +62,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="viewDetailsModalLabel">Detail Bus Pariwisata</h5>
+                <h5 class="modal-title" id="viewDetailsModalLabel">Surat Layak Jalan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

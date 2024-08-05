@@ -6,7 +6,7 @@
     <div class="container mt-5">
         <div class="card">
             <div class="card-header">
-                <h5 class="card-title">Tambah Evidence Code</h5>
+                <h5 class="card-title">Tambah Kode Bukti Transaksi</h5>
             </div>
             <div class="card-body">
                 <form action="{{ route('evidence-code.store') }}" method="POST">
@@ -17,7 +17,7 @@
                         <label style="color: lightgray; font-size: 12px; font-family:Arial, Helvetica, sans-serif">Maksimal 3 Huruf untuk kode prefiks</label>
                     </div>
                     <div class="form-group">
-                        <label for="code_title">Judul Kode</label>
+                        <label for="code_title">Deskripsi Kode</label>
                         <input type="text" class="form-control" id="code_title" name="code_title"  required>
                     </div>
                     <div class="form-group">

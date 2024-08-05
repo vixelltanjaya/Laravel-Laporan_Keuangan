@@ -116,7 +116,7 @@
 
                         <div class="mt-2">
                             <button type="submit" class="btn btn-primary mr-2" id="submitButton" disabled>Submit</button>
-                            <a class="btn bg-danger" href="{{ route('cash-in.index')}}">Cancel</a>
+                            <a class="btn btn-danger" href="{{ route('cash-in.index')}}">Cancel</a>
                         </div>
                     </form>
                 </div>

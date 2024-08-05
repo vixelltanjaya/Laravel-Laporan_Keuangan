@@ -81,6 +81,16 @@
       </li> -->
     
 
+        <!-- Payroll -->
+        <li class="nav-item">
+        <a class="nav-link {{ (Request::is('payroll') ? 'active' : '') }}" href="{{ url('payroll') }}">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i style="font-size: 1rem;" class="ri-hand-coin-line ps-2 pe-2 text-center text-dark {{ (Request::is('payroll ') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
+          </div>
+          <span class="nav-link-text ms-1">Gaji</span>
+        </a>
+      </li>
+      
       <!-- Employee -->
       <li class="nav-item pb-2">
         <a class="nav-link {{ (Request::is('employee') ? 'active' : '') }}" href="{{ url('employee') }}">
@@ -90,6 +100,8 @@
           <span class="nav-link-text ms-1">Pegawai</span>
         </a>
       </li>
+
+    
       @endif
 
       @if (Auth::user()->role_id == 1 || Auth::user()->role_id == 5 || Auth::user()->role_id == 6)
@@ -184,15 +196,6 @@
         </a>
       </li>
 
-      <!-- Payroll -->
-      <li class="nav-item">
-        <a class="nav-link {{ (Request::is('payroll') ? 'active' : '') }}" href="{{ url('payroll') }}">
-          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-            <i style="font-size: 1rem;" class="fas fa-hand-holding-usd fa-lg ps-2 pe-2 text-center text-dark {{ (Request::is('payroll ') ? 'text-white' : 'text-dark') }} " aria-hidden="true"></i>
-          </div>
-          <span class="nav-link-text ms-1">Penggajian</span>
-        </a>
-      </li>
 
       <!-- evidence Code -->
       <li class="nav-item">

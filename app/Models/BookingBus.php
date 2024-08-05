@@ -13,6 +13,17 @@ class BookingBus extends Model
 
     protected $table = 'booking_bus';
 
+    protected $fillable = [
+        'customer_id',
+        'bus_pariwisata_id',
+        'journal_entry_id',
+        'start_book',
+        'end_book',
+        'description',
+        'fleet_departure',
+        'fleet_arrivals'
+    ];
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);
@@ -46,7 +57,8 @@ class BookingBus extends Model
                 'B.end_book',
                 'B.id',
                 'B.fleet_departure',
-                'B.fleet_arrivals'
+                'B.fleet_arrivals',
+                'B.customer_id'
             )
             ->join('bis_pariwisata as A', 'A.id', '=', 'B.bus_pariwisata_id')
             ->join('customer as C', 'C.id', '=', 'B.customer_id')

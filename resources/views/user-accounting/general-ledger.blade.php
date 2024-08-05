@@ -11,9 +11,9 @@
                             <h5 class="mb-0">Buku Besar</h5>
                         </div>
                         <div class="nav-item d-flex align-self-end">
-                            <button id="printButton" class="btn btn-dark active mb-0 text-white me-2" disabled>
+                            <button id="printButton" class="btn btn-dark active mb-0 text-white me-2">
                                 <i class="fas fa-print me-1"></i>Print</button>
-                            <button id="lihatBukuBesarButton" type="button" class="btn btn-primary active mb-0" disabled>
+                            <button id="lihatBukuBesarButton" type="button" class="btn btn-primary active mb-0">
                                 Lihat Buku Besar
                             </button>
                         </div>
@@ -102,19 +102,24 @@
     $(document).ready(function() {
         $('#month_year').on('change', function() {
             var monthYearValue = $(this).val();
-            if (monthYearValue) {
-                $('#printButton, #lihatBukuBesarButton').prop('disabled', false);
-            } else {
-                $('#printButton, #lihatBukuBesarButton').prop('disabled', true);
-            }
         });
 
         $('#lihatBukuBesarButton').click(function() {
-            $('#filterForm').submit();
+            var monthYearValue = $('#month_year').val();
+            if (!monthYearValue) {
+                alert('Pilih bulan dan tahun terlebih dahulu.');
+            } else {
+                $('#filterForm').submit();
+            }
         });
 
         $('#printButton').click(function() {
-            window.print();
+            var monthYearValue = $('#month_year').val();
+            if (!monthYearValue) {
+                alert('Pilih bulan dan tahun terlebih dahulu.');
+            } else {
+                window.print();
+            }
         });
     });
 </script>

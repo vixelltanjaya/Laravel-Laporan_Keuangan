@@ -9,7 +9,7 @@ class addDataPariwisataController extends Controller
 {
     public function index()
     {
-        $chartOfAccounts = CoaModel::where('account_id', 'like', '4%')->get();
+        $chartOfAccounts = CoaModel::where('account_id', 'like', '2%')->get();
         return view('add-data-pariwisata', compact('chartOfAccounts'));
     }
 }

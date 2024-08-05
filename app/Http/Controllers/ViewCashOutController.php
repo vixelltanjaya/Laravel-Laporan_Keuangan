@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DetailJournalEntry;
 use App\Models\JournalEntry;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,7 @@ class ViewCashOutController extends Controller
 
         Log::debug('journalData:' . json_encode($journalData->details));
         Log::debug('detailJournal:' . json_encode($detailJournal));
+        Log::debug('journalEntry:' . json_encode($journalEntry));
         Log::debug('Id :' . json_encode($id));
 
         return view('user-accounting.view-cash-out', [
@@ -42,21 +44,5 @@ class ViewCashOutController extends Controller
             'hasAccount2101' => $hasAccount2101,
             // 'no_ref_asal' => $journalEntry->no_ref_asal 
         ]);
-    }
-
-    public function cancel($id)
-    {
-        try {
-            $journalEntry = JournalEntry::findOrFail($id);
-
-            // Update entri 
-            $journalEntry->is_reversed = 1;
-            $journalEntry->reversed_by = Auth::user()->name;
-            $journalEntry->save();
-
-            return redirect()->route('view-cash-out.index', ['id' => $id])->with('berhasil', 'Entri jurnal berhasil dibatalkan.');
-        } catch (Exception $e) {
-            return redirect()->route('view-cash-out.index', ['id' => $id])->with('gagal', 'Entru gagal dibatalkan.' . $e->getMessage());
-        }
     }
 }

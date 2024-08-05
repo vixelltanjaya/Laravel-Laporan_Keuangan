@@ -87,10 +87,10 @@
                             <td>{{ $pariwisata->account_id }}</td>
                             <td>
                                 <a href="{{ route('edit-data-pariwisata.index', ['id' => $pariwisata->id]) }}" class="btn btn-link text-secondary font-weight-bold text-small">
-                                    <i class="fas fa-user-edit"></i> Edit
+                                    <i class="ri-pencil-line"></i> Edit
                                 </a>
                                 <button class="btn btn-link text-danger font-weight-bold text-small" data-bs-toggle="modal" data-bs-target="#deleteBusModal" data-id="{{$pariwisata->id}}" data-plat="{{$pariwisata->plat_nomor}}">
-                                    <i class="fas fa-trash"></i> Hapus
+                                    <i class="ri-delete-bin-line"></i> Hapus
                                 </button>
                             </td>
                         </tr>

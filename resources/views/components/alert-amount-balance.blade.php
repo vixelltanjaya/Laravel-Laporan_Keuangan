@@ -1,7 +1,7 @@
 <div id="journalDetailsContainer"></div>
 <div id="errorAlert" class="alert alert-danger" style="display: none;">
-    <strong>Alert!</strong> Nominal debit dan kredit belum seimbang.
+    <strong>Jumlah nominal debit dan kredit belum seimbang!</strong>
 </div>
 <div id="successAlert" class="alert alert-success" style="display: none;">
-    <strong>Success!</strong> Nominal debit dan kredit sudah seimbang.
+    <strong>Jumlah nominal debit dan kredit sudah seimbang!</strong>
 </div>

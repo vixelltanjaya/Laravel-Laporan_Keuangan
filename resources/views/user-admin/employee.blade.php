@@ -32,27 +32,7 @@
                         </div>
                     </form>
                 </div>
-
-                @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-
-
-                @if (session('berhasil'))
-                <div class="alert alert-success">
-                    <ul>
-                        <li>{{ session('berhasil') }}</li>
-                    </ul>
-                </div>
-                @endif
-
-
+                @include('components.alert-danger-success');
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
                         <table class="table align-items-center mb-0">
@@ -104,7 +84,7 @@
                                     </td>
                                     <td class="text-center">
                                         <a href="#" class="mx-3" data-bs-toggle="modal" data-bs-target="#editUserModal{{$employee->id}}" data-bs-original-title="Edit user">
-                                            <i class="ri-edit-line text-secondary">Edit</i>
+                                            <i class="ri-pencil-line text-secondary">Edit</i>
                                         </a>
                                         <span data-bs-toggle="modal" data-bs-target="#deleteUserModal{{$employee->id}}">
                                             <i class="cursor-pointer ri-delete-bin-line text-danger">Hapus</i>

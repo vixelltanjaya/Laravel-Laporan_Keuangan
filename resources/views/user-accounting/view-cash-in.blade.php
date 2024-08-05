@@ -43,7 +43,7 @@
 
                     @if($journalEntry->is_reversed == 0 && empty($journalEntry->evidence_code_origin))
                     <p class="mb-1">Status: <strong>Baru</strong></p>
-                    @elseif($journalEntry->is_reversed == 0  && !empty($journalEntry->evidence_code_origin))
+                    @elseif($journalEntry->is_reversed == 0 && !empty($journalEntry->evidence_code_origin))
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <p class="mb-1">Status: <strong>Baru</strong></p>
@@ -73,13 +73,19 @@
                             <a href="#" id="reversedJournalButton" class="btn bg-gradient-dark me-2 disabled">Jurnal Koreksi</a>
                             @endif
                             @if($hasAccount2101)
-                            <a href="{{ route('pelunasan-pariwisata.index', ['id' => $id]) }}" id="pelunasanJournalButton" class="btn btn-info">Pelunasan</a>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('pelunasan-pariwisata.index', ['id' => $id]) }}" id="pelunasanJournalButton" class="btn btn-default">Pelunasan</a>
+                                <a href="{{ route('view-cash-in.generatePdf', ['id' => $id]) }}" class="btn btn-primary text-white">
+                                    <i class="ri-printer-line"></i> Print
+                                </a>
+                            </div>
                             @endif
                             @endif
                         </div>
                         <div class="flex-grow-1"></div>
-                        <div>
+                        <div class="d-flex gap-2">
                             <a href="{{ route('cash-in.index') }}" class="btn btn-secondary"><i class="fas fa-angle-left me-1"></i>Kembali</a>
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#evidenceModal">Lihat Bukti</button>
                         </div>
                     </div>
                 </div>
@@ -87,18 +93,7 @@
         </div>
     </div>
 
-    <!-- bukti transaksi -->
-    <div class="row">
-        <div class="col-12">
-            <!-- Add margin-top to create space between the card and the content above -->
-            <div class="card" style="width: 18rem; margin-top: 20px;">
-                <div class="card-body">
-                    <h5 class="card-title">Bukti Transaksi</h5>
-                    <img id="evidenceImage" data-image-path="{{ Storage::url($detailJournal->evidence_image) }}" alt="Evidence Image" class="img-fluid mb-3" style="max-width: 100%; height: auto;">
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('components.modal-bukti-transaksi')
 
 </main>
 @endsection
@@ -119,6 +114,11 @@
         // Set the src attribute using the data-image-path
         var imagePath = evidenceImage.getAttribute('data-image-path');
         evidenceImage.src = imagePath;
+
+        document.getElementById('openImage').addEventListener('click', function() {
+            const imagePath = document.getElementById('evidenceImage').dataset.imagePath;
+            window.open(imagePath, '_blank');
+        });
 
         console.log('Image path:', imagePath);
         console.log('Evidence image element:', evidenceImage);

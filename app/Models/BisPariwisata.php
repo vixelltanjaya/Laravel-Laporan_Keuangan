@@ -14,7 +14,10 @@ class BisPariwisata extends Model
         'plat_nomor',
         'tahun_kendaraan',
         'karoseri',
-        'no_rangka'
+        'no_rangka',
+        'account_id',
+        'evidence_image_bus',
+        'selling_price'
     ];
     protected $table = 'bis_pariwisata';
 

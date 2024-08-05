@@ -100,23 +100,25 @@ Route::group(['middleware' => 'auth'], function () {
 		return view('rtl');
 	})->name('rtl');
 
-	route::resource('payroll', PayrollController::class);
 
+	// PERSONALIA
 	Route::resource('employee', EmployeeController::class)->only(
 		'index',
 		'store',
 		'update',
 		'destroy'
 	);
+	route::resource('payroll', PayrollController::class);
+
+	// ACCOUNTING 
+	Route::get('export/income-statement', [GenerateFinancialStatementController::class, 'exportIncomeStatement'])->name('export.income-statement');
+
 	Route::get('/exportexcel', [EmployeeController::class, 'exportexcel'])->name('exportexcel');
 	Route::post('/import-employee', [EmployeeController::class, 'importEmployee'])->name('import-employee');
 
 	Route::get('/exportMasterAccountToExcel', [ChartOfAccountController::class, 'exportMasterAccountToExcel'])->name('exportMasterAccountToExcel');
 
 	Route::post('/import-account', [ChartOfAccountController::class, 'importAccount'])->name('import-account');
-
-
-	// Accounting 
 
 	Route::resource('chart-of-account',  ChartOfAccountController::class)->only(
 		'index',
@@ -128,6 +130,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 	Route::prefix('view-cash-in')->group(function () {
 		Route::get('{id}', [ViewCashInController::class, 'index'])->name('view-cash-in.index');
+		Route::get('{id}/generate-pdf', [ViewCashInController::class, 'generatePdf'])->name('view-cash-in.generatePdf');
 	});
 
 	Route::prefix('view-cash-out')->group(function () {
@@ -143,10 +146,10 @@ Route::group(['middleware' => 'auth'], function () {
 		'store'
 	);
 
-	Route::resource('cash-out',  CashOutController::class)->only(
-		'index',
-		'store'
-	);
+	Route::prefix('cash-out')->group(function () {
+		Route::get('/', [CashOutController::class, 'index'])->name('cash-out.index');
+		Route::post('/', [CashOutController::class, 'store'])->name('cash-out.store');
+	});
 
 	Route::get('virtual-reality', function () {
 		return view('virtual-reality');
@@ -196,6 +199,8 @@ Route::group(['middleware' => 'auth'], function () {
 		return view('user-accounting.add-evidence-code');
 	});
 
+
+	// ADMIN
 	Route::resource('pariwisata', PariwisataController::class)->only(['index', 'store', 'update', 'destroy']);
 	Route::get('add-data-pariwisata', [AddDataPariwisataController::class, 'index'])->name('add-data-pariwisata.index');
 	Route::get('edit-data-pariwisata/{id}', [editDataPariwisataController::class, 'index'])->name('edit-data-pariwisata.index');
@@ -205,7 +210,7 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::get('/list', [BookedBusController::class, 'listBook'])->name('pesan-bus.list');
 		Route::get('/', [BookedBusController::class, 'index'])->name('pesan-bus.index');
 		Route::post('/', [BookedBusController::class, 'store'])->name('pesan-bus.store');
-		Route::put('/', [BookedBusController::class, 'update'])->name('pesan-bus.update');
+		Route::put('/{id}', [BookedBusController::class, 'update'])->name('pesan-bus.update');
 		Route::delete('/{id}', [BookedBusController::class, 'destroy'])->name('pesan-bus.destroy');
 	});
 });
@@ -225,10 +230,7 @@ Route::group(['middleware' => ['auth', 'check.role:1']], function () {
 	Route::prefix('user-management')->group(function () {
 		Route::get('/', [UserManagementController::class, 'index'])->name('user-management.index');
 		Route::post('store', [UserManagementController::class, 'store'])->name('user-management.store');
-		Route::put('roleUpdate', [UserManagementController::class, 'updateRole'])->name('user-management.updateRole');
-		Route::put('updateUser', [UserManagementController::class, 'updateUser'])->name('user-management.updateUser');
-		Route::delete('roleDestroy', [UserManagementController::class, 'roleDestroy'])->name('user-management.roleDestroy');
-		Route::delete('userDestroy', [UserManagementController::class, 'userDestroy'])->name('user-management.userDestroy');
+		Route::delete('/{id}', [UserManagementController::class, 'userDestroy'])->name('user-management.userDestroy');
 	});
 });
 

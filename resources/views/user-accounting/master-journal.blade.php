@@ -20,33 +20,7 @@
                         </div>
                     </div>
                 </div>
-
-                @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-
-                @if (session('berhasil'))
-                <div class="alert alert-success">
-                    <ul>
-                        <li>{{ session('berhasil') }}</li>
-                    </ul>
-                </div>
-                @endif
-
-                @if (session('gagal'))
-                <div class="alert alert-danger">
-                    <ul>
-                        <li>{{ session('gagal') }}</li>
-                    </ul>
-                </div>
-                @endif
-
+                @include('components.alert-danger-success');
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table align-items-center mb-0" id="masterJournalTable">
@@ -73,13 +47,13 @@
                                     <td class="d-flex justify-content-between">
                                         <p>
                                             <a href="{{ route('edit-master-journal.index', ['code' => $transactionMaster->code]) }}" class="btn btn-link text-secondary font-weight-bold text-small">
-                                                <i class="fas fa-user-edit"></i> Edit
+                                                <i class="ri-pencil-line"></i> Edit
                                             </a>
                                             <a href="{{ route('view-master-journal.index', ['code' => $transactionMaster->code]) }}" class="btn btn-link text-info font-weight-bold text-small">
-                                                <i class="fa fa-eye" aria-hidden="true"></i> Lihat
+                                                <i class="ri-eye-line" aria-hidden="true"></i> Lihat
                                             </a>
                                             <button class="btn btn-link text-danger font-weight-bold text-small" data-bs-toggle="modal" data-bs-target="#deleteMasterJournalModal" data-id="{{ $transactionMaster->id }}" data-code="{{ $transactionMaster->code }}">
-                                                <i class="fas fa-trash"></i> Hapus
+                                                <i class="ri-delete-bin-line"></i> Hapus
                                             </button>
                                         </p>
                                     </td>
@@ -105,7 +79,7 @@
                 @method('DELETE')
                 @csrf
                 <div class="modal-body">
-                    <p id="deleteMasterJournalMessage">Apakah Anda yakin ingin menghapus data ini?</p>
+                    <p id="deleteMasterJournalMessage"></p>
                     <input type="hidden" id="delete_master_journal" name="id">
                 </div>
                 <div class="modal-footer">
@@ -130,7 +104,7 @@
             console.log("Apakah code masuk sini ?" + code);
 
             var modal = $(this);
-            var message = 'Apakah Anda yakin ingin menghapus data ' + code + ' ?';
+            var message = 'Apakah Anda yakin ingin menghapus data kode jurnal ' + code + ' ?';
             modal.find('.modal-body #deleteMasterJournalMessage').text(message);
             modal.find('.modal-body #delete_master_journal').val(id);
             $('#deleteMasterJournalForm').attr('action', '/master-journal/' + id);

@@ -15,7 +15,7 @@
                             <p class="mb-1">Kode: <strong>{{ $journalEntry->evidence_code }}</strong></p>
                         </div>
                         <div class="text-right">
-                            <p class="mb-1">{{ \Carbon\Carbon::parse($journalEntry->created_at)->format('d M Y') }}</p>
+                            <p class="mb-1">Dibuat Tanggal: <strong>{{ \Carbon\Carbon::parse($journalEntry->created_at)->format('d M Y') }}</strong></p>
                             <p class="mb-1">Dibuat Oleh: <strong>{{ $journalEntry->user_name }}</strong></p>
                         </div>
                     </div>
@@ -41,8 +41,15 @@
                         </table>
                     </div>
 
-                    @if($journalEntry->is_reversed == 0)
+                    @if($journalEntry->is_reversed == 0 && empty($journalEntry->evidence_code_origin))
                     <p class="mb-1">Status: <strong>Baru</strong></p>
+                    @elseif($journalEntry->is_reversed == 0 && !empty($journalEntry->evidence_code_origin))
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1">Status: <strong>Baru</strong></p>
+                            <p class="mb-1">Kode Bukti Asal: <strong>{{ $journalEntry->evidence_code_origin }}</strong></p>
+                        </div>
+                    </div>
                     @elseif($journalEntry->is_reversed == 1)
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -66,29 +73,22 @@
                             <a href="#" id="reversedJournalButton" class="btn bg-gradient-dark me-2 disabled">Jurnal Koreksi</a>
                             @endif
                             @if($hasAccount2101)
-                            <a href="#" id="pelunasanJournalButton" class="btn btn-info">Pelunasan</a>
+                            <a href="{{ route('pelunasan-pariwisata.index', ['id' => $id]) }}" id="pelunasanJournalButton" class="btn btn-info">Pelunasan</a>
                             @endif
                             @endif
                         </div>
                         <div class="flex-grow-1"></div>
-                        <a href="{{ route('cash-out.index') }}" class="btn btn-secondary"><i class="fas fa-angle-left me-1"></i>Kembali</a>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('cash-out.index') }}" class="btn btn-secondary"><i class="fas fa-angle-left me-1"></i>Kembali</a>
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#evidenceModal">Lihat Bukti</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- bukti transaksi -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card" style="width: 18rem; margin-top: 20px;">
-                <div class="card-body">
-                    <h5 class="card-title">Bukti Transaksi</h5>
-                    <img id="evidenceImage" data-image-path="{{ Storage::url($detailJournal->evidence_image) }}" alt="Evidence Image" class="img-fluid mb-3" style="max-width: 100%; height: auto;">
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('components.modal-bukti-transaksi')
 
 </main>
 @endsection
@@ -109,6 +109,11 @@
         // Set the src attribute using the data-image-path
         var imagePath = evidenceImage.getAttribute('data-image-path');
         evidenceImage.src = imagePath;
+
+        document.getElementById('openImage').addEventListener('click', function() {
+            const imagePath = document.getElementById('evidenceImage').dataset.imagePath;
+            window.open(imagePath, '_blank');
+        });
 
         console.log('Image path:', imagePath);
         console.log('Evidence image element:', evidenceImage);

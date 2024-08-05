@@ -51,11 +51,8 @@
                                     <td>
                                         <p>
                                             <a href="{{route('view-cash-in.index',['id' => $cin->id])}}" class="btn btn-link text-info">
-                                                <i class="fas fa-eye"></i> Lihat
+                                                <i class="ri-eye-line"></i> Lihat
                                             </a>
-                                            <button class="btn btn-link btn-sm text-dark" onclick="printInvoice()">
-                                                <i class="fas fa-print"></i> Print
-                                            </button>
                                         </p>
                                     </td>
                                 </tr>
@@ -73,10 +70,6 @@
     $(document).ready(function() {
         $('#cashInTable').DataTable();
     });
-
-    function printInvoice() {
-        window.print();
-    }
 </script>
 
 @endsection

@@ -15,9 +15,20 @@ class Employee extends Model
 
     public static function joinPayroll()
     {
-        return DB::table('employees as A')
-            ->leftJoin('payroll as B', 'B.employees_id', '=', 'A.id')
-            ->select('A.username', 'A.department', 'A.status', 'B.updated_at', 'B.gaji', 'B.honor')
-            ->get();
+        $latestUpdates = DB::table('payroll')
+            ->select('employees_id', DB::raw('MAX(updated_at) as latest_updated_at'))
+            ->groupBy('employees_id');
+
+        return DB::table('employees as e')
+            ->leftJoinSub($latestUpdates, 'latest_payroll', function ($join) {
+                $join->on('e.id', '=', 'latest_payroll.employees_id');
+            })
+            ->leftJoin('payroll as p', function ($join) {
+                $join->on('e.id', '=', 'p.employees_id')
+                    ->on('p.updated_at', '=', 'latest_payroll.latest_updated_at');
+            })
+            ->select('e.id', 'e.username', 'p.gaji', 'p.id as payroll_id', 'p.employees_id', 'p.updated_at');
+
+
     }
 }

@@ -1,61 +1,57 @@
 @extends('layouts.user_type.guest')
 @section('content')
-<main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg">
-    <div class="container-fluid py-4">
-        <div class="row">
-            <div class="col-12">
-                <div class="card mb-4">
-                    <div class="card-header pb-0">
-                        <h6>Pesan Bus</h6>
-                    </div>
-
-                    @include('components.alert-danger-success')
-
-                    @if (isset($bus))
-                    <div class="card h-100">
-                        <div class="card-header pb-0 p-3">
-                        </div>
-                        <div class="card-body p-3 pb-0">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNbeS6M-tGimKyz1ku-mF6leMXmmWTivktpgnARz4JMA&s" alt="Bis Pariwisata1">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNbeS6M-tGimKyz1ku-mF6leMXmmWTivktpgnARz4JMA&s" alt="Bis Pariwisata2">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNbeS6M-tGimKyz1ku-mF6leMXmmWTivktpgnARz4JMA&s" alt="Bis Pariwisata3">
-                            <p class="mb-1">Fasilitas:</p>
-                            <ul>
-                                <li>AC</li>
-                                <li>Tempat duduk yang nyaman</li>
-                                <li>Sound system</li>
-                                <li>TV/Karaoke</li>
-                                <li>33 Seat</li>
-                            </ul>
-                            <p class="mb-1">Nomor Plat: <strong>{{ $bus->plat_nomor }}</strong></p>
-                            <div class="d-flex justify-content-between my-2">
-                                <a href="{{ url()->previous() }}" class="btn btn-secondary">Batal</a>
-                            </div>
-                        </div>
-                    </div>
-                    @else
-                    <p>Bus tidak ditemukan.</p>
-                    @endif
+<main class="main-content position-relative max-height-vh-100 h-100 mt-6 border-radius-lg">
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-3">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6>Pesan Bus</h6>
                 </div>
+
+                @include('components.alert-danger-success')
+
+                @if (isset($bus))
+                <div class="card h-100">
+                    <div class="card-header pb-0 p-3">
+                    </div>
+                    <div class="card-body p-3 pb-0">
+                        <img src="{{ Storage::url($bus->evidence_image_bus) }}" alt="Bus Pariwisata" class="img-fluid" style="width: 250px; height: 250px;">
+                        <p class="mb-1">Fasilitas:</p>
+                        <ul>
+                            <li>AC</li>
+                            <li>Tempat duduk yang nyaman</li>
+                            <li>Sound system</li>
+                            <li>TV/Karaoke</li>
+                            <li>33 Seat</li>
+                        </ul>
+                        <p class="mb-1">Nomor Plat: <strong>{{ $bus->plat_nomor }}</strong></p>
+                        <div class="d-flex justify-content-between my-2">
+                            <a href="{{ url()->previous() }}" class="btn btn-secondary">Batal</a>
+                        </div>
+                    </div>
+                </div>
+                @else
+                <p>Bus tidak ditemukan.</p>
+                @endif
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-12">
-                <div class="card mb-4">
-                    <div class="card-header pb-0 text-left">
-                        <h3>Calendar</h3>
-                        <strong class="text-danger"><span class="text-danger">*</span></label>Klik tanggal untuk booking tanggal keberangkatan</strong>
-                    </div>
-                    <div class="card-body">
-                        <div id="calendar-container" style="display:flex ;justify-content:center ;margin: 0 auto">
-                            <div id="calendar" style="max-width:800px; width:100%" class="text-center"></div>
-                        </div>
+        <div class="col-9">
+            <div class="card mb-4">
+                <div class="card-header pb-0 text-left">
+                    <h3>Calendar</h3>
+                    <strong class="text-danger"><span class="text-danger">*</span>Klik tanggal untuk booking tanggal keberangkatan</strong>
+                </div>
+                <div class="card-body">
+                    <div id="calendar-container" style="display:flex; justify-content:center; margin: 20px auto 0;">
+                        <div id="calendar" style="max-width:800px; width:100%" class="text-center"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </main>
 
 <!-- modal -->

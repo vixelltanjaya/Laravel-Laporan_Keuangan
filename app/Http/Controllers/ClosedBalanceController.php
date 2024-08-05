@@ -27,6 +27,7 @@ class ClosedBalanceController extends Controller
         $selectedMonthYearFormatted = null;
         $isPastOneMonth = false;
 
+
         if ($selectedMonthYear) {
             try {
                 if (Carbon::hasFormat($selectedMonthYear, 'Y-m')) {
@@ -42,7 +43,7 @@ class ClosedBalanceController extends Controller
         }
 
         // hitung total sum
-        $totalSum = $sumBalance->map(function($balance) {
+        $totalSum = $sumBalance->map(function ($balance) {
             if (strtolower($balance->account_sign) === 'debit') {
                 return $balance->beginning_balance_next_month + $balance->total_debit - $balance->total_credit;
             } else {
@@ -55,7 +56,15 @@ class ClosedBalanceController extends Controller
         Log::debug('selectedMonthYearFormatted ' . json_encode($selectedMonthYearFormatted));
         Log::debug('isClose ' . json_encode($isClose));
 
-        return view('user-accounting.closed-balance', compact('sumBalance', 'isClose', 'isPastOneMonth','totalSum'));
+        return view('user-accounting.closed-balance', compact('sumBalance', 'isClose', 'isPastOneMonth', 'totalSum'));
+    }
+
+
+    protected $financialStatementController;
+
+    public function __construct(GenerateFinancialStatementController $financialStatementController)
+    {
+        $this->financialStatementController = $financialStatementController;
     }
 
     public function store(Request $request)
@@ -64,10 +73,10 @@ class ClosedBalanceController extends Controller
 
         $request->validate([
             'balances.*.account_id' => 'required|integer',
-            'balances.*.beginning_balance_next_month' => 'required|integer',
-            'balances.*.debit' => 'required|integer',
-            'balances.*.credit' => 'required|integer',
-            'balances.*.balance_difference' => 'required|integer',
+            'balances.*.beginning_balance_next_month' => 'required|numeric',
+            'balances.*.debit' => 'required|numeric',
+            'balances.*.credit' => 'required|numeric',
+            'balances.*.balance_difference' => 'required|numeric',
             'balances.*.month_year' => 'required|date_format:Y-m',
         ]);
 
@@ -80,13 +89,24 @@ class ClosedBalanceController extends Controller
                 throw new Exception('Balances data is null');
             }
 
+            $netIncomeResults = $this->financialStatementController->countNetIncome($request);
+            Log::debug('netIncomeResults: ' . json_encode($netIncomeResults));
+
             Log::debug('Balances data: ' . json_encode($balancesData));
+
+            $accountBalance = AccountBalance::where('account_id', 3300)
+                ->where('balance_time', Carbon::now()->format('Ymd')) // Use the current date or adjust as needed
+                ->first();
+
+            $this->updateOrCreateBalance(3300, $netIncomeResults['netIncomeCurrentMonth']);
+            $this->updateOrCreateBalance(3200, $netIncomeResults['netIncomeYTD']);
+            $this->updateOrCreateBalance(3100, $netIncomeResults['netIncome']);
+
+            Log::info('account balance' . $accountBalance);
 
             $balanceTimeArray = [];
 
             foreach ($balancesData as $data) {
-                Log::debug('pemrosesan balance data: ' . json_encode($data));
-
                 $monthYear = $data['month_year'];
                 $balance_time = Carbon::parse($monthYear)->lastOfMonth()->format('Ymd');
                 $close_date = now()->format('Y/m/d');
@@ -98,12 +118,11 @@ class ClosedBalanceController extends Controller
                 $balance->credit_mutation = $data['credit'];
                 $balance->ending_balance = $data['balance_difference'];
                 $balance->balance_time = $balance_time;
-                $balance->save();
+                // $balance->save();
 
                 $balanceTimeArray[] = $balance_time;
-
-                Log::debug('Balance stored: ' . json_encode($balance->toArray()));
             }
+            Log::debug('Balance stored: ' . json_encode($balance->toArray()));
 
             // Ensure unique balance times for closing balance entries
             $uniqueBalanceTimes = array_unique($balanceTimeArray);
@@ -113,12 +132,11 @@ class ClosedBalanceController extends Controller
                 $closeBalance->balance_time = $balance_time;
                 $closeBalance->is_close = 1;
                 $closeBalance->close_date = $close_date;
-                $closeBalance->save();
-
-                Log::debug('Close balance stored: ' . json_encode($closeBalance->toArray()));
+                // $closeBalance->save();
             }
+            Log::debug('Close balance stored: ' . json_encode($closeBalance->toArray()));
 
-            DB::commit();
+            DB::rollback();
 
             return redirect()->route('closed-balance.index')->with('berhasil', 'Pembukuan berhasil ditutup');
         } catch (\Exception $e) {
@@ -126,6 +144,29 @@ class ClosedBalanceController extends Controller
             Log::error('Error storing balances: ' . $e->getMessage());
             return redirect()->route('closed-balance.index')->with('gagal', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    protected function updateOrCreateBalance($accountId, $beginningBalance)
+    {
+        $balance = AccountBalance::where('account_id', $accountId)
+            ->where('balance_time', Carbon::now()->format('Ymd')) 
+            ->first();
+
+        if ($balance) {
+            $balance->beginning_balance = $beginningBalance;
+            $balance->save();
+        } else {
+            $balance = new AccountBalance();
+            $balance->account_id = $accountId;
+            $balance->beginning_balance = $beginningBalance;
+            $balance->debit_mutation = 0;
+            $balance->credit_mutation = 0;
+            $balance->ending_balance = $beginningBalance;
+            $balance->balance_time = Carbon::now()->format('Ymd');
+            $balance->save();
+        }
+
+        Log::info('Account balance updated/created: ' . json_encode($balance->toArray()));
     }
 
     private function getIsCloseStatus($formattedMonthYear)
