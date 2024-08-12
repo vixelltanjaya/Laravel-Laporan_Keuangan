@@ -67,7 +67,7 @@ class GeneralLedgerController extends Controller
                 'debit' => 0,
                 'credit' => 0,
                 'amount' => $beginningBalanceAmount,
-                'readonly' => true, // Custom property to mark this row as read-only
+                'readonly' => true, 
             ];
 
             return $entries->prepend($beginningBalanceRow);

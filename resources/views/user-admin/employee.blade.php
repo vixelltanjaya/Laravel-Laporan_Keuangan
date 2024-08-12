@@ -118,15 +118,16 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="username" class="form-label">Nama</label>
-                        <input type="text" class="form-control" name="username" id="username">
+                        <input type="text" class="form-control" name="username" id="username" required>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="text" class="form-control" id="email" name="email">
+                        <input type="text" class="form-control" id="email" name="email" required>
                     </div>
                     <div class="mb-3">
                         <label for="departemen" class="form-label">Departemen</label>
-                        <select class="form-control" id="departemen" name="departemen">
+                        <select class="form-control" id="departemen" name="departemen" required>
+                        <option value="" disabled selected>Pilih Departemen</option>
                             <option value="akunting">Akunting</option>
                             <option value="administrasi">Administrasi</option>
                             <option value="personalia">Personalia</option>
@@ -136,7 +137,8 @@
                     </div>
                     <div class="mb-3">
                         <label for="status_pegawai" class="form-label">Status Pegawai</label>
-                        <select class="form-control" id="status_pegawai" name="status_pegawai">
+                        <select class="form-control" id="status_pegawai" name="status_pegawai" required>
+                        <option value="" disabled selected>Pilih status</option>
                             <option value="tetap">Tetap</option>
                             <option value="harian">Harian</option>
                         </select>
@@ -166,15 +168,15 @@
                     @csrf
                     <div class="mb-3">
                         <label for="username" class="form-label">Nama</label>
-                        <input type="text" class="form-control" id="username" name="username" value="{{ old('username', $employee->username) }}">
+                        <input type="text" class="form-control" id="username" name="username" value="{{ old('username', $employee->username) }}" required>
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="text" class="form-control" id="email" name="email" value="{{ old('email', $employee->email) }}" readonly="true">
+                        <input type="text" class="form-control" id="email" name="email" value="{{ old('email', $employee->email) }}" readonly="true" required>
                     </div>
                     <div class="mb-3">
                         <label for="departemen" class="form-label">Departemen</label>
-                        <select class="form-control" id="departemen" name="departemen">
+                        <select class="form-control" id="departemen" name="departemen" required>
                             <option value="" disabled selected>Pilih Departemen</option>
                             <option value="akunting" {{ old('departemen', $employee->departemen) == 'akunting' ? 'selected' : '' }}>Akunting</option>
                             <option value="administrasi" {{ old('departemen', $employee->departemen) == 'administrasi' ? 'selected' : '' }}>Administrasi</option>
@@ -184,7 +186,7 @@
 
                     <div class="mb-3">
                         <label for="status_pegawai" class="form-label">Status Pegawai</label>
-                        <select class="form-control" id="status_pegawai" name="status_pegawai">
+                        <select class="form-control" id="status_pegawai" name="status_pegawai" required>
                             <option value="" disabled selected>Pilih Status Pegawai</option>
                             <option value="tetap" {{ old('status_pegawai', $employee->status_pegawai) == 'tetap' ? 'selected' : '' }}>Tetap</option>
                             <option value="harian" {{ old('status_pegawai', $employee->status_pegawai) == 'harian' ? 'selected' : '' }}>Harian</option>

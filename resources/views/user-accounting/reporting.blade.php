@@ -80,13 +80,13 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="transaction_month_start">Transaksi Awal <span class="text-danger">*</span></label>
-                                    <input type="month" class="form-control" name="transaction_month_start" required>
+                                    <input type="date" class="form-control" name="transaction_month_start" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="transaction_month_end">Transaksi Akhir <span class="text-danger">*</span></label>
-                                    <input type="month" class="form-control" name="transaction_month_end" required>
+                                    <input type="date" class="form-control" name="transaction_month_end" required>
                                 </div>
                             </div>
                             <div class="form-group col-md-6">

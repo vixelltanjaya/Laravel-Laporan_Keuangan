@@ -106,7 +106,7 @@
                     <table>
                         <tr>
                             <td class="title">
-                                <img src="https://raw.githubusercontent.com/prawiratamaaa/skripsi-laravel/master/public/assets/img/Maharani_R.png?token=GHSAT0AAAAAACU7XUVZNQJLHJKGSQZISKHQZVQUXTQ" style="width: 50%; max-width: 100px;" alt="Maharani Logo" />
+                                <img src="" style="width: 50%; max-width: 100px;" alt="Maharani Logo" />
                             </td>
                             <td>
                                 Invoice : <strong>{{ $invoices }}</strong><br />

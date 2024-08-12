@@ -16,11 +16,11 @@
                             <h5 class="mb-0">Jurnal Master</h5>
                         </div>
                         <div class="nav-item d-flex align-self-end">
-                            <a href="{{ route('add-master-journal.index') }}" class="btn bg-gradient-primary mb-0 me-2">+&nbsp;Add</a>
+                            <a href="{{ route('add-master-journal.index') }}" class="btn bg-gradient-primary mb-0 me-2">+&nbsp;Template Journal</a>
                         </div>
                     </div>
                 </div>
-                @include('components.alert-danger-success');
+                @include('components.alert-danger-success')
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table align-items-center mb-0" id="masterJournalTable">

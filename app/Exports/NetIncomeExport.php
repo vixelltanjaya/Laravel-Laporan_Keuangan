@@ -25,8 +25,8 @@ class NetIncomeExport implements FromCollection, WithHeadings, WithTitle
 
         $data = [];
 
-        // header perhitungan
-        $data[] = ['Perhitungan', '', ''];
+        // header pendapatan
+        $data[] = ['Pendapatan', '', ''];
 
         // pendapatan
         foreach ($this->incomeStatement as $item) {
@@ -72,7 +72,7 @@ class NetIncomeExport implements FromCollection, WithHeadings, WithTitle
             ['Laporan Laba Rugi'],
             ['PT Maharani Putra Sejahtera'],
             ['Periode ' . implode(' - ', $this->period)],
-            ['', '', ''], // Extra row for spacing
+            ['', '', ''], 
         ];
     }
 

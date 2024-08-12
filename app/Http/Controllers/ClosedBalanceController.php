@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AccountBalance;
 use App\Models\ClosingBalance;
 use App\Models\CoaModel;
+use App\Models\DetailJournalEntry;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -90,19 +91,12 @@ class ClosedBalanceController extends Controller
             }
 
             $netIncomeResults = $this->financialStatementController->countNetIncome($request);
-            Log::debug('netIncomeResults: ' . json_encode($netIncomeResults));
 
             Log::debug('Balances data: ' . json_encode($balancesData));
-
-            $accountBalance = AccountBalance::where('account_id', 3300)
-                ->where('balance_time', Carbon::now()->format('Ymd')) // Use the current date or adjust as needed
-                ->first();
-
+;
             $this->updateOrCreateBalance(3300, $netIncomeResults['netIncomeCurrentMonth']);
             $this->updateOrCreateBalance(3200, $netIncomeResults['netIncomeYTD']);
             $this->updateOrCreateBalance(3100, $netIncomeResults['netIncome']);
-
-            Log::info('account balance' . $accountBalance);
 
             $balanceTimeArray = [];
 
@@ -118,7 +112,7 @@ class ClosedBalanceController extends Controller
                 $balance->credit_mutation = $data['credit'];
                 $balance->ending_balance = $data['balance_difference'];
                 $balance->balance_time = $balance_time;
-                // $balance->save();
+                $balance->save();
 
                 $balanceTimeArray[] = $balance_time;
             }
@@ -132,14 +126,14 @@ class ClosedBalanceController extends Controller
                 $closeBalance->balance_time = $balance_time;
                 $closeBalance->is_close = 1;
                 $closeBalance->close_date = $close_date;
-                // $closeBalance->save();
+                $closeBalance->save();
             }
             Log::debug('Close balance stored: ' . json_encode($closeBalance->toArray()));
 
-            DB::rollback();
+            DB::commit();
 
             return redirect()->route('closed-balance.index')->with('berhasil', 'Pembukuan berhasil ditutup');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollback();
             Log::error('Error storing balances: ' . $e->getMessage());
             return redirect()->route('closed-balance.index')->with('gagal', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -152,6 +146,9 @@ class ClosedBalanceController extends Controller
             ->where('balance_time', Carbon::now()->format('Ymd')) 
             ->first();
 
+        Log::debug('beginning balance: ' . json_encode($beginningBalance));
+        Log::debug('balance update or create balance: ' . json_encode($balance));
+
         if ($balance) {
             $balance->beginning_balance = $beginningBalance;
             $balance->save();
@@ -162,11 +159,11 @@ class ClosedBalanceController extends Controller
             $balance->debit_mutation = 0;
             $balance->credit_mutation = 0;
             $balance->ending_balance = $beginningBalance;
-            $balance->balance_time = Carbon::now()->format('Ymd');
+            $balance->balance_time = Carbon::now()->endOfMonth()->format('Ymd');
             $balance->save();
         }
 
-        Log::info('Account balance updated/created: ' . json_encode($balance->toArray()));
+        Log::debug('Account balance updated/created: ' . json_encode($balance->toArray()));
     }
 
     private function getIsCloseStatus($formattedMonthYear)
@@ -179,4 +176,6 @@ class ClosedBalanceController extends Controller
 
         return $isClose;
     }
+
+
 }

@@ -75,7 +75,7 @@ class BookedBusController extends Controller
             'description' => 'required|string|max:255',
             'customer_id' => 'required|exists:customer,id',
             'bus_pariwisata_id' => 'required|exists:bis_pariwisata,id',
-            'evidence_image' => 'nullable|file|max:2048',
+            'evidence_image' => 'required|file|max:2048',
             'amount' => 'required|string',
         ]);
 

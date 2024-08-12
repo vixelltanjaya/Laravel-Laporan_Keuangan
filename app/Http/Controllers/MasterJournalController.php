@@ -28,10 +28,9 @@ class MasterJournalController extends Controller
     {
         // Validate data
         $request->validate([
-            'code' => 'required|numeric',
+            'code' => 'required|numeric|unique:master_transaction,code',
             'description' => 'required|string|max:255',
             'evidence_id' => 'required|integer|exists:evidence_code,id',
-            // 'divisi' => 'required|integer|exists:division,id',
             'noAccount.*' => 'required|exists:chart_of_account,account_id',
             'accountSign.*' => 'required|in:debit,credit',
         ]);
@@ -45,7 +44,6 @@ class MasterJournalController extends Controller
             $masterJournal->code = $request->code;
             $masterJournal->description = $request->description;
             $masterJournal->evidence_id = $request->evidence_id;
-            // $masterJournal->business_type_id = $request->divisi;
             $masterJournal->save();
 
             // Save detail transactions
@@ -79,10 +77,9 @@ class MasterJournalController extends Controller
         Log::debug('masuk func update');
 
         $request->validate([
-            'code' => 'required|integer',
+            'code' => 'required|numeric|unique:master_transaction, code' .$id,
             'description' => 'required|string|max:255',
             'evidence_id' => 'required|integer|exists:evidence_code,id',
-            // 'divisi' => 'required|integer|exists:division,id',
             'noAccount.*' => 'required|exists:chart_of_account,account_id',
             'accountSign.*' => 'required|in:debit,credit',
         ]);
@@ -97,7 +94,6 @@ class MasterJournalController extends Controller
             $masterJournal->code = $request->code;
             $masterJournal->description = $request->description;
             $masterJournal->evidence_id = $request->evidence_id;
-            // $masterJournal->business_type_id = $request->divisi;
             $masterJournal->save();
 
             Log::debug('master journal' .json_encode($masterJournal));

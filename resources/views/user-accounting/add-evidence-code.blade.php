@@ -8,6 +8,7 @@
             <div class="card-header">
                 <h5 class="card-title">Tambah Kode Bukti Transaksi</h5>
             </div>
+            @include('components.alert-danger-success')
             <div class="card-body">
                 <form action="{{ route('evidence-code.store') }}" method="POST">
                     @csrf
@@ -18,7 +19,7 @@
                     </div>
                     <div class="form-group">
                         <label for="code_title">Deskripsi Kode</label>
-                        <input type="text" class="form-control" id="code_title" name="code_title"  required>
+                        <input type="text" class="form-control" id="code_title" name="code_title" required>
                     </div>
                     <div class="form-group">
                         <label for="contoh_kode">Contoh Format Kode Full</label>

@@ -36,14 +36,6 @@ class EmployeeController extends Controller
         return view('user-admin.employee', [
             'employees' => $employees
         ]);
-        // $employee = Employee::latest();
-
-        // if (request('search')){
-        //     $employee->where('username','like','%' . request('search') . '%');
-        // }
-
-        // return view ('user-admin/employee', [
-        //     'employees' => Employee::orderBy('id','asc')->get()]);
 
     }
 
@@ -116,7 +108,7 @@ class EmployeeController extends Controller
         return Excel::download(new EmployeeExport, 'data_pegawai.xlsx');
     }
 
-    public function importAccount(Request $request)
+    public function importEmployee(Request $request)
     {
         Log::info('Apakah proses import masuk sini?');
 
@@ -138,6 +130,6 @@ class EmployeeController extends Controller
             return redirect()->back()->with('gagal', 'File tidak ditemukan dalam request.');
         }
 
-        return redirect()->back()->with('berhasil', 'File berhasil diunggah dan diproses.');
+        return redirect()->back()->with('berhasil', 'File berhasil diunggah.');
     }
 }

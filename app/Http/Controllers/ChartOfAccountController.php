@@ -26,11 +26,11 @@ class ChartOfAccountController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'account_id' => 'required|string|max:20',
+            'account_id' => 'required|string|max:20|unique:chart_of_account,account_id',
             'account_name' => 'required|string|max:255',
             'account_sign' => 'required|string|max:14',
             'account_type' => 'required|string|max:14',
-            'account_group' => 'nullable|string|max:14',
+            'account_group' => 'nullable|string|max:50',
         ]);
 
         $data = $request->all();
@@ -43,16 +43,15 @@ class ChartOfAccountController extends Controller
 
     public function update(Request $request, $id)
     {
-
         Log::debug('Request ID: ' . json_encode($request->id));
         Log::debug('Route ID: ' . json_encode($id));
 
         $request->validate([
-            'account_id' => 'required|string|max:50',
+            'account_id' => 'required|string|max:20|unique:chart_of_account,account_id,' . $id,
             'account_name' => 'required|string|max:255',
-            'account_sign' => 'required|string|max:50',
-            'account_type' => 'required|string|max:255',
-            'account_group' => 'required|string|max:255',
+            'account_sign' => 'required|string|max:14',
+            'account_type' => 'required|string|max:14',
+            'account_group' => 'nullable|string|max:50',
         ]);
 
         try {
@@ -62,7 +61,7 @@ class ChartOfAccountController extends Controller
             $coa->account_name = $request->account_name;
             $coa->account_sign = $request->account_sign;
             $coa->account_type = $request->account_type;
-            $coa->account_group = $request->account_group;
+            $coa->account_group = $request->account_group ?? '';
 
             $coa->save();
 

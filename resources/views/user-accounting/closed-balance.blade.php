@@ -80,8 +80,8 @@
                 </table>
 
                 <div class="text-center mt-3">
-                    <button type="button" id="tutupSaldoButton" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#tutupSaldoModal" @if($isClose || $isPastOneMonth) disabled @endif>
-                        Tutup Saldo
+                    <button type="button" id="tutupSaldoButton" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#tutupSaldoModal"  @if($isClose || $isPastOneMonth) disabled @endif>
+                        Tutup Buku
                     </button>
                 </div>
 
@@ -103,7 +103,7 @@
             <form action="{{ route('closed-balance.store') }}" method="POST">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title" id="tutupSaldoModalLabel">Tutup Saldo</h5>
+                    <h5 class="modal-title" id="tutupSaldoModalLabel">Tutup Buku</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="tutupSaldoModalBody">
@@ -119,6 +119,7 @@
                 <input type="hidden" name="balances[{{ $index }}][debit]" value="{{ $account->total_debit }}">
                 <input type="hidden" name="balances[{{ $index }}][credit]" value="{{ $account->total_credit }}">
                 <input type="hidden" name="balances[{{ $index }}][balance_difference]" value="{{ $account->balance_difference }}">
+                <input type="hidden" name="balances[{{ $index }}][division_id]" value="{{$account->division_id}}">
                 <input type="hidden" name="balances[{{ $index }}][month_year]" value="{{ request('month_year') }}">
                 @endforeach
             </form>

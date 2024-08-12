@@ -11,23 +11,7 @@
                 <h4>Tambah Master Journal</h4>
             </div>
 
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-
-                @if (session('berhasil'))
-                <div class="alert alert-success">
-                    <ul>
-                        <li>{{ session('berhasil') }}</li>
-                    </ul>
-                </div>
-                @endif
+            @include('components.alert-danger-success')
         
             <div class="card-body">
                 <form id="masterJournalForm" action="{{ route('master-journal.store') }}" method="POST" enctype="multipart/form-data">
@@ -70,6 +54,25 @@
                             </div>
                         </div>
                         <div class="journal-entries">
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <select class="form-control" name="noAccount[]" required>
+                                        <option value="" disabled selected>Nomor Akun</option>
+                                        @foreach($chartOfAccounts as $coa)
+                                        <option value="{{ $coa->account_id }}">{{ $coa->account_id }} - {{ $coa->account_name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-control" name="accountSign[]" required>
+                                        <option value="debit">Debit</option>
+                                        <option value="credit">Kredit</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-1 d-flex flex-column justify-content-between">
+                                    <button type="button" class="btn btn-info btn-sm mb-2 addRow">+</button>
+                                </div>
+                            </div>
                             <div class="form-group row">
                                 <div class="col-md-6">
                                     <select class="form-control" name="noAccount[]" required>

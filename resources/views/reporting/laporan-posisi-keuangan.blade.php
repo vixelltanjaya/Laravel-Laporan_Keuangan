@@ -11,7 +11,7 @@
         <td></td>
     </tr>
     @foreach($balanceSheet as $balance)
-    @if(strtolower($balance->account_group) === 'lancar' || strtolower($balance->account_group) === 'aset lancar')
+    @if(strtolower($balance->account_group) === 'aset lancar')
     <tr>
         <td>{{ $balance->account_name }}</td>
         <td></td>
@@ -120,9 +120,9 @@
     @endif
     @endforeach
     <tr>
-        <td>Saldo Laba</td>
+        <td>Laba Bulan Berjalan</td>
         <td></td>
-        <td>{{ number_format($labaTahunBerjalan['netIncome'], 0, ',', '.') }}</td>
+        <td>{{ number_format($labaTahunBerjalan['netIncomeCurrentMonth'], 0, ',', '.') }}</td>
     </tr>
     <tr>
         <td>Laba Tahun Berjalan</td>
@@ -130,9 +130,9 @@
         <td>{{ number_format($labaTahunBerjalan['netIncomeYTD'], 0, ',', '.') }}</td>
     </tr>
     <tr>
-        <td>Laba Bulan Berjalan</td>
+        <td>Saldo Laba</td>
         <td></td>
-        <td>{{ number_format($labaTahunBerjalan['netIncomeCurrentMonth'], 0, ',', '.') }}</td>
+        <td>{{ number_format($labaTahunBerjalan['netIncome'], 0, ',', '.') }}</td>
     </tr>
     <tr>
         <td><strong>Total Ekuitas</strong></td>

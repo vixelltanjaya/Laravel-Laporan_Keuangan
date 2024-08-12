@@ -148,8 +148,12 @@ class CorrectingEntryController extends Controller
 
 
             // DB::rollBack();
-            DB::commit(); 
-            return redirect()->route('cash-in.index')->with('berhasil', 'Transaksi berhasil disimpan (dalam mode pengujian).');
+            DB::commit();
+            if ($ref === 'BKM') {
+                return redirect()->route('cash-in.index')->with('berhasil', 'Transaksi berhasil disimpan');
+            } else {
+                return redirect()->route('cash-out.index')->with('berhasil', 'Transaksi berhasil disimpan');
+            }
         } catch (ValidationException $e) {
             DB::rollback();
             Log::error('Validation error: ' . $e->getMessage());

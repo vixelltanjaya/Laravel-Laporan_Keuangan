@@ -143,7 +143,7 @@
                     <input type="hidden" id="edit_account_code" name="id">
                     <div class="form-group">
                         <label for="edit_account_id">Kode Akuntansi</label>
-                        <input type="text" class="form-control" id="edit_account_id" name="account_id" required>
+                        <input type="text" class="form-control" id="edit_account_id" name="account_id">
                     </div>
                     <div class="form-group">
                         <label for="edit_account_name">Nama Akun</label>
@@ -169,7 +169,7 @@
                     </div>
                     <div class="form-group">
                         <label for="edit_account_group">Akun Grup</label>
-                        <input type="text" class="form-control" id="edit_account_group" name="account_group" required>
+                        <input type="text" class="form-control" id="edit_account_group" name="account_group">
                     </div>
                     <button type="submit" class="btn btn-primary">Simpan</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

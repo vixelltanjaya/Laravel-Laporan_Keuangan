@@ -1,6 +1,6 @@
 <tbody>
     <tr>
-        <td><strong>Perhitungan</strong></td>
+        <td><strong>Pendapatan</strong></td>
         <td></td>
         <td></td>
     </tr>

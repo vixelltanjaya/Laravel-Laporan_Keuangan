@@ -7,15 +7,13 @@
             <a href="{{ url()->previous() }}" class="btn btn-default">Batal</a>
             <div class="card">
                 <div class="card-header pb-0 px-3">
-                    <div class="btn-group">
-                        <button id="printButton" class="btn btn-dark">
-                            <i class="ri-printer-line"></i> Print to PDF
-                        </button>
-                    </div>
-                    <form action="{{ route('export.income-statement') }}" method="GET" class="d-inline">
-                        @csrf
-                        <button type="submit" class="btn btn-info">Export Laporan Laba Rugi</button>
-                    </form>
+                    @if(isset($reportType) && $reportType === 'income')
+                    @include('reporting.print-laba-rugi')
+                    @elseif(isset($reportType) && $reportType === 'balance')
+                    @include('reporting.print-posisi-keuangan')
+                    @else
+                    @include('reporting.print-perubahan-modal')
+                    @endif  
                 </div>
                 <div class="card-body pt-4 p-3 text-center">
                     <div class="text-center mb-4">
@@ -31,9 +29,9 @@
                         </p>
                         <p class="mb-0" id="reportPeriod">
                             Periode
-                            {{ request('transaction_month_start') ? date('F Y', strtotime(request('transaction_month_start') . '-01')) : '' }}
+                            {{ request('transaction_month_start') ? date('d F Y', strtotime(request('transaction_month_start') . '-01')) : '' }}
                             -
-                            {{ request('transaction_month_end') ? date('F Y', strtotime(request('transaction_month_end') . '-01')) : '' }}
+                            {{ request('transaction_month_end') ? date('d F Y', strtotime(request('transaction_month_end') . '-01')) : '' }}
                         </p>
                     </div>
                     <table class="table table-bordered">

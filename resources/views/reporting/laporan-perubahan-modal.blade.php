@@ -7,7 +7,7 @@
     </tr>
     <tr>
         <td>Laba</td>
-        <td>{{ number_format($netIncomeResults['netIncome'], 0, ',', '.') }}</td>
+        <td>{{ number_format($netIncomeResults['netIncomeYTD'] + ($netIncomeResults['netIncomeCurrentMonth']), 0, ',', '.') }}</td>
         <td></td>
     </tr>
     <tr>
@@ -19,7 +19,7 @@
         <td><strong>Perubahan Modal</strong></td>
         <td></td>
         <td><strong>
-            {{ number_format($netIncomeResults['netIncome'] - ($perubahanModal->firstWhere('account_type', 'Prive')->total_amount ?? 0), 0, ',', '.') }}
+            {{ number_format($netIncomeResults['netIncomeYTD'] + ($netIncomeResults['netIncomeCurrentMonth']) - ($perubahanModal->firstWhere('account_type', 'Prive')->total_amount ?? 0), 0, ',', '.') }}
         </strong></td>
     </tr>
     <!-- Modal Akhir Section -->
@@ -27,7 +27,7 @@
         <td><strong>Modal Akhir</strong></td>
         <td></td>
         <td><strong>
-            {{ number_format(($perubahanModal->firstWhere('account_type', 'Ekuitas')->total_amount ?? 0) + ($netIncomeResults['netIncome'] - ($perubahanModal->firstWhere('account_type', 'Prive')->total_amount ?? 0)), 0, ',', '.') }}
+            {{ number_format(($perubahanModal->firstWhere('account_type', 'Ekuitas')->total_amount ?? 0) + ($netIncomeResults['netIncomeYTD'] + ($netIncomeResults['netIncomeCurrentMonth']) - ($perubahanModal->firstWhere('account_type', 'Prive')->total_amount ?? 0)), 0, ',', '.') }}
         </strong></td>
     </tr>
 </tbody>

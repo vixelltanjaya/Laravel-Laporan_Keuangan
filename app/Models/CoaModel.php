@@ -58,6 +58,7 @@ class CoaModel extends Model
                 'A.account_name',
                 'A.account_sign',
                 'A.account_type',
+                'D.division_id',
                 DB::raw('COALESCE("C"."beginning_balance", 0) AS "beginning_balance"'),
                 DB::raw('COALESCE(SUM(CAST("B"."debit" AS NUMERIC)), 0) AS "total_debit"'),
                 DB::raw('COALESCE(SUM(CAST("B"."credit" AS NUMERIC)), 0) AS "total_credit"'),
@@ -72,7 +73,7 @@ class CoaModel extends Model
                 DB::raw('COALESCE("C".ending_balance, 0) AS "beginning_balance_next_month"'),
                 DB::raw('SUBSTRING("C".balance_time FROM 1 FOR 6) AS balance_time')
             )
-            ->groupBy('A.account_id', 'A.account_name', 'C.beginning_balance', 'A.account_sign', 'C.ending_balance', 'C.balance_time', 'A.account_type')
+            ->groupBy('A.account_id', 'A.account_name', 'C.beginning_balance', 'A.account_sign', 'C.ending_balance', 'C.balance_time', 'A.account_type', 'D.division_id')
             ->orderBy('A.account_id', 'ASC');
 
         Log::debug('SQL Query: ' . $query->toSql());
@@ -93,10 +94,10 @@ class CoaModel extends Model
         }
 
         $formattedStartDate = date('Y-m-d 00:00:00', strtotime($transactionMonthStart . '-01'));
-        $formattedEndDate = date('Y-m-d 23:59:59', strtotime("last day of $transactionMonthEnd"));
+        // $formattedEndDate = date('Y-m-d 23:59:59', strtotime("last day of $transactionMonthEnd"));
 
         Log::debug('formattedStartDate: ' . json_encode($formattedStartDate));
-        Log::debug('formattedEndDate: ' . json_encode($formattedEndDate));
+        Log::debug('formattedEndDate: ' . json_encode($transactionMonthEnd));
 
         $divisionId = $request->input('division_id');
 
@@ -125,7 +126,7 @@ class CoaModel extends Model
         ')
             )
             ->whereIn(DB::raw('SUBSTRING("A".account_id, 1, 1)'), $accountIdStartsWith)
-            ->whereBetween('B.updated_at', [$formattedStartDate, $formattedEndDate]);
+            ->whereBetween('B.updated_at', [$formattedStartDate, $transactionMonthEnd]);
 
         // Add condition for `division_id` if provided
         if ($divisionId !== 'all') {
@@ -183,53 +184,78 @@ class CoaModel extends Model
 
         return $results->get();
     }
-    public static function getNetIncomeYTD($request)
+    public static function getNetIncome($request)
     {
+        $accountIdStartsWith = ['1', '2', '3', '4', '5'];
         $transactionMonthStart = $request->input('transaction_month_start');
         $transactionMonthEnd = $request->input('transaction_month_end');
 
-        $getLastDate = date('Y-m-d', strtotime("last day of $transactionMonthEnd "));
-        $balanceTimeFirst = date('Ymd', strtotime($transactionMonthStart . '-01'));
+        Log::debug('transactionMonthStart: ' . json_encode($transactionMonthStart));
+        Log::debug('transactionMonthEnd: ' . json_encode($transactionMonthEnd));
 
-        Log::debug('transactionMonthStart ' . $transactionMonthStart);
-        Log::debug('transactionMonthEnd ' . $transactionMonthEnd);
-        Log::debug('getLastDate ' . $getLastDate);
-        Log::debug('balanceTimeFirst ' . $balanceTimeFirst);
-
-        try {
-            $balanceTimeLast = Carbon::createFromFormat('Y-m-d', $getLastDate)
-                ->startOfMonth()
-                ->subDay()
-                ->format('Ymd');
-            Log::debug('balance_time calculated: ' . $balanceTimeLast);
-        } catch (Exception $e) {
-            Log::error('Error parsing date: ' . $e->getMessage());
-            $balanceTimeLast = null;
+        if (!$transactionMonthStart) {
+            $transactionMonthStart = date('Y-01-01');
+        } else {
+            $transactionMonthStart = date('Y-m-d', strtotime($transactionMonthStart . '-01'));
         }
 
-        $results = DB::table('account_balance as A')
-            ->leftJoin('chart_of_account as B', 'A.account_id', '=', 'B.account_id')
+        $formattedStartDate = date('Y-m-d 00:00:00', strtotime($transactionMonthStart . '-01'));
+        $formattedEndDate = date('Y-m-d 23:59:59', strtotime("last day of $transactionMonthEnd"));
+
+        Log::debug('formattedStartDate: ' . json_encode($formattedStartDate));
+        Log::debug('formattedEndDate: ' . json_encode($formattedEndDate));
+
+        $divisionId = $request->input('division_id');
+
+        // Base query
+        $query = DB::table('chart_of_account AS A')
+            ->leftJoin('detail_journal_entry AS B', 'A.account_id', '=', 'B.account_id')
+            ->leftJoin('journal_entry AS C', 'C.id', '=', 'B.entry_id')
+            ->leftJoin('account_balance AS E', 'E.account_id', '=', 'A.account_id')
             ->select(
                 'A.account_id',
-                'B.account_sign',
-                'B.account_type',
-                DB::raw('SUM("A".debit_mutation) AS total_debit'),
-                DB::raw('SUM("A".credit_mutation) AS total_credit'),
+                'A.account_name',
+                'A.account_type',
+                'A.account_group',
+                'C.entry_date',
+                DB::raw('SUM("B".debit) AS total_debit'),
+                DB::raw('SUM("B".credit) AS total_credit'),
                 DB::raw('
-                CASE 
-                    WHEN LOWER("B".account_sign) = \'debit\' THEN SUM("A".debit_mutation) - SUM("A".credit_mutation)
-                    WHEN LOWER("B".account_sign) = \'kredit\' THEN SUM("A".credit_mutation) - SUM("A".debit_mutation)
-                    ELSE 0
-                END AS total_amount
-            '),
-                'A.balance_time'
+        CASE
+            WHEN LOWER ("A".account_type) = \'aset\' THEN SUM("B".debit) - SUM("B".credit)
+            WHEN LOWER ("A".account_type) = \'kewajiban\' THEN SUM("B".credit) - SUM("B".debit)
+            WHEN LOWER ("A".account_type) = \'ekuitas\' THEN SUM("B".credit) - SUM("B".debit)
+            WHEN LOWER ("A".account_type) = \'pendapatan\' THEN SUM("B".credit) - SUM("B".debit)
+            WHEN LOWER ("A".account_type) = \'beban\' THEN SUM("B".debit) - SUM("B".credit)
+            ELSE 0
+        END AS total_amount
+        ')
             )
-            ->whereBetween('A.balance_time', [$balanceTimeFirst, $balanceTimeLast])
-            ->groupBy('A.account_id', 'B.account_sign', 'B.account_type', 'A.balance_time')
-            ->orderBy('A.account_id', 'ASC');
+            ->whereIn(DB::raw('SUBSTRING("A".account_id, 1, 1)'), $accountIdStartsWith)
+            ->whereBetween('B.updated_at', [$formattedStartDate, $formattedEndDate]);
 
-        Log::debug('Query Bindings netIncomeYTD: ', $results->getBindings());
+        // Add condition for `division_id` if provided
+        if ($divisionId !== 'all' && $divisionId != 0) {
+            $query->where('C.division_id', '=', $divisionId);
+        }
 
-        return $results->get();
+        // Group by `account_id` to ensure unique account_id values
+        $results = $query
+            ->groupBy(
+                'A.account_id',
+                'A.account_name',
+                'A.account_type',
+                'A.account_group',
+                'E.balance_time',
+                'C.entry_date'
+            )
+            ->orderBy('A.account_id', 'ASC')
+            ->get();
+
+        // Log the query
+        Log::debug('Generated SQL Query: ' . $query->toSql());
+        Log::debug('Query Bindings: ', $query->getBindings());
+
+        return $results;
     }
 }

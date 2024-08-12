@@ -112,6 +112,8 @@ Route::group(['middleware' => 'auth'], function () {
 
 	// ACCOUNTING 
 	Route::get('export/income-statement', [GenerateFinancialStatementController::class, 'exportIncomeStatement'])->name('export.income-statement');
+	Route::get('export/balance-sheet', [GenerateFinancialStatementController::class, 'exportBalanceSheet'])->name('export.balance-sheet');
+
 
 	Route::get('/exportexcel', [EmployeeController::class, 'exportexcel'])->name('exportexcel');
 	Route::post('/import-employee', [EmployeeController::class, 'importEmployee'])->name('import-employee');
@@ -163,6 +165,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 	Route::prefix('financial-statement')->group(function () {
 		Route::post('/income', [GenerateFinancialStatementController::class, 'income'])->name('generate-financial-statement.income');
+		Route::get('/income', [GenerateFinancialStatementController::class, 'generatePdfIncomeStatement'])->name('generate-financial-statement.generatePdfIncomeStatement');
 		Route::post('/balance', [GenerateFinancialStatementController::class, 'balance'])->name('generate-financial-statement.balance');
 		Route::post('/perubahanModal', [GenerateFinancialStatementController::class, 'perubahanModal'])->name('generate-financial-statement.perubahanModal');
 	});

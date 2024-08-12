@@ -90,7 +90,7 @@
                                             <form action="{{ route('pesan-bus.destroy', $booking->id) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this booking?')">
+                                                <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah anda yakin membatalkan pesanan ini?')">
                                                     Batal
                                                 </button>
                                             </form>
@@ -123,19 +123,19 @@
                     @csrf
                     <div class="mb-3">
                         <label for="start-date" class="form-label">Start Date</label>
-                        <input type="date" class="form-control" id="start-book" name="start_date">
+                        <input type="date" class="form-control" id="start-book" name="start_date" required>
                     </div>
                     <div class="mb-3">
                         <label for="end-date" class="form-label">End Date</label>
-                        <input type="date" class="form-control" id="end-book" name="end_date">
+                        <input type="date" class="form-control" id="end-book" name="end_date" required>
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="desc" name="description"></textarea>
+                        <textarea class="form-control" id="desc" name="description" required></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="customer" class="form-label">Customer</label>
-                        <select class="form-control" id="customer" name="customer_id">
+                        <select class="form-control" id="customer" name="customer_id" required>
                             <option value="">Select Customer</option>
                             @foreach ($customers as $customer)
                             <option value="{{ $customer->id }}">{{ $customer->name }}</option>
@@ -143,13 +143,13 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="amount" class="form-label">Amount</label>
+                        <label for="amount" class="form-label">Jumlah DP</label>
                         <input type="text" class="form-control" id="amount" name="amount" required>
                     </div>
                     <div class="mb-3">
                         <label for="evidence_image">Bukti Transaksi</label>
                         <small class="form-text text-muted">(Maks. 2MB)</small>
-                        <input type="file" class="form-control-file file-selector-button" name="evidence_image" id="evidence_image">
+                        <input type="file" class="form-control-file file-selector-button" name="evidence_image" id="evidence_image" required>
                     </div>
                     <input type="hidden" id="bus-id" name="bus_pariwisata_id" value="{{$bus->id}}">
                 </form>
@@ -296,7 +296,7 @@
                 console.log('Has events: ', hasEvents); // Log the result for debugging
 
                 if (hasEvents) {
-                    alert("Tanggal yang dipilih sudah ada booking.");
+                    alert("Tanggal yang dipilih sudah dipesan.");
                     return;
                 }
                 $('#start-date').val(info.dateStr);
@@ -326,10 +326,10 @@
                 success: function(response) {
                     $('#modal-action').modal('hide');
                     calendar.refetchEvents();
-                    alert('Event saved successfully!');
+                    alert('Booking Tersimpan!');
                 },
                 error: function(response) {
-                    alert('Failed to save event.');
+                    alert('Gagal menyimpan booking!');
                 }
             });
         });
