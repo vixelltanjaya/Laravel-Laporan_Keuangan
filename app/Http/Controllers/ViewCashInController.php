@@ -48,36 +48,41 @@ class ViewCashInController extends Controller
 
     public function generatePdf($id)
     {
-        Log::info('route id: ' . $id);
-        $id = intval($id);
+        try {
+            Log::info('route id: ' . $id);
+            $id = intval($id);
 
-        $journalData = JournalEntry::joinDetailAndUsers($id);
-        $detailJournal = DetailJournalEntry::where('entry_id', $id)->first();
-        $bookingData = JournalEntry::joinBookingBus($id);
+            $journalData = JournalEntry::joinDetailAndUsers($id);
+            $detailJournal = DetailJournalEntry::where('entry_id', $id)->first();
+            $bookingData = JournalEntry::joinBookingBus($id);
 
-        $journalEntry = $journalData->journalEntry;
-        $details = $journalData->details;
+            $journalEntry = $journalData->journalEntry;
+            $details = $journalData->details;
 
-        $evidenceCode = substr($journalEntry->evidence_code, 2, 12);
-        $invoice = 'INV/' . $evidenceCode;
-        
-        Log::info('invoices ' . $invoice);
-        Log::info('bookingData ' .json_encode($bookingData));
-        Log::info('Journal Entry: ', (array) $journalEntry);
-        Log::info('Detail Journal: ', (array) $detailJournal);
-        Log::info('details: ', (array) $details);
+            $evidenceCode = substr($journalEntry->evidence_code, 2, 12);
+            $invoice = 'INV/' . $evidenceCode;
 
-        $data = [
-            'journalEntry' => $journalEntry,
-            'details' => $details,
-            'detailJournal' => $detailJournal,
-            'invoices' => $invoice,
-            'bookingData' => $bookingData 
-        ];
+            Log::info('invoices ' . $invoice);
+            Log::info('bookingData ' . json_encode($bookingData));
+            Log::info('Journal Entry: ', (array) $journalEntry);
+            Log::info('Detail Journal: ', (array) $detailJournal);
+            Log::info('details: ', (array) $details);
 
-        // Load the view and pass the data
-        $pdf = Pdf::loadView('invoice_pdf', $data);
+            $data = [
+                'journalEntry' => $journalEntry,
+                'details' => $details,
+                'detailJournal' => $detailJournal,
+                'invoices' => $invoice,
+                'bookingData' => $bookingData
+            ];
 
-        return $pdf->download('invoice.pdf');
+            // Load the view and pass the data
+            $pdf = Pdf::loadView('invoice_pdf', $data);
+
+            return $pdf->download('invoice.pdf');
+        } catch (Exception $e) {
+            Log::error('Error generating PDF: ' . $e->getMessage());
+            return redirect()->back()->withErrors('Transaksi bukan transaksi pemesanan Bus Pariwisata.');
+        }
     }
 }

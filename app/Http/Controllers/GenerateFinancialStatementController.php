@@ -25,15 +25,35 @@ class GenerateFinancialStatementController extends Controller
         Log::debug('income request: ' . json_encode($request->all()));
         $reportType = 'income';
 
+        $startDate = $request->input('transaction_month_start');
+        $endDate = $request->input('transaction_month_end');
+
         session()->put('export_request', $request->all());
 
+        $formattedStartDate = $startDate ? date('d F Y', strtotime($startDate . '-01')) : '';
+        $formattedEndDate = $endDate ? date('d F Y', strtotime($endDate . '-01')) : '';
         // Pass the $request object directly to the function
         $incomeStatement = CoaModel::getSumRequestTrx($request);
         Log::debug('income incomeStatement: ' . json_encode($incomeStatement));
 
+        $totalPendapatan = $incomeStatement->filter(function ($item) {
+            return strtolower($item->account_type) === 'pendapatan';
+        })->sum('total_amount');
+
+        $totalBeban = $incomeStatement->filter(function ($item) {
+            return strtolower($item->account_type) === 'beban';
+        })->sum('total_amount');
+
+        $labaBersih = $totalPendapatan - $totalBeban;
+
         return view('user-accounting.generate-financial-statement', compact([
             'reportType',
             'incomeStatement',
+            'totalPendapatan',
+            'totalBeban',
+            'labaBersih',
+            'formattedStartDate',
+            'formattedEndDate'
         ]));
     }
     public function balance(Request $request)
@@ -45,11 +65,31 @@ class GenerateFinancialStatementController extends Controller
         $balanceSheet = CoaModel::getSumRequestTrx($request);
         $netIncomeResults = $this->countNetIncome($request);
 
+        $endDate = $request->input('transaction_month_end');
+        $formattedEndDate = $endDate ? date('d F Y', strtotime($endDate . '-01')) : '';
+
+        $totalPendapatanDanEkuitas = $balanceSheet->filter(function ($item) {
+            return strtolower($item->account_type) === 'ekuitas' || strtolower($item->account_type) === 'pendapatan';
+        })->sum('total_amount');
+
+        $totalBeban = $balanceSheet->filter(function ($item) {
+            return strtolower($item->account_type) === 'beban';
+        })->sum('total_amount');
+
+        $totalKewajiban = $balanceSheet->filter(function ($item) {
+            return strtolower($item->account_type) === 'kewajiban';
+        })->sum('total_amount');
+
+        $netAmount = $totalPendapatanDanEkuitas - $totalBeban;
+        $totalKewajibanDanEkuitas = $totalPendapatanDanEkuitas - $totalBeban + $totalKewajiban;
 
         return view('user-accounting.generate-financial-statement', [
             'reportType' => $reportType,
             'balanceSheet' => $balanceSheet,
             'labaTahunBerjalan' => $netIncomeResults,
+            'netAmount' => $netAmount,
+            'totalKewajibanDanEkuitas' => $totalKewajibanDanEkuitas,
+            'formattedEndDate' => $formattedEndDate
         ]);
     }
 
@@ -211,11 +251,11 @@ class GenerateFinancialStatementController extends Controller
 
     public function exportBalanceSheet(Request $request)
     {
-        Log::debug('export balance sheet' .json_encode($request));
+        Log::debug('export balance sheet' . json_encode($request));
         $requestData = session()->get('export_request');
         $request = new Request($requestData);
-        
-        Log::debug('export balance sheet request berdasar filter index' .json_encode($request));
+
+        Log::debug('export balance sheet request berdasar filter index' . json_encode($request));
         $startDate = $request->input('transaction_month_start');
         $endDate = $request->input('transaction_month_end');
 
@@ -241,15 +281,12 @@ class GenerateFinancialStatementController extends Controller
         // Clear the export request from the session
         session()->forget('export_request');
 
-        return Excel::download(new BalanceSheetExport($incomeStatement, $saldoLaba ,$months), 'balance_sheet.xlsx');
+        return Excel::download(new BalanceSheetExport($incomeStatement, $saldoLaba, $months), 'balance_sheet.xlsx');
     }
 
     public function generatePdfIncomeStatement(Request $request)
     {
         $requestData = session()->get('export_request');
-        if (!$requestData) {
-            return back()->with('error', 'Session data is missing or invalid.');
-        }
         $request = new Request($requestData);
 
         $startDate = $request->input('transaction_month_start');
@@ -259,31 +296,91 @@ class GenerateFinancialStatementController extends Controller
             return back()->with('error', 'Start date or end date is missing.');
         }
 
-        $transactionPeriod = CarbonPeriod::create($startDate, $endDate);
-        $months = collect($transactionPeriod->map(function ($date) {
-            return $date->format('d-F-Y');
-        }))->unique()->toArray();
+        $formattedStartDate = $startDate ? date('d F Y', strtotime($startDate . '-01')) : '';
+        $formattedEndDate = $endDate ? date('d F Y', strtotime($endDate . '-01')) : '';
 
         $incomeStatement = CoaModel::getSumRequestTrx($request);
+        Log::debug('income incomeStatement: ' . json_encode($incomeStatement));
 
+        $totalPendapatan = $incomeStatement->filter(function ($item) {
+            return strtolower($item->account_type) === 'pendapatan';
+        })->sum('total_amount');
+
+        $totalBeban = $incomeStatement->filter(function ($item) {
+            return strtolower($item->account_type) === 'beban';
+        })->sum('total_amount');
+
+        $labaBersih = $totalPendapatan - $totalBeban;
         if (is_null($incomeStatement)) {
             return back()->with('error', 'Failed to retrieve income statement data.');
         }
 
         $data = [
             'incomeStatement' => $incomeStatement,
-            'months' => $months
+            'formattedStartDate' => $formattedStartDate,
+            'formattedEndDate' => $formattedEndDate,
+            'totalPendapatan' => $totalPendapatan,
+            'totalBeban' => $totalBeban,
+            'labaBersih' => $labaBersih,
         ];
 
-        Log::debug('months ' . json_encode($months));
+        Log::debug('data ' . json_encode($data));
 
         // Load the test view and pass the data
-        $pdf = Pdf::loadView('reporting.laporan_lr_pdf', $data);
-
-        Log::debug('pdf ' . json_encode($pdf));
+        $pdf = Pdf::loadView('reporting.laporan-laba-rugi', $data);
 
         session()->forget('export_request');
 
         return $pdf->download('laporan_lr_pdf.pdf');
+    }
+
+    public function generatePdfBalanceSheet(Request $request)
+    {
+        $requestData = session()->get('export_request');
+        $request = new Request($requestData);
+
+        Log::debug('cek request' .json_encode($request->all()));
+
+        $endDate = $request->input('transaction_month_end');
+
+        $formattedEndDate = $endDate ? date('d F Y', strtotime($endDate . '-01')) : '';
+
+        $balanceSheet = CoaModel::getSumRequestTrx($request);
+        $netIncomeResults = $this->countNetIncome($request);
+
+        $totalPendapatanDanEkuitas = $balanceSheet->filter(function ($item) {
+            return strtolower($item->account_type) === 'ekuitas' || strtolower($item->account_type) === 'pendapatan';
+        })->sum('total_amount');
+
+        $totalBeban = $balanceSheet->filter(function ($item) {
+            return strtolower($item->account_type) === 'beban';
+        })->sum('total_amount');
+
+        $totalKewajiban = $balanceSheet->filter(function ($item) {
+            return strtolower($item->account_type) === 'kewajiban';
+        })->sum('total_amount');
+
+        $netAmount = $totalPendapatanDanEkuitas - $totalBeban;
+        $totalKewajibanDanEkuitas = $totalPendapatanDanEkuitas - $totalBeban + $totalKewajiban;
+
+        $data = [
+            'balanceSheet' => $balanceSheet,
+            'formattedEndDate' => $formattedEndDate,
+            'labaTahunBerjalan' => $netIncomeResults,
+            'totalBeban' => $totalBeban,
+            'totalPendapatanDanEkuitas' => $totalPendapatanDanEkuitas,
+            'totalKewajiban' => $totalKewajiban,
+            'netAmount' => $netAmount,
+            'totalKewajibanDanEkuitas' => $totalKewajibanDanEkuitas,
+        ];
+
+        Log::debug('data ' . json_encode($data));
+
+        // Load the test view and pass the data
+        $pdf = Pdf::loadView('reporting.laporan-posisi-keuangan', $data);
+
+        session()->forget('export_request');
+
+        return $pdf->download('laporan_posisi_keuangan_pdf.pdf');
     }
 }

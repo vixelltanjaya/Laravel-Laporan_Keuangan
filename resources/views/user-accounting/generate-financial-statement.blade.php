@@ -6,46 +6,20 @@
         <div class="col-md-12">
             <a href="{{ url()->previous() }}" class="btn btn-default">Batal</a>
             <div class="card">
-                <div class="card-header pb-0 px-3">
+                <div class="card-body">
                     @if(isset($reportType) && $reportType === 'income')
                     @include('reporting.print-laba-rugi')
+                    @include('reporting.laporan-laba-rugi')
                     @elseif(isset($reportType) && $reportType === 'balance')
                     @include('reporting.print-posisi-keuangan')
+                    @include('reporting.laporan-posisi-keuangan')
                     @else
-                    @include('reporting.print-perubahan-modal')
-                    @endif  
-                </div>
-                <div class="card-body pt-4 p-3 text-center">
-                    <div class="text-center mb-4">
-                        <h6 class="mb-0">PT. Maharani Putra Sejahtera</h6>
-                        <p class="mb-0" id="reportTitle">
-                            @if(isset($reportType) && $reportType === 'income')
-                            Laporan Laba Rugi
-                            @elseif(isset($reportType) && $reportType === 'balance')
-                            Laporan Posisi Keuangan
-                            @else
-                            Laporan Perubahan Modal
-                            @endif
-                        </p>
-                        <p class="mb-0" id="reportPeriod">
-                            Periode
-                            {{ request('transaction_month_start') ? date('d F Y', strtotime(request('transaction_month_start') . '-01')) : '' }}
-                            -
-                            {{ request('transaction_month_end') ? date('d F Y', strtotime(request('transaction_month_end') . '-01')) : '' }}
-                        </p>
-                    </div>
-                    <table class="table table-bordered">
-                        @if(isset($reportType) && $reportType === 'income')
-                        @include('reporting.laporan-laba-rugi')
-                        @elseif(isset($reportType) && $reportType === 'balance')
-                        @include('reporting.laporan-posisi-keuangan')
-                        @else
-                        @include('reporting.laporan-perubahan-modal')
-                        @endif
-                    </table>
+                    @include('reporting.laporan-perubahan-modal')
+                    @endif
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </main>
 @endsection

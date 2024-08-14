@@ -150,7 +150,7 @@ class PelunasanPariwisataController extends Controller
 
             // DB::rollBack();
             DB::commit();
-            return redirect()->route('cash-in.index')->with('berhasil', 'Transaksi berhasil disimpan (dalam mode pengujian).');
+            return redirect()->route('cash-in.index')->with('berhasil', 'Transaksi berhasil disimpan.');
         } catch (ValidationException $e) {
             DB::rollback();
             Log::error('Validation error: ' . $e->getMessage());

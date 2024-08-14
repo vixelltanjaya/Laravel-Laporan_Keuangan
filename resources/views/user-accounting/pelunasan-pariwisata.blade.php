@@ -244,7 +244,7 @@
 
             if (sign === 'debit') {
                 debitTotal += amount;
-            } else if (sign === 'credit') {
+            } else if (sign === 'kredit') {
                 creditTotal += amount;
             }
         });

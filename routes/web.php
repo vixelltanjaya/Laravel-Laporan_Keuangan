@@ -109,8 +109,10 @@ Route::group(['middleware' => 'auth'], function () {
 		'destroy'
 	);
 	route::resource('payroll', PayrollController::class);
+});
 
-	// ACCOUNTING 
+// ACCOUNTING 
+Route::group(['middleware'=>['auth', 'check.role:1,5,8']], function(){
 	Route::get('export/income-statement', [GenerateFinancialStatementController::class, 'exportIncomeStatement'])->name('export.income-statement');
 	Route::get('export/balance-sheet', [GenerateFinancialStatementController::class, 'exportBalanceSheet'])->name('export.balance-sheet');
 
@@ -167,6 +169,7 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::post('/income', [GenerateFinancialStatementController::class, 'income'])->name('generate-financial-statement.income');
 		Route::get('/income', [GenerateFinancialStatementController::class, 'generatePdfIncomeStatement'])->name('generate-financial-statement.generatePdfIncomeStatement');
 		Route::post('/balance', [GenerateFinancialStatementController::class, 'balance'])->name('generate-financial-statement.balance');
+		Route::get('/balance', [GenerateFinancialStatementController::class, 'generatePdfBalanceSheet'])->name('generate-financial-statement.generatePdfBalanceSheet');
 		Route::post('/perubahanModal', [GenerateFinancialStatementController::class, 'perubahanModal'])->name('generate-financial-statement.perubahanModal');
 	});
 
@@ -202,23 +205,23 @@ Route::group(['middleware' => 'auth'], function () {
 		return view('user-accounting.add-evidence-code');
 	});
 
+});
 
-	// ADMIN
+// ADMIN
+Route::group(['middleware'=>['auth', 'check.role:1,6,8']], function(){
 	Route::resource('pariwisata', PariwisataController::class)->only(['index', 'store', 'update', 'destroy']);
 	Route::get('add-data-pariwisata', [AddDataPariwisataController::class, 'index'])->name('add-data-pariwisata.index');
 	Route::get('edit-data-pariwisata/{id}', [editDataPariwisataController::class, 'index'])->name('edit-data-pariwisata.index');
 	// Route::put('pariwisata/{id}', [editDataPariwisataController::class, 'update'])->name('pariwisata.update');
-
+	
 	Route::prefix('pesan-bus')->group(function () {
 		Route::get('/list', [BookedBusController::class, 'listBook'])->name('pesan-bus.list');
 		Route::get('/', [BookedBusController::class, 'index'])->name('pesan-bus.index');
 		Route::post('/', [BookedBusController::class, 'store'])->name('pesan-bus.store');
 		Route::put('/{id}', [BookedBusController::class, 'update'])->name('pesan-bus.update');
 		Route::delete('/{id}', [BookedBusController::class, 'destroy'])->name('pesan-bus.destroy');
-	});
+	});		
 });
-
-
 
 // role SuperAdmin
 Route::group(['middleware' => ['auth', 'check.role:1']], function () {

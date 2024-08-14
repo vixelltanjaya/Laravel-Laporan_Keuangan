@@ -9,6 +9,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="card-title">Detail Transaksi</h5>
                     </div>
+                    @include('components.alert-danger-success')
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <p class="mb-1">Deskripsi: <strong>{{ $journalEntry->description }}</strong></p>
