@@ -4,14 +4,10 @@
 
 <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg">
     <div class="container-fluid py-4">
-        <div class="row">
+        <div class="row" id="bus-container">
             @include('components.alert-danger-success')
             @foreach ($bisPariwisata as $index => $pariwisata)
-            @if ($index % 3 == 0 && $index != 0)
-        </div>
-        <div class="row">
-            @endif
-            <div class="col-lg-4 mb-4">
+            <div class="col-lg-4 mb-4 bus-item" data-index="{{ $index }}">
                 <div class="card h-100">
                     <div class="card-header pb-0 p-3">
                         <div class="row">
@@ -22,7 +18,7 @@
                     </div>
                     <div class="card-body p-3 pb-0">
                         <div class="col-md-10">
-                            <img src="{{ Storage::url($pariwisata->evidence_image_bus) }}" alt="Bus Pariwisata" class="img-fluid" style="width: 300x; height: 200px;">
+                            <img src="{{ Storage::url($pariwisata->evidence_image_bus) }}" alt="Bus Pariwisata" class="img-fluid" style="width: 250px; height: 250px;">
                         </div>
                         <p class="mb-1">Medium Bus ini dapat menampung hingga 33 penumpang</p>
                         <p class="mb-1">Fasilitas:</p>
@@ -54,52 +50,60 @@
             </div>
             @endforeach
         </div>
-    </div>
-
-    <!--  Table for Internal Uses-->
-    <div class="col-md-12 mb-lg-0 mb-4">
-        <div class="card mt-4">
-            <div class="card-header pb-0 p-3">
-                <a href="{{ url('add-data-pariwisata') }}" class="btn btn-primary"> Tambah Data Bis</a>
-                <h6 class="mb-0">Data Kendaraan</h6>
-            </div>
-            <div class="card-body p-3">
-                <table id="vehicleTable" class="display">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Plat Nomor</th>
-                            <th>Tahun Kendaraan</th>
-                            <th>Karoseri</th>
-                            <th>Nomor Rangka</th>
-                            <th>Nomor Akun</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($bisPariwisata as $pariwisata)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $pariwisata->plat_nomor }}</td>
-                            <td>{{ $pariwisata->tahun_kendaraan }}</td>
-                            <td>{{ $pariwisata->karoseri }}</td>
-                            <td>{{ $pariwisata->no_rangka }}</td>
-                            <td>{{ $pariwisata->account_id }}</td>
-                            <td>
-                                <a href="{{ route('edit-data-pariwisata.index', ['id' => $pariwisata->id]) }}" class="btn btn-link text-secondary font-weight-bold text-small">
-                                    <i class="ri-pencil-line"></i> Edit
-                                </a>
-                                <button class="btn btn-link text-danger font-weight-bold text-small" data-bs-toggle="modal" data-bs-target="#deleteBusModal" data-id="{{$pariwisata->id}}" data-plat="{{$pariwisata->plat_nomor}}">
-                                    <i class="ri-delete-bin-line"></i> Hapus
-                                </button>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+        <div class="row">
+            <div class="col-12">
+                <nav>
+                    <ul class="pagination justify-content-center" id="pagination">
+                        <!-- Pagination items will be generated here by jQuery -->
+                    </ul>
+                </nav>
             </div>
         </div>
-    </div>
+
+        <!--  Table for Internal Uses-->
+        <div class="col-md-12 mb-lg-0 mb-4">
+            <div class="card mt-4">
+                <div class="card-header pb-0 p-3">
+                    <a href="{{ url('add-data-pariwisata') }}" class="btn btn-primary"> Tambah Data Bis</a>
+                    <h6 class="mb-0">Data Kendaraan</h6>
+                </div>
+                <div class="card-body p-3">
+                    <table id="vehicleTable" class="display">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Plat Nomor</th>
+                                <th>Tahun Kendaraan</th>
+                                <th>Karoseri</th>
+                                <th>Nomor Rangka</th>
+                                <th>Nomor Akun</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($bisPariwisata as $pariwisata)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $pariwisata->plat_nomor }}</td>
+                                <td>{{ $pariwisata->tahun_kendaraan }}</td>
+                                <td>{{ $pariwisata->karoseri }}</td>
+                                <td>{{ $pariwisata->no_rangka }}</td>
+                                <td>{{ $pariwisata->account_id }}</td>
+                                <td>
+                                    <a href="{{ route('edit-data-pariwisata.index', ['id' => $pariwisata->id]) }}" class="btn btn-link text-secondary font-weight-bold text-small">
+                                        <i class="ri-pencil-line"></i> Edit
+                                    </a>
+                                    <button class="btn btn-link text-danger font-weight-bold text-small" data-bs-toggle="modal" data-bs-target="#deleteBusModal" data-id="{{$pariwisata->id}}" data-plat="{{$pariwisata->plat_nomor}}">
+                                        <i class="ri-delete-bin-line"></i> Hapus
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 </main>
 
 <!-- Modal Hapus -->
@@ -203,5 +207,42 @@
         $('#deleteBusForm').on('submit', function() {
             $(this).find('button[type="submit"]').prop('disabled', true);
         });
+    });
+
+    $(document).ready(function() {
+        const itemsPerPage = 3;
+        const busItems = $('.bus-item');
+        const totalItems = busItems.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+        function showPage(page) {
+            busItems.hide();
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            busItems.slice(start, end).show();
+
+            // Update active class on pagination buttons
+            $('#pagination li').removeClass('active');
+            $('#pagination li[data-page="' + page + '"]').addClass('active');
+        }
+
+        function createPagination() {
+            for (let i = 1; i <= totalPages; i++) {
+                $('#pagination').append('<li class="page-item" data-page="' + i + '"><a class="page-link" href="#">' + i + '</a></li>');
+            }
+
+            // Add click event for pagination
+            $('#pagination li').click(function(e) {
+                e.preventDefault();
+                const page = $(this).data('page');
+                showPage(page);
+            });
+        }
+
+        // Initialize the pagination
+        createPagination();
+
+        // Show the first page by default
+        showPage(1);
     });
 </script>
