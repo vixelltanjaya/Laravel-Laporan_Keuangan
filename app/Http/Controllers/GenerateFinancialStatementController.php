@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\BalanceSheetExport;
 use App\Exports\NetIncomeExport;
+use App\Exports\PerubahanModalExport;
 use App\Models\AccountBalance;
 use App\Models\CoaModel;
 use App\Models\DetailJournalEntry;
@@ -11,6 +12,7 @@ use App\Models\JournalEntry;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
@@ -67,6 +69,7 @@ class GenerateFinancialStatementController extends Controller
 
         $endDate = $request->input('transaction_month_end');
         $formattedEndDate = $endDate ? date('d F Y', strtotime($endDate . '-01')) : '';
+        $formattedMonth = $endDate ? date('F Y') : '';
 
         $totalPendapatanDanEkuitas = $balanceSheet->filter(function ($item) {
             return strtolower($item->account_type) === 'ekuitas' || strtolower($item->account_type) === 'pendapatan';
@@ -89,10 +92,10 @@ class GenerateFinancialStatementController extends Controller
             'labaTahunBerjalan' => $netIncomeResults,
             'netAmount' => $netAmount,
             'totalKewajibanDanEkuitas' => $totalKewajibanDanEkuitas,
-            'formattedEndDate' => $formattedEndDate
+            'formattedEndDate' => $formattedEndDate,
+            'formattedMonth' => $formattedMonth
         ]);
     }
-
     public function perubahanModal(Request $request)
     {
         $reportType = 'perubahanModal';
@@ -100,11 +103,30 @@ class GenerateFinancialStatementController extends Controller
         $netIncomeResults = $this->countNetIncome($request);
         $perubahanModal = CoaModel::getSumRequestTrx($request);
 
-        // dd($netIncomeResults);
+        $endDate = $request->input('transaction_month_end');
+        $formattedEndDate = $endDate ? date('d F Y', strtotime($endDate . '-01')) : '';
 
-        return view('user-accounting.generate-financial-statement', compact('reportType', 'netIncomeResults', 'perubahanModal'));
+        // Get raw numeric values first
+        $modalPemilikRaw = $perubahanModal->firstWhere('account_name', 'Modal Pemilik')->total_amount ?? 0;
+        $labaRaw = $netIncomeResults['netIncomeYTD'] + $netIncomeResults['netIncomeCurrentMonth'] + $netIncomeResults['netIncome'];
+        $priveRaw = $perubahanModal->firstWhere('account_type', 'Prive')->total_amount ?? 0;
+        $perubahanModalRaw = $labaRaw - $priveRaw;
+
+        $modalAkhirRaw = $modalPemilikRaw + $perubahanModalRaw;
+
+        Log::debug('laba raw' .json_encode($netIncomeResults));
+
+        // Format the amounts
+        $modalPemilik = $this->formatAmount($modalPemilikRaw);
+        $laba = $this->formatAmount($labaRaw);
+        $prive = $this->formatAmount($priveRaw);
+        $perubahanModal = $this->formatAmount($perubahanModalRaw);
+        $modalAkhir = $this->formatAmount($modalAkhirRaw);
+
+        Log::debug('formatted datanya apa ' . json_encode($perubahanModal));
+
+        return view('user-accounting.generate-financial-statement', compact('reportType', 'modalPemilik', 'modalAkhir', 'laba', 'prive', 'netIncomeResults', 'perubahanModal', 'formattedEndDate'));
     }
-
     public function countNetIncome($request)
     {
         Log::debug('func count countNetIncome' . json_encode($request->all()));
@@ -221,10 +243,13 @@ class GenerateFinancialStatementController extends Controller
             'netIncomeYTD' => $netIncomeYTD
         ];
     }
-
     public function exportIncomeStatement(Request $request)
     {
         $requestData = session()->get('export_request');
+        if (is_null($requestData)) {
+            return redirect()->back()->with('gagal', 'Terjadi kesalahan. Silakan refresh halaman dan coba lagi.');
+        }
+
         $request = new Request($requestData);
 
         $startDate = $request->input('transaction_month_start');
@@ -243,16 +268,16 @@ class GenerateFinancialStatementController extends Controller
 
         $incomeStatement = CoaModel::getSumRequestTrx($request);
         Log::debug('exportIncomeStatement incomeStatement: ' . json_encode($incomeStatement));
-
-        session()->forget('export_request');
-
         return Excel::download(new NetIncomeExport($incomeStatement, $months), 'net_income.xlsx');
     }
-
     public function exportBalanceSheet(Request $request)
     {
         Log::debug('export balance sheet' . json_encode($request));
         $requestData = session()->get('export_request');
+        if (is_null($requestData)) {
+            return redirect()->back()->with('gagal', 'Terjadi kesalahan. Silakan refresh halaman dan coba lagi.');
+        }
+
         $request = new Request($requestData);
 
         Log::debug('export balance sheet request berdasar filter index' . json_encode($request));
@@ -278,72 +303,114 @@ class GenerateFinancialStatementController extends Controller
 
         Log::debug('exportBalanceSheet incomeStatement: ' . json_encode($incomeStatement));
 
-        // Clear the export request from the session
-        session()->forget('export_request');
-
         return Excel::download(new BalanceSheetExport($incomeStatement, $saldoLaba, $months), 'balance_sheet.xlsx');
     }
-
-    public function generatePdfIncomeStatement(Request $request)
+    public function exportPerubahanModal(Request $request)
     {
         $requestData = session()->get('export_request');
+        if (is_null($requestData)) {
+            return redirect()->back()->with('gagal', 'Terjadi kesalahan. Silakan refresh halaman dan coba lagi.');
+        }
+
         $request = new Request($requestData);
 
+        Log::debug('export balance sheet request berdasar filter index' . json_encode($request));
         $startDate = $request->input('transaction_month_start');
         $endDate = $request->input('transaction_month_end');
 
-        if (!$startDate || !$endDate) {
-            return back()->with('error', 'Start date or end date is missing.');
-        }
+        $startDate = $startDate ?: '2024-01-01';
 
-        $formattedStartDate = $startDate ? date('d F Y', strtotime($startDate . '-01')) : '';
-        $formattedEndDate = $endDate ? date('d F Y', strtotime($endDate . '-01')) : '';
+        $formattedStartDate = Carbon::parse($startDate)->format('d-F-Y');
+        $formattedEndDate = Carbon::parse($endDate)->format('d-F-Y');
 
-        $incomeStatement = CoaModel::getSumRequestTrx($request);
-        Log::debug('income incomeStatement: ' . json_encode($incomeStatement));
-
-        $totalPendapatan = $incomeStatement->filter(function ($item) {
-            return strtolower($item->account_type) === 'pendapatan';
-        })->sum('total_amount');
-
-        $totalBeban = $incomeStatement->filter(function ($item) {
-            return strtolower($item->account_type) === 'beban';
-        })->sum('total_amount');
-
-        $labaBersih = $totalPendapatan - $totalBeban;
-        if (is_null($incomeStatement)) {
-            return back()->with('error', 'Failed to retrieve income statement data.');
-        }
-
-        $data = [
-            'incomeStatement' => $incomeStatement,
-            'formattedStartDate' => $formattedStartDate,
-            'formattedEndDate' => $formattedEndDate,
-            'totalPendapatan' => $totalPendapatan,
-            'totalBeban' => $totalBeban,
-            'labaBersih' => $labaBersih,
+        $months = [
+            'start_date' => $formattedStartDate,
+            'end_date' => $formattedEndDate,
         ];
 
-        Log::debug('data ' . json_encode($data));
+        // Log request details
+        Log::debug('export perubahan modal request: ' . json_encode($request->all()));
 
-        // Load the test view and pass the data
-        $pdf = Pdf::loadView('reporting.laporan-laba-rugi', $data);
+        // Fetch income statement data
+        $incomeStatement = CoaModel::getSumRequestTrx($request);
+        $saldoLaba = $this->countNetIncome($request);
 
-        session()->forget('export_request');
+        Log::debug('export perubahan modal incomeStatement: ' . json_encode($incomeStatement));
 
-        return $pdf->download('laporan_lr_pdf.pdf');
+        return Excel::download(new PerubahanModalExport($incomeStatement, $saldoLaba, $months), 'perubahan_modal.xlsx');
     }
+    public function generatePdfIncomeStatement(Request $request)
+    {
+        $requestData = session()->get('export_request');
+        if (is_null($requestData)) {
+            return redirect()->back()->with('gagal', 'Terjadi kesalahan. Silakan refresh halaman dan coba lagi.');
+        }
 
+        try {
+
+            $request = new Request($requestData);
+
+            $startDate = $request->input('transaction_month_start');
+            $endDate = $request->input('transaction_month_end');
+
+            if (!$startDate || !$endDate) {
+                return back()->with('error', 'Start date or end date is missing.');
+            }
+
+            $formattedStartDate = $startDate ? date('d F Y', strtotime($startDate . '-01')) : '';
+            $formattedEndDate = $endDate ? date('d F Y', strtotime($endDate . '-01')) : '';
+
+            $incomeStatement = CoaModel::getSumRequestTrx($request);
+            Log::debug('income incomeStatement: ' . json_encode($incomeStatement));
+
+            if (is_null($incomeStatement)) {
+                throw new Exception('Failed to retrieve income statement data.');
+            }
+
+            $totalPendapatan = $incomeStatement->filter(function ($item) {
+                return strtolower($item->account_type) === 'pendapatan';
+            })->sum('total_amount');
+
+            $totalBeban = $incomeStatement->filter(function ($item) {
+                return strtolower($item->account_type) === 'beban';
+            })->sum('total_amount');
+
+            $labaBersih = $totalPendapatan - $totalBeban;
+
+            $data = [
+                'incomeStatement' => $incomeStatement,
+                'formattedStartDate' => $formattedStartDate,
+                'formattedEndDate' => $formattedEndDate,
+                'totalPendapatan' => $totalPendapatan,
+                'totalBeban' => $totalBeban,
+                'labaBersih' => $labaBersih,
+            ];
+
+            Log::debug('data ' . json_encode($data));
+
+            // Load the view and pass the data
+            $pdf = Pdf::loadView('reporting.laporan-laba-rugi', $data);
+            return $pdf->download('laporan_lr_pdf.pdf');
+        } catch (Exception $e) {
+            Log::error('Error ' . $e->getMessage());
+            return back()->with('gagal', 'Silakan refresh halaman');
+        }
+    }
     public function generatePdfBalanceSheet(Request $request)
     {
         $requestData = session()->get('export_request');
+        if (is_null($requestData)) {
+            return redirect()->back()->with('gagal', 'Terjadi kesalahan. Silakan refresh halaman dan coba lagi.');
+        }
+
         $request = new Request($requestData);
 
-        Log::debug('cek request' .json_encode($request->all()));
+        Log::debug('cek request' . json_encode($request->all()));
 
         $endDate = $request->input('transaction_month_end');
 
         $formattedEndDate = $endDate ? date('d F Y', strtotime($endDate . '-01')) : '';
+        $formattedMonth = $endDate ? date('F Y') : '';
 
         $balanceSheet = CoaModel::getSumRequestTrx($request);
         $netIncomeResults = $this->countNetIncome($request);
@@ -366,6 +433,7 @@ class GenerateFinancialStatementController extends Controller
         $data = [
             'balanceSheet' => $balanceSheet,
             'formattedEndDate' => $formattedEndDate,
+            'formattedMonth' => $formattedMonth,
             'labaTahunBerjalan' => $netIncomeResults,
             'totalBeban' => $totalBeban,
             'totalPendapatanDanEkuitas' => $totalPendapatanDanEkuitas,
@@ -378,9 +446,61 @@ class GenerateFinancialStatementController extends Controller
 
         // Load the test view and pass the data
         $pdf = Pdf::loadView('reporting.laporan-posisi-keuangan', $data);
-
-        session()->forget('export_request');
-
         return $pdf->download('laporan_posisi_keuangan_pdf.pdf');
+    }
+    public function generatePdfPerubahanModal(Request $request){
+        $requestData = session()->get('export_request');
+        if (is_null($requestData)) {
+            return redirect()->back()->with('gagal', 'Terjadi kesalahan. Silakan refresh halaman dan coba lagi.');
+        }
+
+        $request = new Request($requestData);
+
+        Log::debug('perubahan modal' . json_encode($request->all()));
+
+        $endDate = $request->input('transaction_month_end');
+
+        $formattedEndDate = $endDate ? date('d F Y', strtotime($endDate . '-01')) : '';
+        $formattedMonth = $endDate ? date('F Y') : '';
+
+        $netIncomeResults = $this->countNetIncome($request);
+        $perubahanModal = CoaModel::getSumRequestTrx($request);
+
+        $modalPemilikRaw = $perubahanModal->firstWhere('account_name', 'Modal Pemilik')->total_amount ?? 0;
+        $labaRaw = $netIncomeResults['netIncomeYTD'] + $netIncomeResults['netIncomeCurrentMonth'] + $netIncomeResults['netIncome'];
+        $priveRaw = $perubahanModal->firstWhere('account_type', 'Prive')->total_amount ?? 0;
+        $perubahanModalRaw = $labaRaw - $priveRaw;
+
+        $modalAkhirRaw = $modalPemilikRaw + $perubahanModalRaw;
+
+        Log::debug('laba raw' .json_encode($netIncomeResults));
+
+        // Format the amounts
+        $modalPemilik = $this->formatAmount($modalPemilikRaw);
+        $laba = $this->formatAmount($labaRaw);
+        $prive = $this->formatAmount($priveRaw);
+        $perubahanModal = $this->formatAmount($perubahanModalRaw);
+        $modalAkhir = $this->formatAmount($modalAkhirRaw);
+        
+        $data = [
+            'modalPemilik' => $modalPemilik,
+            'laba' => $laba,
+            'prive' => $prive,
+            'modalAkhir' => $modalAkhir,
+            'perubahanModal' => $perubahanModal,
+            'formattedEndDate' => $formattedEndDate,
+            'formattedMonth' => $formattedMonth,
+        ];
+
+        Log::debug('data ' . json_encode($data));
+
+        // Load the test view and pass the data
+        $pdf = Pdf::loadView('reporting.laporan-perubahan-modal', $data);
+        return $pdf->download('laporan_perubahan_modal.pdf');
+    }
+
+    private function formatAmount($amount)
+    {
+        return number_format($amount, 0, ',', '.');
     }
 }

@@ -9,11 +9,13 @@
 <table id="tableIncomeStatement" class="table table-bordered">
     <thead>
         <tr>
-            <th><strong>Nama Akun</strong></th>
-            <th colspan="2"><strong>Nominal (Rp)</strong></th>
+            <th>Akun</th>
+            <th>Jumlah (Rp)</th>
+            <th>Keterangan</th>
         </tr>
     </thead>
     <tbody>
+        <!-- Pendapatan Section -->
         <tr>
             <td colspan="3"><strong>Pendapatan</strong></td>
         </tr>
@@ -22,15 +24,17 @@
         <tr>
             <td>{{ $item->account_name }}</td>
             <td>{{ number_format($item->total_amount, 2) }}</td>
-            <td></td>
+            <td>{{ $item->description ?? '' }}</td>
         </tr>
         @endif
         @endforeach
         <tr>
             <td><strong>Total Pendapatan</strong></td>
-            <td></td>
             <td><strong>{{ number_format($totalPendapatan, 2) }}</strong></td>
+            <td></td>
         </tr>
+
+        <!-- Beban Section -->
         <tr>
             <td colspan="3"><strong>Beban</strong></td>
         </tr>
@@ -39,19 +43,21 @@
         <tr>
             <td>{{ $item->account_name }}</td>
             <td>{{ number_format($item->total_amount, 2) }}</td>
-            <td></td>
+            <td>{{ $item->description ?? '' }}</td>
         </tr>
         @endif
         @endforeach
         <tr>
             <td><strong>Total Beban</strong></td>
-            <td></td>
             <td><strong>{{ number_format($totalBeban, 2) }}</strong></td>
+            <td></td>
         </tr>
+
+        <!-- Laba Bersih Section -->
         <tr>
             <td><strong>Laba Bersih</strong></td>
-            <td></td>
             <td><strong>{{ number_format($labaBersih, 2) }}</strong></td>
+            <td></td>
         </tr>
     </tbody>
 </table>

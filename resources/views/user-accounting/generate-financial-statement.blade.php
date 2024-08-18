@@ -7,6 +7,7 @@
             <a href="{{ url()->previous() }}" class="btn btn-default">Batal</a>
             <div class="card">
                 <div class="card-body">
+                    @include('components.alert-danger-success')
                     @if(isset($reportType) && $reportType === 'income')
                     @include('reporting.print-laba-rugi')
                     @include('reporting.laporan-laba-rugi')
@@ -14,6 +15,7 @@
                     @include('reporting.print-posisi-keuangan')
                     @include('reporting.laporan-posisi-keuangan')
                     @else
+                    @include('reporting.print-perubahan-modal')
                     @include('reporting.laporan-perubahan-modal')
                     @endif
                 </div>

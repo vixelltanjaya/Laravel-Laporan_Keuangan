@@ -115,7 +115,7 @@ Route::group(['middleware' => 'auth'], function () {
 Route::group(['middleware'=>['auth', 'check.role:1,5,8']], function(){
 	Route::get('export/income-statement', [GenerateFinancialStatementController::class, 'exportIncomeStatement'])->name('export.income-statement');
 	Route::get('export/balance-sheet', [GenerateFinancialStatementController::class, 'exportBalanceSheet'])->name('export.balance-sheet');
-
+	Route::get('export/perubahan-modal', [GenerateFinancialStatementController::class, 'exportPerubahanModal'])->name('export.perubahan-modal');
 
 	Route::get('/exportexcel', [EmployeeController::class, 'exportexcel'])->name('exportexcel');
 	Route::post('/import-employee', [EmployeeController::class, 'importEmployee'])->name('import-employee');
@@ -171,11 +171,13 @@ Route::group(['middleware'=>['auth', 'check.role:1,5,8']], function(){
 		Route::post('/balance', [GenerateFinancialStatementController::class, 'balance'])->name('generate-financial-statement.balance');
 		Route::get('/balance', [GenerateFinancialStatementController::class, 'generatePdfBalanceSheet'])->name('generate-financial-statement.generatePdfBalanceSheet');
 		Route::post('/perubahanModal', [GenerateFinancialStatementController::class, 'perubahanModal'])->name('generate-financial-statement.perubahanModal');
+		Route::get('/perubahanModal', [GenerateFinancialStatementController::class, 'generatePdfPerubahanModal'])->name('generate-financial-statement.generate-pdf-perubahan-modal');
 	});
 
 	Route::prefix('general-ledger')->group(function () {
 		Route::get('/', [GeneralLedgerController::class, 'index'])->name('general-ledger.index');
 		Route::get('/filter', [GeneralLedgerController::class, 'getRequest'])->name('general-ledger.getRequest');
+		Route::get('/excel', [GeneralLedgerController::class, 'generateGlToExcel'])->name('general-ledger.generate-gl-to-excel');
 	});
 
 	Route::resource('customer', CustomerController::class)->only(['index', 'store', 'update', 'destroy']);

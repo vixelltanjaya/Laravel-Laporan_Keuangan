@@ -11,9 +11,12 @@
                             <h5 class="mb-0">Buku Besar</h5>
                         </div>
                         <div class="nav-item d-flex align-self-end">
-                            <button id="printButton" class="btn btn-dark active mb-0 text-white me-2">
-                                <i class="fas fa-print me-1"></i>Print</button>
-                            <button id="lihatBukuBesarButton" type="button" class="btn btn-primary active mb-0">
+                            <form action="{{ route('general-ledger.generate-gl-to-excel') }}" method="GET" class="d-inline">
+                                <button type="submit" class="btn btn-dark btn-block mb-0 me-2">
+                                    <i class="ri-file-excel-2-line"></i> Export to Excel
+                                </button>
+                            </form>
+                            <button id="lihatBukuBesarButton" type="button" class="btn btn-primary btn-block active mb-3">
                                 Lihat Buku Besar
                             </button>
                         </div>
@@ -39,9 +42,9 @@
                         <div class="text-center">
                             <h5 class="mb-0">Buku Besar</h5>
                             <h5 class="mb-0">Detail Transaksi</h5>
-                            <h4 id="periode" class="card-subtitle text-muted mb-3">
-                                {{ request('month_year') ? date('F Y', strtotime(request('month_year') . '-01')) : '' }}
-                            </h4>
+                            <h6 id="periode" class="card-subtitle text-muted mb-2">
+                                {{$formattedDate}}
+                            </h6>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -69,7 +72,7 @@
                                 @php $totalAmount = 0; @endphp
                                 @forelse($accountData as $entry)
                                 <tr @if(isset($entry->readonly)) style="background-color: #f5f5f5;" @endif>
-                                    <td>{{ \Carbon\Carbon::parse($entry->created_at)->format('Y/m/d') }}</td>
+                                    <td>{{ $entry->formattedDateTrx }}</td>
                                     <td>{{ $entry->description }}</td>
                                     <td>{{ $entry->evidence_code }}</td>
                                     <td>{{ $entry->debit ? number_format($entry->debit, 2) : '' }}</td>

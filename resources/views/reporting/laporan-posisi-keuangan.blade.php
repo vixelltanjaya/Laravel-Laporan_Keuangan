@@ -1,10 +1,8 @@
-
-
-<div id="headerTable">
-    <h6 class="mb-0 text-center" id="reportCompany">PT Maharani Putra Sejahtera</h6>
-    <p class="mb-0 text-center" id="reportTitle">Laporan Posisi Keuangan</p>
-    <p class="mb-4 text-center" id="reportPeriod">
-        Periode {{$formattedEndDate}}
+<div id="headerTable" style="text-align: center;">
+    <h2 class="mb-0">PT Maharani Putra Sejahtera</h2>
+    <p class="mb-0" id="reportTitle">Laporan Posisi Keuangan</p>
+    <p class="mb-4" id="reportPeriod">
+        Periode {{ $formattedEndDate }}
     </p>
 </div>
 
@@ -13,7 +11,7 @@
         <tr>
             <td><strong>Aset</strong></td>
             <td><strong></strong></td>
-            <td><strong>{{ request('transaction_month_end') ? date('F Y', strtotime(request('transaction_month_end') . '-01')) : '' }}</strong></td>
+            <td><strong>{{ $formattedMonth }}</strong></td>
         </tr>
         <!-- Asset -->
         <tr>
@@ -26,7 +24,7 @@
         <tr>
             <td>{{ $balance->account_name }}</td>
             <td></td>
-            <td>{{ number_format($balance->total_amount, 2) }}</td>
+            <td>{{ number_format($balance->total_amount, 2, ',', '.') }}</td>
         </tr>
         @endif
         @endforeach
@@ -35,7 +33,7 @@
             <td></td>
             <td><strong>{{ number_format($balanceSheet->filter(function($item) {
             return strtolower($item->account_group) === 'lancar' || strtolower($item->account_group) === 'aset lancar';
-        })->sum('total_amount'), 2) }}</strong></td>
+        })->sum('total_amount'), 2, ',', '.') }}</strong></td>
         </tr>
         <tr>
             <td><strong>Aset Tetap</strong></td>
@@ -47,7 +45,7 @@
         <tr>
             <td>{{ $balance->account_name }}</td>
             <td></td>
-            <td>{{ number_format($balance->total_amount, 2) }}</td>
+            <td>{{ number_format($balance->total_amount, 2, ',', '.') }}</td>
         </tr>
         @endif
         @endforeach
@@ -56,14 +54,14 @@
             <td></td>
             <td><strong>{{ number_format($balanceSheet->filter(function($item) {
             return strtolower($item->account_group) === 'tetap' || strtolower($item->account_group) === 'aset tetap';
-        })->sum('total_amount'), 2) }}</strong></td>
+        })->sum('total_amount'), 2, ',', '.') }}</strong></td>
         </tr>
         <tr>
             <td><strong>Total Aset</strong></td>
             <td></td>
             <td><strong>{{ number_format($balanceSheet->filter(function($item) {
             return strtolower($item->account_type) === 'aset' || strtolower($item->account_type) === 'aset';
-        })->sum('total_amount'), 2) }}</strong></td>
+        })->sum('total_amount'), 2, ',', '.') }}</strong></td>
         </tr>
         <tr>
             <td><strong>&nbsp;</strong></td>
@@ -86,7 +84,7 @@
         <tr>
             <td>{{ $balance->account_name }}</td>
             <td></td>
-            <td>{{ number_format($balance->total_amount, 2) }}</td>
+            <td>{{ number_format($balance->total_amount, 2, ',', '.') }}</td>
         </tr>
         @endif
         @endforeach
@@ -100,7 +98,7 @@
         <tr>
             <td>{{ $balance->account_name }}</td>
             <td></td>
-            <td>{{ number_format($balance->total_amount, 2) }}</td>
+            <td>{{ number_format($balance->total_amount, 2, ',', '.') }}</td>
         </tr>
         @endif
         @endforeach
@@ -109,7 +107,7 @@
             <td></td>
             <td><strong>{{ number_format($balanceSheet->filter(function($item) {
             return strtolower($item->account_type) === 'kewajiban' || strtolower($item->account_type) === 'kewajiban';
-        })->sum('total_amount'), 2) }}</strong></td>
+        })->sum('total_amount'), 2, ',', '.') }}</strong></td>
         </tr>
         <tr>
             <td>&nbsp;</td>
@@ -125,7 +123,7 @@
         @if(strtolower($balance->account_group) === 'ekuitas')
         <tr>
             <td>{{ $balance->account_name }}</td>
-            <td>{{ number_format($balance->total_amount, 2) }}</td>
+            <td>{{ number_format($balance->total_amount, 2, ',', '.') }}</td>
             <td></td>
         </tr>
         @endif
@@ -148,32 +146,12 @@
         <tr>
             <td><strong>Total Ekuitas</strong></td>
             <td></td>
-            <td><strong>{{number_format($netAmount,2)}}</strong></td>
+            <td><strong>{{number_format($netAmount,2, ',', '.')}}</strong></td>
         </tr>
         <tr>
             <td><strong>Total Kewajiban dan Ekuitas</strong></td>
             <td></td>
-            <td><strong>{{number_format($totalKewajibanDanEkuitas,2)}}</strong></td>
+            <td><strong>{{number_format($totalKewajibanDanEkuitas,2, ',', '.')}}</strong></td>
         </tr>
     </tbody>
 </table>
-
-
-<script>
-    document.getElementById('printButton').addEventListener('click', function() {
-        var printContents = document.getElementById('headerTable').outerHTML;
-        printContents += document.getElementById('tableBalanceSheet').outerHTML;
-
-        var originalContents = document.body.innerHTML;
-
-        var printWindow = window.open('', '_blank');
-        printWindow.document.write('<html><head><title>Print to PDF</title>');
-        printWindow.document.write('</head><body >');
-        printWindow.document.write(printContents);
-        printWindow.document.write('</body></html>');
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
-    });
-</script>
