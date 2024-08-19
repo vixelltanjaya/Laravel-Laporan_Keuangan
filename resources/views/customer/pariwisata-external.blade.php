@@ -1,4 +1,4 @@
-@extends('layouts.user_type.guest')
+@extends('layouts.user_type.external')
 @section('content')
 <main class="main-content position-relative max-height-vh-100 h-100 mt-8 border-radius-lg">
     <div class="container-fluid py-4">

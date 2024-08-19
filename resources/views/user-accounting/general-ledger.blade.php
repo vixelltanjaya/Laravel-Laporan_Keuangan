@@ -12,7 +12,7 @@
                         </div>
                         <div class="nav-item d-flex align-self-end">
                             <form action="{{ route('general-ledger.generate-gl-to-excel') }}" method="GET" class="d-inline">
-                                <button type="submit" class="btn btn-dark btn-block mb-0 me-2">
+                                <button id="exportBukuBesarExcel" type="submit" class="btn btn-dark btn-block mb-0 me-2">
                                     <i class="ri-file-excel-2-line"></i> Export to Excel
                                 </button>
                             </form>
@@ -103,6 +103,15 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
+        function toggleExportButton() {
+            var monthYearValue = $('#month_year').val();
+            if (monthYearValue) {
+                $('#exportBukuBesarExcel').prop('disabled', false);
+            } else {
+                $('#exportBukuBesarExcel').prop('disabled', true);
+            }
+        }
+        toggleExportButton();
         $('#month_year').on('change', function() {
             var monthYearValue = $(this).val();
         });

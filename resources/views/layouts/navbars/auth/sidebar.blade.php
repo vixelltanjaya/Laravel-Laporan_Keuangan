@@ -29,7 +29,7 @@
           <span class="nav-link-text ms-1">Dashboard</span>
         </a>
       </li>
-      @if (Auth::user()->role_id == 1 || Auth::user()->role_id == 6)
+      @if (Auth::user()->role_id == 1 || Auth::user()->role_id == 6 || Auth::user()->role_id == 8)
       <li class="nav-item mt-2">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Admin</h6>
       </li>
@@ -54,7 +54,7 @@
       </li>
       @endif
 
-      @if (Auth::user()->role_id == 1 || Auth::user()->role_id == 6)
+      @if (Auth::user()->role_id == 1 || Auth::user()->role_id == 6 || Auth::user()->role_id == 7)
       <li class="nav-item mt-2">
         <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Personalia</h6>
       </li>

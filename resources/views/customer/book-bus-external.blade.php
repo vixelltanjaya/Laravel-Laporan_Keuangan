@@ -1,4 +1,4 @@
-@extends('layouts.user_type.guest')
+@extends('layouts.user_type.external')
 @section('content')
 <main class="main-content position-relative max-height-vh-100 h-100 mt-6 border-radius-lg">
 <div class="container-fluid py-4">
@@ -184,7 +184,7 @@
             var platNomor = document.getElementById('plat_nomor').value;
 
             var message = `Nama: ${namaCustomer}\nTanggal Berangkat: ${startDate} \n Tanggal Pulang: ${endDate}\nNo Telepon: ${noTelp}\nDescription: ${description}\nPlat nomor: ${platNomor}`;
-            var whatsappUrl = `https://wa.me/6287832412825?text=${encodeURIComponent(message)}`; // testing only using dev phone number
+            var whatsappUrl = `https://wa.me/6287832412825?text=${encodeURIComponent(message)}`; // using dev/my phone number
 
             window.open(whatsappUrl, '_blank');
         });

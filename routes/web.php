@@ -44,6 +44,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,9 +68,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/login', function () {
 		return view('dashboard');
 	});
-
 	Route::get('/list-penjualan-harian-vs-pariwisata', [DashboardController::class, 'listPenjualanHarianVsPariwisata'])->name('listPenjualanHarianVsPariwisata');
-
 	Route::get('/logout', [SessionsController::class, 'destroy']);
 	Route::get('/user-profile', [InfoUserController::class, 'create']);
 	Route::post('/user-profile', [InfoUserController::class, 'store']);
@@ -99,20 +98,18 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('rtl', function () {
 		return view('rtl');
 	})->name('rtl');
+});
 
-
-	// PERSONALIA
-	Route::resource('employee', EmployeeController::class)->only(
-		'index',
-		'store',
-		'update',
-		'destroy'
-	);
-	route::resource('payroll', PayrollController::class);
+// PERSONALIA
+Route::group(['middleware' => ['auth', 'checkRole:1,6,7']], function() {
+    Route::resource('payroll', PayrollController::class);
+    Route::resource('employee', EmployeeController::class)->only(
+        'index', 'store', 'update', 'destroy'
+    );
 });
 
 // ACCOUNTING 
-Route::group(['middleware'=>['auth', 'check.role:1,5,8']], function(){
+Route::group(['middleware'=>['auth', 'checkRole:1,5,6']], function(){
 	Route::get('export/income-statement', [GenerateFinancialStatementController::class, 'exportIncomeStatement'])->name('export.income-statement');
 	Route::get('export/balance-sheet', [GenerateFinancialStatementController::class, 'exportBalanceSheet'])->name('export.balance-sheet');
 	Route::get('export/perubahan-modal', [GenerateFinancialStatementController::class, 'exportPerubahanModal'])->name('export.perubahan-modal');
@@ -210,7 +207,7 @@ Route::group(['middleware'=>['auth', 'check.role:1,5,8']], function(){
 });
 
 // ADMIN
-Route::group(['middleware'=>['auth', 'check.role:1,6,8']], function(){
+Route::group(['middleware'=>['auth', 'checkRole:1,6,8']], function(){
 	Route::resource('pariwisata', PariwisataController::class)->only(['index', 'store', 'update', 'destroy']);
 	Route::get('add-data-pariwisata', [AddDataPariwisataController::class, 'index'])->name('add-data-pariwisata.index');
 	Route::get('edit-data-pariwisata/{id}', [editDataPariwisataController::class, 'index'])->name('edit-data-pariwisata.index');
@@ -226,7 +223,7 @@ Route::group(['middleware'=>['auth', 'check.role:1,6,8']], function(){
 });
 
 // role SuperAdmin
-Route::group(['middleware' => ['auth', 'check.role:1']], function () {
+Route::group(['middleware' => ['auth', 'checkRole:1']], function () {
 	Route::resource('add-role', RoleController::class)->only(['index', 'store']);
 	Route::prefix('add-user')->group(function () {
 		Route::get('destroy', [AddUserController::class, 'destroy'])->name('add-user.destroy');
@@ -243,16 +240,6 @@ Route::group(['middleware' => ['auth', 'check.role:1']], function () {
 });
 
 // user external
-Route::prefix('book-bus-external')->group(function () {
-	Route::get('/', [BookBusExternalController::class, 'index'])->name('book-bus-external.index');
-	Route::get('/list', [BookBusExternalController::class, 'listBook'])->name('book-bus-external.list');
-});
-Route::get('pariwisata-external', [PariwisataExternalController::class, 'index'])->name('pariwisata-external.index');
-Route::get('/landing-page', function () {
-	return view('customer.landing-page-cust');
-});
-
-
 Route::group(['middleware' => 'guest'], function () {
 	Route::get('/register', [RegisterController::class, 'create']);
 	Route::post('/register', [RegisterController::class, 'store']);
@@ -262,6 +249,14 @@ Route::group(['middleware' => 'guest'], function () {
 	Route::post('/forgot-password', [ResetController::class, 'sendEmail']);
 	Route::get('/reset-password/{token}', [ResetController::class, 'resetPass'])->name('password.reset');
 	Route::post('/reset-password', [ChangePasswordController::class, 'changePassword'])->name('password.update');
+	Route::prefix('book-bus-external')->group(function () {
+		Route::get('/', [BookBusExternalController::class, 'index'])->name('book-bus-external.index');
+		Route::get('/list', [BookBusExternalController::class, 'listBook'])->name('book-bus-external.list');
+	});
+	Route::get('pariwisata-external', [PariwisataExternalController::class, 'index'])->name('pariwisata-external.index');
+	Route::get('/landing-page', function () {
+		return view('customer.landing-page-cust');
+	});
 });
 
 Route::get('/login', function () {

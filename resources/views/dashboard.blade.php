@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="row">
-  @if (Auth::user()->role_id == 1)
+  @if (Auth::user()->role_id == 1 || Auth::user()->role_id == 5)
   <!-- Kas dan Setara Kas Card -->
   <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
     <div class="card">
