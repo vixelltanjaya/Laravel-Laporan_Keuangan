@@ -147,6 +147,10 @@
                         <input type="text" class="form-control" id="amount" name="amount" required>
                     </div>
                     <div class="mb-3">
+                        <label for="total_price" class="form-label">Jumlah Harga Total</label>
+                        <input type="text" class="form-control" id="total_price" name="total_price" required>
+                    </div>
+                    <div class="mb-3">
                         <label for="evidence_image">Bukti Transaksi</label>
                         <small class="form-text text-muted">(Maks. 2MB)</small>
                         <input type="file" class="form-control-file file-selector-button" name="evidence_image" id="evidence_image" required>
@@ -219,6 +223,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var amountInput = document.getElementById('amount');
+        var totalPriceInput = document.getElementById('total_price');
 
         amountInput.addEventListener('input', function(e) {
             var value = e.target.value.replace(/\./g, '');
@@ -233,6 +238,26 @@
             if (!isNaN(value) && value.length > 0) {
                 e.target.value = parseFloat(value).toLocaleString('de-DE');
             }
+        });
+
+        // totalPriceInput.addEventListener('input', function(e) {
+        //     var value = e.target.value.replace(/\./g, '');
+        //     if (!isNaN(value) && value.length > 0) {
+        //         value = parseFloat(value).toLocaleString('de-DE');
+        //     }
+        //     e.target.value = value;
+        // });
+
+        // totalPriceInput.addEventListener('blur', function(e) {
+        //     var value = e.target.value.replace(/\./g, '');
+        //     if (!isNaN(value) && value.length > 0) {
+        //         e.target.value = parseFloat(value).toLocaleString('de-DE');
+        //     }
+        // });
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            var value = totalPriceInput.value.replace(/\./g, '');
+            totalPriceInput.value = value; 
         });
 
         var platNomor = @json($bus -> plat_nomor);
@@ -313,7 +338,7 @@
             if (evidenceImage) {
                 formData.append('evidence_image', evidenceImage);
             }
-            
+
             console.log('bus id nya apaaa ', busId);
             console.log('evidenceImage', evidenceImage);
 

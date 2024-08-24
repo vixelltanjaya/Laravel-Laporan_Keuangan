@@ -12,42 +12,19 @@
             <div class="card-body">
                 <h4>Edit Master Journal</h4>
             </div>
-
-            @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
-
-            @if (session('berhasil'))
-            <div class="alert alert-success">
-                <ul>
-                    <li>{{ session('berhasil') }}</li>
-                </ul>
-            </div>
-            @endif
-
+            @include('components.alert-danger-success');
             <div class="card-body">
                 <form id="masterJournalForm" action="{{ route('master-journal.update', $masterJournal->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <!-- begin: Input Data -->
                     <div class="form-group col-md-6">
-                        <label for="code">Kode Transaksi<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="code" value="{{ $masterJournal->code }}" required>
-                    </div>
-
-                    <div class="form-group col-md-6">
-                        <label for="description">Deskripsi Transaksi<span class="text-danger">*</span></label>
+                        <label for="description">Deskripsi Template Journal<span class="text-danger">*</span></label>
                         <input type="text" class="form-control" name="description" value="{{ $masterJournal->description }}" required>
                     </div>
                     
                     <div class="form-group col-md-6">
-                        <label for="evidence_id">Kode Bukti Transaksi<span class="text-danger">*</span></label>
+                        <label for="evidence_id">Kode Bukti Template Journal<span class="text-danger">*</span></label>
                         <select name="evidence_id" id="evidence_id" class="form-control" required>
                             <option value="">Pilih Kode Bukti</option>
                             @foreach($EvidenceCode as $evidence)

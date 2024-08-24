@@ -16,9 +16,9 @@
                         <div class="nav-item d-flex align-self-end">
                             <a href="#" class="btn bg-gradient-primary me-2" type="button" data-bs-toggle="modal" data-bs-target="#modalAddEmployee">+&nbsp;Employee</a>
                             <a href="/exportexcel" target="_blank" class="btn btn-dark active text-white me-2 " role="button" aria-pressed="true">
-                                <i class="fas fa-download me-1"></i>Unduh</a>
+                                <i class="ri-file-excel-2-line me-1"></i>Unduh</a>
                             <a href="/" target="_blank" class="btn btn-default active text-black me-2" role="button" aria-pressed="true" data-bs-toggle="modal" data-bs-target="#importEmployeeModal">
-                                <i class="fas fa-file-import me-1"></i>Import</a>
+                                <i class="ri-file-line me-1"></i>Import</a>
                         </div>
                     </div>
                 </div>
@@ -127,7 +127,7 @@
                     <div class="mb-3">
                         <label for="departemen" class="form-label">Departemen</label>
                         <select class="form-control" id="departemen" name="departemen" required>
-                        <option value="" disabled selected>Pilih Departemen</option>
+                            <option value="" disabled selected>Pilih Departemen</option>
                             <option value="akunting">Akunting</option>
                             <option value="administrasi">Administrasi</option>
                             <option value="personalia">Personalia</option>
@@ -138,7 +138,7 @@
                     <div class="mb-3">
                         <label for="status_pegawai" class="form-label">Status Pegawai</label>
                         <select class="form-control" id="status_pegawai" name="status_pegawai" required>
-                        <option value="" disabled selected>Pilih status</option>
+                            <option value="" disabled selected>Pilih status</option>
                             <option value="tetap">Tetap</option>
                             <option value="harian">Harian</option>
                         </select>

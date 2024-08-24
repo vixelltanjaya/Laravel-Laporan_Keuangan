@@ -49,6 +49,18 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            <div class="form-group col-md-6" id="employee-select-container">
+                                <label for="employee">Pilih Supir</label>
+                                <select name="employee" id="employee" class="form-control" required>
+                                    <option value="0">Pilih Supir / Kosongkan</option>
+                                    @foreach($employee as $employees)
+                                    <option value="{{ $employees->id }}">
+                                        {{ $employees->username }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div class="form-group col-md-6">
                                 <label for="transaction_date">Tanggal Transaksi <span class="text-danger">*</span></label>
                                 <input type="date" class="form-control" name="transaction_date" value="{{ date('Y-m-d') }}">
@@ -150,8 +162,6 @@
     function unformatNumber(value) {
         return value.replace(/,/g, ''); // Remove all commas
     }
-
-
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('master_transaction_id').addEventListener('change', function() {
             var selectedOption = this.options[this.selectedIndex];
@@ -233,5 +243,25 @@
                 input.value = unformatNumber(input.value);
             });
         });
+
+        // Get the division_id element and the employee select element
+        var divisionSelect = document.getElementById('division');
+        var employeeSelectContainer = document.querySelector('#employee').closest('.form-group');
+
+        // Function to show/hide employee select based on division_id
+        function toggleEmployeeSelect() {
+            var selectedDivisionId = divisionSelect.value; // Get the selected division_id
+            if (selectedDivisionId == '2') { // Check if selected division_id is 2
+                employeeSelectContainer.style.display = 'block'; // Show the employee select element
+            } else {
+                employeeSelectContainer.style.display = 'none'; // Hide the employee select element
+            }
+        }
+
+        // Initial check on page load
+        toggleEmployeeSelect();
+
+        // Add event listener for changes in the division select input
+        divisionSelect.addEventListener('change', toggleEmployeeSelect);
     });
 </script>

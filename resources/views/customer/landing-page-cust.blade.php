@@ -7,7 +7,7 @@
             <div class="container">
                 <div class="text-center text-white d-flex flex-column justify-content-center align-items-center" style="height: 70vh; background: url('hero-image.jpg') no-repeat center center/cover;">
                     <h1>Welcome to PT Maharani Putra Sejahtera </h1>
-                    <p>Your trusted partner for luxurious travel experiences</p>
+                    <p>Your trusted partner for travel experiences</p>
                 </div>
             </div>
         </section>
@@ -15,19 +15,19 @@
         <section id="about" class="py-5">
             <div class="container">
                 <h2>About Us</h2>
-                <p>Maharani Tour provides the best pariwisata buses for your travel needs. We ensure comfort, safety, and an unforgettable travel experience.</p>
+                <p>Maharani Tour menyediakan bus pariwisata terbaik untuk kebutuhan perjalanan Anda. Kami memastikan kenyamanan, keamanan, dan pengalaman perjalanan yang tak terlupakan.</p>
             </div>
         </section>
 
         <!-- Services Section -->
         <section id="services" class="bg-light py-5">
             <div class="container">
-                <h2>Our Services</h2>
+                <h2>Layanan Kami</h2>
                 <ul>
-                    <li>Comfortable seating with AC</li>
-                    <li>Sound system and TV/Karaoke</li>
-                    <li>Professional and experienced drivers</li>
-                    <li>Custom travel packages</li>
+                    <li>Kursi nyaman</li>
+                    <li>Sound system dan TV/Karaoke</li>
+                    <li>Crew yang professional dan berpengalaman</li>
+                    <li>Bus ber-AC</li>
                 </ul>
             </div>
         </section>
@@ -35,19 +35,16 @@
         <!-- Fleet Section -->
         <section id="fleet" class="py-5">
             <div class="container">
-                <h2>Our Fleet</h2>
+                <h2>Armada Kami</h2>
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <img src="{{ asset('storage/bus_images/4b3d3c98-cfd8-4abe-b2b4-38c4711f5460.jpg') }}" alt="Bus 1" class="img-fluid">
-                        <p>33 Seat Bus with full amenities</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <img src="{{ asset('storage/bus_images/552722ce-d490-4ac6-a8a0-8e4bd4cfaf3a.jpg') }}" alt="Bus 2" class="img-fluid">
-                        <p>33 Seat Bus with full amenities</p>
                     </div>
                     <div class="col-md-4 mb-3">
                         <img src="{{ asset('storage/bus_images/dfd2efbd-8e6c-4d06-90bd-03c885676bc5.jpg') }}" alt="Bus 3" class="img-fluid">
-                        <p>33 Seat Bus with full amenities</p>
                     </div>
                 </div>
             </div>

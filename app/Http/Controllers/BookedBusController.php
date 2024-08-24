@@ -67,16 +67,18 @@ class BookedBusController extends Controller
     public function store(Request $request)
     {
         Log::debug('masuk func store');
-        Log::debug('cek req id ' . json_encode($request->all()));
         Log::debug('evidence_image ' . json_encode($request->evidence_image));
+        Log::debug('cek req id ' . json_encode($request->all()));
+        
         $request->validate([
             'start_date' => 'required|date',
             'end_date' => 'required|date',
             'description' => 'required|string|max:255',
             'customer_id' => 'required|exists:customer,id',
+            'amount' => 'required|string',
+            'total_price' => 'required|numeric',
             'bus_pariwisata_id' => 'required|exists:bis_pariwisata,id',
             'evidence_image' => 'required|file|max:2048',
-            'amount' => 'required|string',
         ]);
 
         DB::beginTransaction();
@@ -84,6 +86,9 @@ class BookedBusController extends Controller
         try {
 
             $amount = floatval(str_replace('.', '', $request->amount));
+            $totalPrice = str_replace('.', '', $request->input('total_price'));
+            $numericTotalPrice = is_numeric($totalPrice) ? floatval($totalPrice) : 0;
+
             // simpan ke booking_bus
             $booking = new BookingBus();
             $booking->start_book = $request->start_date;
@@ -92,8 +97,9 @@ class BookedBusController extends Controller
             $booking->description = $request->description;
             $booking->customer_id = $request->customer_id;
             $booking->bus_pariwisata_id = $request->bus_pariwisata_id;
+            $booking->total_price = $numericTotalPrice;
             $booking->journal_entry_id = 0;
-            // $booking->save();
+            $booking->save();
             Log::debug('bookings ' . json_encode($booking));
 
             // Increment dokumen

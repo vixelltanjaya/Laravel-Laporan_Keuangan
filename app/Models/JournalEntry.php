@@ -46,9 +46,11 @@ class JournalEntry extends Model
                 'B.evidence_image',
                 'B.entry_id',
                 'A.account_name',
-                'A.account_sign'
+                'A.account_sign',
+                'C.username'
             )
             ->leftJoin('chart_of_account AS A', 'B.account_id', '=', 'A.account_id')
+            ->leftJoin('employees AS C', 'C.id', '=', 'B.employee_id')
             ->where('B.entry_id', $id)
             ->orderBy('B.id', 'ASC')
             ->get();
@@ -67,6 +69,7 @@ class JournalEntry extends Model
                 'A.customer_id',
                 'A.start_book',
                 'A.end_book',
+                'A.total_price',
                 'B.description',
                 'C.name',
                 'C.no_telp',

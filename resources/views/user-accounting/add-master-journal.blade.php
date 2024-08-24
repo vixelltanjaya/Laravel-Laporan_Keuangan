@@ -18,17 +18,12 @@
                     @csrf
                     <!-- begin: Input Data -->
                     <div class="form-group col-md-6">
-                        <label for="code">Kode Transaksi<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" name="code" value="" required>
-                    </div>
-
-                    <div class="form-group col-md-6">
-                        <label for="description">Deskripsi Transaksi<span class="text-danger">*</span></label>
+                        <label for="description">Deskripsi Template Journal<span class="text-danger">*</span></label>
                         <input type="text" class="form-control" name="description" value="" required>
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label for="evidence_id">Kode Bukti Transaksi<span class="text-danger">*</span></label>
+                        <label for="evidence_id">Kode Bukti Template Journal<span class="text-danger">*</span></label>
                         <select name="evidence_id" id="evidence_id" class="form-control" required>
                             <option value="">Pilih Kode Bukti</option>
                             @foreach($EvidenceCode as $evidence)
@@ -209,8 +204,6 @@
 
         // Event listener for previewing the form data
         $('button[data-target="#previewModal"]').on('click', function() {
-            // Collect data from the form
-            let transactionCode = $('input[name="code"]').val();
             let description = $('input[name="description"]').val();
             let journalEntries = [];
 

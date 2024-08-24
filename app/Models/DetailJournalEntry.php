@@ -12,7 +12,7 @@ class DetailJournalEntry extends Model
 
     protected $table = 'detail_journal_entry';
 
-    protected $fillable = ['entry_id', 'account_id', 'debit', 'credit', 'evidence_image'];
+    protected $fillable = ['entry_id', 'account_id', 'debit', 'credit', 'evidence_image', 'employee_id'];
 
     public static function joinJournalEntry()
     {

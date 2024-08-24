@@ -119,7 +119,6 @@
                 <input type="hidden" name="balances[{{ $index }}][debit]" value="{{ $account->total_debit }}">
                 <input type="hidden" name="balances[{{ $index }}][credit]" value="{{ $account->total_credit }}">
                 <input type="hidden" name="balances[{{ $index }}][balance_difference]" value="{{ $account->balance_difference }}">
-                <input type="hidden" name="balances[{{ $index }}][division_id]" value="{{$account->division_id}}">
                 <input type="hidden" name="balances[{{ $index }}][month_year]" value="{{ request('month_year') }}">
                 @endforeach
             </form>

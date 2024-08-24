@@ -57,6 +57,20 @@
                 </nav>
             </div>
         </div>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header pb-0 text-left">
+                        <h3>Calendar</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="calendar-container" style="display:flex; justify-content:center; margin:0 auto;">
+                            <div id="calendar" style="max-width:800px; width:100%;" class="text-center"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 </main>
 
 <!-- view details -->
@@ -85,6 +99,10 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js" integrity="sha512-7U4rRB8aGAHGVad3u2jiC7GA5/1YhQcQjxKeaVms/bT66i3LVBMRcBI9KwABNWnxOSwulkuSXxZLGuyfvo7V1A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -95,6 +113,54 @@
         evidenceImage.src = evidenceImage.getAttribute('data-image-path');
 
         console.log('path', evidenceImage);
+
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            selectable: true,
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,listWeek'
+            },
+            buttonText: {
+                dayGridMonth: 'Booking',
+                listWeek: 'List Booking'
+            },
+            events: function(fetchInfo, successCallback, failureCallback) {
+                $.ajax({
+                    url: `{{ route('listBookExternal') }}`,
+                    type: 'GET',
+                    success: function(data) {
+                        successCallback(data);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed fetching events data:', error);
+                        failureCallback(error);
+                    }
+                });
+            },
+            eventContent: function(arg) {
+                var customer = document.createElement('div');
+                customer.innerHTML = `Customer: ${arg.event.extendedProps.customer}`;
+
+                var description = document.createElement('div');
+                description.innerHTML = `${arg.event.extendedProps.description}`;
+
+                var bus = document.createElement('div');
+                bus.innerHTML = `<strong>Plat: ${arg.event.extendedProps.bus}</strong>`;
+
+                return {
+                    domNodes: [bus]
+                };
+            },
+            eventDidMount: function(info) {
+                if (info.event.extendedProps.color) {
+                    info.el.style.backgroundColor = info.event.extendedProps.color;
+                }
+            }
+        });
+        calendar.render();
+
     });
 
     function viewDetails(button) {

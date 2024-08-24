@@ -63,10 +63,9 @@
                         <input type="text" class="form-control" id="employee_name{{ $employee->id }}" name="employee_name" value="{{ $employee->username }}" readonly>
                         <input type="hidden" name="employee_id" value="{{ $employee->id }}">
                     </div>
-
                     <div class="mb-3">
                         <label for="gaji{{ $employee->id }}" class="form-label">Gaji</label>
-                        <input type="text" class="form-control gaji-input" id="gaji{{ $employee->id }}" name="gaji" value="{{ old('gaji', $employee->gaji ?? $employee->honor ?? '') }}" required>
+                        <input type="text" class="form-control" id="gaji{{ $employee->id }}" name="gaji" value="{{ old('gaji', $employee->gaji ?? $employee->honor ?? '') }}" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </form>
@@ -82,14 +81,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 <script>
-    function formatNumber(value) {
-        return new Intl.NumberFormat().format(value);
-    }
-
-    function removeFormatting(value) {
-        return value.replace(/,/g, '');
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.gaji-input').forEach(gajiInput => {
             gajiInput.value = formatNumber(removeFormatting(gajiInput.value));
@@ -106,7 +97,20 @@
                 gajiInput.value = removeFormatting(gajiInput.value);
             });
         });
+        document.querySelector('form').addEventListener('submit', function() {
+            document.querySelectorAll('.gaji-input').forEach(gajiInput => {
+                gajiInput.value = removeFormatting(gajiInput.value);
+            });
+        });
 
         $('#payrollTable').DataTable();
     });
+
+    function formatNumber(value) {
+        return new Intl.NumberFormat().format(value);
+    }
+
+    function removeFormatting(value) {
+        return value.replace(/,/g, '');
+    }
 </script>

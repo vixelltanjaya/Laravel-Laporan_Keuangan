@@ -146,18 +146,18 @@
             entry.find('input').val(''); 
             entry.find('select').val('');
             entry.appendTo('.journal-entries');
-            validateBalance(); // Validate balance on adding new row
+            validateBalance(); 
         });
 
         $(document).on('click', '.removeRow', function(e) {
             e.preventDefault();
             $(this).closest('.form-group.row').remove();
-            validateBalance(); // Validate balance on removing a row
+            validateBalance(); 
         });
 
         $('#resetButton').click(function() {
             $('#journalForm')[0].reset();
-            validateBalance(); // Reset balance validation
+            validateBalance(); 
         });
 
         $('[data-bs-target="#previewModal"]').click(function() {
@@ -199,13 +199,11 @@
             `;
             $('#previewContent').html(previewContent);
         });
-
-        // Initial validation
         validateBalance();
     });
 
     function formatNumber(input) {
-        let value = input.value.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except the decimal point
+        let value = input.value.replace(/[^0-9.]/g, '');
         let number = parseFloat(value);
         if (!isNaN(number)) {
             input.value = number.toLocaleString('en-US', {
@@ -214,7 +212,7 @@
             });
         }
         updateRawValue(input);
-        validateBalance(); // Validate balance on input change
+        validateBalance(); 
     }
 
     function updateRawValue(input) {
@@ -236,7 +234,10 @@
             } else if (sign === 'credit') {
                 creditTotal += amount;
             }
+            
         });
+        console.log('cek debit total' .debitTotal);
+        console.log('cek kredit total' .creditTotal);
 
         const isBalanced = debitTotal === creditTotal;
         $('#submitButton').prop('disabled', !isBalanced);

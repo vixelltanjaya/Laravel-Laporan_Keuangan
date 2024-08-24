@@ -6,6 +6,7 @@ use App\Models\CoaModel;
 use App\Models\DetailJournalEntry;
 use App\Models\JournalEntry;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -56,6 +57,10 @@ class ViewCashInController extends Controller
             $detailJournal = DetailJournalEntry::where('entry_id', $id)->first();
             $bookingData = JournalEntry::joinBookingBus($id);
 
+            $formattedStartDate = Carbon::parse($bookingData->start_book)->format('d/m/Y');
+            $formattedEndDate = Carbon::parse($bookingData->end_book)->format('d/m/Y');
+            $formattedBookingDates = $formattedStartDate . ' - ' . $formattedEndDate;
+
             $journalEntry = $journalData->journalEntry;
             $details = $journalData->details;
 
@@ -73,7 +78,8 @@ class ViewCashInController extends Controller
                 'details' => $details,
                 'detailJournal' => $detailJournal,
                 'invoices' => $invoice,
-                'bookingData' => $bookingData
+                'bookingData' => $bookingData,
+                'formattedBookingDates' => $formattedBookingDates,
             ];
 
             // Load the view and pass the data

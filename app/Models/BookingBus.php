@@ -21,7 +21,8 @@ class BookingBus extends Model
         'end_book',
         'description',
         'fleet_departure',
-        'fleet_arrivals'
+        'fleet_arrivals',
+        'total_price',
     ];
 
     public function customer()
@@ -58,6 +59,7 @@ class BookingBus extends Model
                 'B.id',
                 'B.fleet_departure',
                 'B.fleet_arrivals',
+                'B.total_price',
                 'B.customer_id'
             )
             ->join('bis_pariwisata as A', 'A.id', '=', 'B.bus_pariwisata_id')

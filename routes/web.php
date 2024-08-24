@@ -167,8 +167,6 @@ Route::group(['middleware'=>['auth', 'checkRole:1,5,6']], function(){
 		Route::get('/income', [GenerateFinancialStatementController::class, 'generatePdfIncomeStatement'])->name('generate-financial-statement.generatePdfIncomeStatement');
 		Route::post('/balance', [GenerateFinancialStatementController::class, 'balance'])->name('generate-financial-statement.balance');
 		Route::get('/balance', [GenerateFinancialStatementController::class, 'generatePdfBalanceSheet'])->name('generate-financial-statement.generatePdfBalanceSheet');
-		Route::post('/perubahanModal', [GenerateFinancialStatementController::class, 'perubahanModal'])->name('generate-financial-statement.perubahanModal');
-		Route::get('/perubahanModal', [GenerateFinancialStatementController::class, 'generatePdfPerubahanModal'])->name('generate-financial-statement.generate-pdf-perubahan-modal');
 	});
 
 	Route::prefix('general-ledger')->group(function () {
@@ -254,6 +252,7 @@ Route::group(['middleware' => 'guest'], function () {
 		Route::get('/list', [BookBusExternalController::class, 'listBook'])->name('book-bus-external.list');
 	});
 	Route::get('pariwisata-external', [PariwisataExternalController::class, 'index'])->name('pariwisata-external.index');
+	Route::get('pariwisata-external/listBookExternal', [PariwisataExternalController::class, 'listBookExternal'])->name('listBookExternal');
 	Route::get('/landing-page', function () {
 		return view('customer.landing-page-cust');
 	});

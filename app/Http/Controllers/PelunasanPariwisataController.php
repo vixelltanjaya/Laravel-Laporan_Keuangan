@@ -52,7 +52,7 @@ class PelunasanPariwisataController extends Controller
             'noAccount' => 'required|array',
             'noAccount.*' => 'integer',
             'accountSign' => 'required|array',
-            'accountSign.*' => 'in:debit,credit',
+            'accountSign.*' => 'in:debit,kredit',
             'amount' => 'required|array',
             'amount.*' => 'required|numeric',
             'evidence_image' => 'sometimes|image|mimes:jpeg,png,jpg|max:2048',
@@ -140,11 +140,11 @@ class PelunasanPariwisataController extends Controller
                         'entry_id' => $journalEntry->id,
                         'account_id' => $accountId,
                         'debit' => $request->input('accountSign')[$index] === 'debit' ? $request->input('amount')[$index] : 0,
-                        'credit' => $request->input('accountSign')[$index] === 'credit' ? $request->input('amount')[$index] : 0,
+                        'credit' => $request->input('accountSign')[$index] === 'kredit' ? $request->input('amount')[$index] : 0,
                         'evidence_image' => $imagePath ?? ''
                     ]);
-                    Log::debug('Detail Journal Entry created for account ID: ' . $accountId);
                 }
+                Log::debug('Detail Journal Entry: ' .json_encode($request->all()));
             }
 
 

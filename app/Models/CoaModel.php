@@ -58,7 +58,6 @@ class CoaModel extends Model
                 'A.account_name',
                 'A.account_sign',
                 'A.account_type',
-                'D.division_id',
                 DB::raw('COALESCE("C"."beginning_balance", 0) AS "beginning_balance"'),
                 DB::raw('COALESCE(SUM(CAST("B"."debit" AS NUMERIC)), 0) AS "total_debit"'),
                 DB::raw('COALESCE(SUM(CAST("B"."credit" AS NUMERIC)), 0) AS "total_credit"'),
@@ -73,7 +72,7 @@ class CoaModel extends Model
                 DB::raw('COALESCE("C".ending_balance, 0) AS "beginning_balance_next_month"'),
                 DB::raw('SUBSTRING("C".balance_time FROM 1 FOR 6) AS balance_time')
             )
-            ->groupBy('A.account_id', 'A.account_name', 'C.beginning_balance', 'A.account_sign', 'C.ending_balance', 'C.balance_time', 'A.account_type', 'D.division_id')
+            ->groupBy('A.account_id', 'A.account_name', 'C.beginning_balance', 'A.account_sign', 'C.ending_balance', 'C.balance_time', 'A.account_type')
             ->orderBy('A.account_id', 'ASC');
 
         Log::debug('SQL Query: ' . $query->toSql());
@@ -100,8 +99,6 @@ class CoaModel extends Model
         Log::debug('formattedEndDate: ' . json_encode($transactionMonthEnd));
 
         $divisionId = $request->input('division_id');
-
-        // Base query
         $query = DB::table('chart_of_account AS A')
             ->leftJoin('detail_journal_entry AS B', 'A.account_id', '=', 'B.account_id')
             ->leftJoin('journal_entry AS C', 'C.id', '=', 'B.entry_id')

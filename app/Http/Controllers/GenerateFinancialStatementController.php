@@ -96,37 +96,6 @@ class GenerateFinancialStatementController extends Controller
             'formattedMonth' => $formattedMonth
         ]);
     }
-    public function perubahanModal(Request $request)
-    {
-        $reportType = 'perubahanModal';
-        session()->put('export_request', $request->all());
-        $netIncomeResults = $this->countNetIncome($request);
-        $perubahanModal = CoaModel::getSumRequestTrx($request);
-
-        $endDate = $request->input('transaction_month_end');
-        $formattedEndDate = $endDate ? date('d F Y', strtotime($endDate . '-01')) : '';
-
-        // Get raw numeric values first
-        $modalPemilikRaw = $perubahanModal->firstWhere('account_name', 'Modal Pemilik')->total_amount ?? 0;
-        $labaRaw = $netIncomeResults['netIncomeYTD'] + $netIncomeResults['netIncomeCurrentMonth'] + $netIncomeResults['netIncome'];
-        $priveRaw = $perubahanModal->firstWhere('account_type', 'Prive')->total_amount ?? 0;
-        $perubahanModalRaw = $labaRaw - $priveRaw;
-
-        $modalAkhirRaw = $modalPemilikRaw + $perubahanModalRaw;
-
-        Log::debug('laba raw' .json_encode($netIncomeResults));
-
-        // Format the amounts
-        $modalPemilik = $this->formatAmount($modalPemilikRaw);
-        $laba = $this->formatAmount($labaRaw);
-        $prive = $this->formatAmount($priveRaw);
-        $perubahanModal = $this->formatAmount($perubahanModalRaw);
-        $modalAkhir = $this->formatAmount($modalAkhirRaw);
-
-        Log::debug('formatted datanya apa ' . json_encode($perubahanModal));
-
-        return view('user-accounting.generate-financial-statement', compact('reportType', 'modalPemilik', 'modalAkhir', 'laba', 'prive', 'netIncomeResults', 'perubahanModal', 'formattedEndDate'));
-    }
     public function countNetIncome($request)
     {
         Log::debug('func count countNetIncome' . json_encode($request->all()));
@@ -269,41 +238,6 @@ class GenerateFinancialStatementController extends Controller
         $incomeStatement = CoaModel::getSumRequestTrx($request);
         Log::debug('exportIncomeStatement incomeStatement: ' . json_encode($incomeStatement));
         return Excel::download(new NetIncomeExport($incomeStatement, $months), 'net_income.xlsx');
-    }
-    public function exportBalanceSheet(Request $request)
-    {
-        Log::debug('export balance sheet' . json_encode($request));
-        $requestData = session()->get('export_request');
-        if (is_null($requestData)) {
-            return redirect()->back()->with('gagal', 'Terjadi kesalahan. Silakan refresh halaman dan coba lagi.');
-        }
-
-        $request = new Request($requestData);
-
-        Log::debug('export balance sheet request berdasar filter index' . json_encode($request));
-        $startDate = $request->input('transaction_month_start');
-        $endDate = $request->input('transaction_month_end');
-
-        $startDate = $startDate ?: '2024-01-01';
-
-        $formattedStartDate = Carbon::parse($startDate)->format('d-F-Y');
-        $formattedEndDate = Carbon::parse($endDate)->format('d-F-Y');
-
-        $months = [
-            'start_date' => $formattedStartDate,
-            'end_date' => $formattedEndDate,
-        ];
-
-        // Log request details
-        Log::debug('exportBalanceSheet request: ' . json_encode($request->all()));
-
-        // Fetch income statement data
-        $incomeStatement = CoaModel::getSumRequestTrx($request);
-        $saldoLaba = $this->countNetIncome($request);
-
-        Log::debug('exportBalanceSheet incomeStatement: ' . json_encode($incomeStatement));
-
-        return Excel::download(new BalanceSheetExport($incomeStatement, $saldoLaba, $months), 'balance_sheet.xlsx');
     }
     public function exportPerubahanModal(Request $request)
     {
@@ -448,57 +382,7 @@ class GenerateFinancialStatementController extends Controller
         $pdf = Pdf::loadView('reporting.laporan-posisi-keuangan', $data);
         return $pdf->download('laporan_posisi_keuangan_pdf.pdf');
     }
-    public function generatePdfPerubahanModal(Request $request){
-        $requestData = session()->get('export_request');
-        if (is_null($requestData)) {
-            return redirect()->back()->with('gagal', 'Terjadi kesalahan. Silakan refresh halaman dan coba lagi.');
-        }
-
-        $request = new Request($requestData);
-
-        Log::debug('perubahan modal' . json_encode($request->all()));
-
-        $endDate = $request->input('transaction_month_end');
-
-        $formattedEndDate = $endDate ? date('d F Y', strtotime($endDate . '-01')) : '';
-        $formattedMonth = $endDate ? date('F Y') : '';
-
-        $netIncomeResults = $this->countNetIncome($request);
-        $perubahanModal = CoaModel::getSumRequestTrx($request);
-
-        $modalPemilikRaw = $perubahanModal->firstWhere('account_name', 'Modal Pemilik')->total_amount ?? 0;
-        $labaRaw = $netIncomeResults['netIncomeYTD'] + $netIncomeResults['netIncomeCurrentMonth'] + $netIncomeResults['netIncome'];
-        $priveRaw = $perubahanModal->firstWhere('account_type', 'Prive')->total_amount ?? 0;
-        $perubahanModalRaw = $labaRaw - $priveRaw;
-
-        $modalAkhirRaw = $modalPemilikRaw + $perubahanModalRaw;
-
-        Log::debug('laba raw' .json_encode($netIncomeResults));
-
-        // Format the amounts
-        $modalPemilik = $this->formatAmount($modalPemilikRaw);
-        $laba = $this->formatAmount($labaRaw);
-        $prive = $this->formatAmount($priveRaw);
-        $perubahanModal = $this->formatAmount($perubahanModalRaw);
-        $modalAkhir = $this->formatAmount($modalAkhirRaw);
-        
-        $data = [
-            'modalPemilik' => $modalPemilik,
-            'laba' => $laba,
-            'prive' => $prive,
-            'modalAkhir' => $modalAkhir,
-            'perubahanModal' => $perubahanModal,
-            'formattedEndDate' => $formattedEndDate,
-            'formattedMonth' => $formattedMonth,
-        ];
-
-        Log::debug('data ' . json_encode($data));
-
-        // Load the test view and pass the data
-        $pdf = Pdf::loadView('reporting.laporan-perubahan-modal', $data);
-        return $pdf->download('laporan_perubahan_modal.pdf');
-    }
-
+    
     private function formatAmount($amount)
     {
         return number_format($amount, 0, ',', '.');

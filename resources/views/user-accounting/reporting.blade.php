@@ -26,14 +26,6 @@
                                 <a class="btn btn-link text-dark px-3 mb-0" data-bs-toggle="modal" data-bs-target="#balanceSheetModal"><i class="far fa-file text-dark me-2" aria-hidden="true"></i>Tampilkan</a>
                             </div>
                         </li>
-                        <li class="list-group-item border-0 d-flex p-4 mb-2 mt-3 bg-gray-100 border-radius-lg">
-                            <div class="d-flex flex-column">
-                                <h6 class="mb-3 text-sm">Perubahan Modal</h6>
-                            </div>
-                            <div class="ms-auto text-end">
-                                <a class="btn btn-link text-dark px-3 mb-0" data-bs-toggle="modal" data-bs-target="#perubahanModalModal"><i class="far fa-file text-dark me-2" aria-hidden="true"></i>Tampilkan</a>
-                            </div>
-                        </li>
                     </ul>
                 </div>
             </div>
@@ -104,29 +96,6 @@
                 case '#balanceSheetModal':
                     title = 'Neraca';
                     actionUrl = "{{ route('generate-financial-statement.balance') }}";
-                    formContent = `
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="transaction_month_end">Transaksi Akhir <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" name="transaction_month_end" required>
-                                </div>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="division_id">Tipe Bisnis <span class="text-danger">*</span></label>
-                                <select name="division_id" id="division_id" class="form-control" required>
-                                    <option value="all">All</option>
-                                    @foreach ($division as $divisi)
-                                    <option value="{{ $divisi->id }}">{{ $divisi->description }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case '#perubahanModalModal':
-                    title = 'Perubahan modal';
-                    actionUrl = "{{ route('generate-financial-statement.perubahanModal') }}";
                     formContent = `
                         <div class="row">
                             <div class="col-md-6">

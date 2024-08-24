@@ -58,13 +58,14 @@
 
         .invoice-box table tr.item td {
             border-bottom: 1px solid #eee;
+            padding: 10px 5px;
         }
 
         .invoice-box table tr.item.last td {
             border-bottom: none;
         }
 
-        .invoice-box table tr.total td:nth-child(2) {
+        .invoice-box table tr.total td:nth-child(3) {
             border-top: 2px solid #eee;
             font-weight: bold;
         }
@@ -102,12 +103,12 @@
     <div class="invoice-box">
         <table cellpadding="0" cellspacing="0">
             <tr class="top">
-                <td colspan="2">
+                <td colspan="3">
                     <table>
                         <tr>
                             <td class="title">
-                                <img src="https://raw.githubusercontent.com/prawiratamaaa/skripsi-laravel/master/public/assets/img/Maharani_R.png?token=GHSAT0AAAAAACU7XUVZRE3IWX7Q26XRXLE6ZV6W2CQ" 
-                                style="width: 70%; max-width: 100px;" alt="Maharani Logo" />
+                                <img src="https://raw.githubusercontent.com/prawiratamaaa/skripsi-laravel/master/public/assets/img/Maharani_R.png?token=GHSAT0AAAAAACU7XUVZAT6JAUVAHR27RRAYZWD6AXA"
+                                    style="width: 70%; max-width: 100px;" alt="Maharani Logo" />
                             </td>
                             <td>
                                 Invoice : <strong>{{ $invoices }}</strong><br />
@@ -118,7 +119,7 @@
                 </td>
             </tr>
             <tr class="information">
-                <td colspan="2">
+                <td colspan="3">
                     <table>
                         <tr>
                             <td>
@@ -134,24 +135,26 @@
                 </td>
             </tr>
             <tr>
-                <td>Customer : <strong>{{ $bookingData->name}} ({{ $bookingData->no_telp}})</strong></td>
+                <td colspan="2">Customer : <strong>{{ $bookingData->name}} ({{ $bookingData->no_telp}})</strong></td>
                 <td></td>
             </tr>
             <tr>
-                <td>Kendaraan : {{ $bookingData->plat_nomor}} </td>
+                <td colspan="2">Kendaraan : {{ $bookingData->plat_nomor}} </td>
                 <td></td>
             </tr>
             <tr class="heading">
-                <td>Tanggal Booking</td>
-                <td>Deskripsi</td>
+                <td style="width: 50%;">Tanggal Booking</td>
+                <td style="width: 40%; text-align:center;">Deskripsi</td>
+                <td style="width: 20%;">Total Harga</td>
             </tr>
             <tr class="item">
-                <td>{{ \Carbon\Carbon::parse($bookingData->start_book)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($bookingData->end_book)->format('d/m/Y') }}</td>
-                <td>{{ $bookingData->description }}</td>
+                <td style="width: 50%;">{{$formattedBookingDates}}</td>
+                <td style="width: 40%; text-align:center;">{{ $bookingData->description }}</td>
+                <td style="width: 20%;"><strong>Rp{{ number_format($bookingData->total_price) }}</strong></td>
             </tr>
             <tr class="total">
-                <td></td>
-                <td>Total: Rp{{ number_format($bookingData->credit) }}</td>
+                <td colspan="2"></td>
+                <td>Jumlah DP : Rp{{ number_format($bookingData->credit) }}</td>
             </tr>
         </table>
     </div>

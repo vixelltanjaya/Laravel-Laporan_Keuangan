@@ -42,6 +42,9 @@
                         </table>
                     </div>
 
+                    @if($detail->username != null )
+                    <p class="mb-1">Supir: <strong>{{$detail->username}}</strong></p>
+                    @endif
                     @if($journalEntry->is_reversed == 0 && empty($journalEntry->evidence_code_origin))
                     <p class="mb-1">Status: <strong>Baru</strong></p>
                     @elseif($journalEntry->is_reversed == 0 && !empty($journalEntry->evidence_code_origin))

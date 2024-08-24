@@ -95,8 +95,8 @@
                                     </div>
                                     <div class="col-md-3">
                                         <select class="form-control" name="accountSign[]" required>
-                                            <option value="debit"{{ $detail->account_sign == 'debit' ? 'selected' : '' }}>Debit</option>
-                                            <option value="credit"{{ $detail->account_sign == 'kredit' ? 'selected' : '' }}>Kredit</option>
+                                            <option value="debit" {{ $detail->account_sign == 'debit' ? 'selected' : '' }}>Debit</option>
+                                            <option value="kredit" {{ $detail->account_sign == 'kredit' ? 'selected' : '' }}>Kredit</option>
                                         </select>
                                     </div>
                                     <div class="col-md-3">
@@ -225,11 +225,11 @@
             });
         }
         updateRawValue(input);
-        validateBalance(); // Validate balance on input change
+        validateBalance();
     }
 
     function updateRawValue(input) {
-        const rawValue = input.value.replace(/,/g, ''); // Remove commas for raw value
+        const rawValue = input.value.replace(/,/g, '');
         const index = Array.from(document.querySelectorAll('.amount-input')).indexOf(input);
         document.querySelectorAll('.raw-amount-input')[index].value = rawValue;
     }
@@ -249,7 +249,13 @@
             }
         });
 
+        console.log('total kredit ' +creditTotal);
+        console.log('total debit ' +debitTotal);
+
         const isBalanced = debitTotal === creditTotal;
+
+        
+        
         $('#submitButton').prop('disabled', !isBalanced);
     }
 </script>
