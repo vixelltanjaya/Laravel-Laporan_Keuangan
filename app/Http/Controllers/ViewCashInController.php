@@ -20,6 +20,7 @@ class ViewCashInController extends Controller
 
         $journalData = JournalEntry::joinDetailAndUsers($id);
         $detailJournal = DetailJournalEntry::where('entry_id', $id)->first();
+        $bookingData = JournalEntry::joinBookingBus($id);
 
         $journalEntry = $journalData->journalEntry;
         $details = $journalData->details;
@@ -43,6 +44,7 @@ class ViewCashInController extends Controller
             'detailJournal' => $detailJournal,
             'id' => $id,
             'hasAccount2101' => $hasAccount2101,
+            'bookingData' => $bookingData,
             // 'no_ref_asal' => $journalEntry->no_ref_asal 
         ]);
     }

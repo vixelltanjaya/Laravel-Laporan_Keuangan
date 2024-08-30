@@ -76,7 +76,7 @@ class BookedBusController extends Controller
             'description' => 'required|string|max:255',
             'customer_id' => 'required|exists:customer,id',
             'amount' => 'required|string',
-            'total_price' => 'required|numeric',
+            'totalPrice' => 'required|numeric',
             'bus_pariwisata_id' => 'required|exists:bis_pariwisata,id',
             'evidence_image' => 'required|file|max:2048',
         ]);
@@ -86,7 +86,7 @@ class BookedBusController extends Controller
         try {
 
             $amount = floatval(str_replace('.', '', $request->amount));
-            $totalPrice = str_replace('.', '', $request->input('total_price'));
+            $totalPrice = str_replace('.', '', $request->input('totalPrice'));
             $numericTotalPrice = is_numeric($totalPrice) ? floatval($totalPrice) : 0;
 
             // simpan ke booking_bus

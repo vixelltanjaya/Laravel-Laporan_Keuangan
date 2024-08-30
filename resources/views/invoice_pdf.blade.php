@@ -143,18 +143,18 @@
                 <td></td>
             </tr>
             <tr class="heading">
-                <td style="width: 50%;">Tanggal Booking</td>
-                <td style="width: 40%; text-align:center;">Deskripsi</td>
-                <td style="width: 20%;">Total Harga</td>
+                <td style="text-align:left;">Tanggal Booking</td>
+                <td style="text-align:center;">Deskripsi</td>
+                <td style="text-align:right;">Total Harga</td>
             </tr>
             <tr class="item">
-                <td style="width: 50%;">{{$formattedBookingDates}}</td>
-                <td style="width: 40%; text-align:center;">{{ $bookingData->description }}</td>
-                <td style="width: 20%;"><strong>Rp{{ number_format($bookingData->total_price) }}</strong></td>
+                <td style="text-align:left; ">{{$formattedBookingDates}}</td>
+                <td style="text-align:center;">{{ $bookingData->description }}</td>
+                <td style="text-align:right;"><strong>Rp{{ number_format($bookingData->total_price) }}</strong></td>
             </tr>
             <tr class="total">
                 <td colspan="2"></td>
-                <td>Jumlah DP : Rp{{ number_format($bookingData->credit) }}</td>
+                <td style="white-space: nowrap;">Jumlah DP : Rp{{ number_format($bookingData->credit) }}</td>
             </tr>
         </table>
     </div>

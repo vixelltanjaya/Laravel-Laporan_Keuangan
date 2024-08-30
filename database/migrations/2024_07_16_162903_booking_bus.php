@@ -20,6 +20,9 @@ return new class extends Migration
             $table->bigInteger('journal_entry_id')->unsigned()->index();
             $table->date('start_book');
             $table->date('end_book');
+            $table->date('fleet_departure');
+            $table->date('fleet_arrival');
+            $table->double('total_price', 14,2);
             $table->timestamps();
 
             // FK

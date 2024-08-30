@@ -15,7 +15,8 @@ return new class extends Migration
         Schema::create('detail_journal_entry', function(Blueprint $table){
             $table->bigIncrements('id');
             $table->bigInteger('entry_id')->index();
-            $table->string('account_id',255)->index();
+            $table->string('account_id',50)->index();
+            $table->string('employee_id',50)->index();
             $table->double('debit',14,2);
             $table->double('credit',14,2);
             $table->string('evidence_image')->nullable();
@@ -23,6 +24,7 @@ return new class extends Migration
 
             $table->foreign('entry_id')->references('id')->on('journal_entry')->onDelete('cascade');
             $table->foreign('account_id')->references('account_id')->on('chart_of_account')->onDelete('cascade');
+            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
         });
     }
 

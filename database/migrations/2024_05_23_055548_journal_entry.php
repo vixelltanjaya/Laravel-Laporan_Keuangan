@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('evidence_code_origin',15);
             $table->timestamps();
 
-            $table->foreign('business_type_id')->references('id')->on('journal_entry')->onDelete('cascade');
+            $table->foreign('division_id')->references('id')->on('division')->onDelete('cascade');
         });
     }
 

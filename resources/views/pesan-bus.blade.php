@@ -147,8 +147,8 @@
                         <input type="text" class="form-control" id="amount" name="amount" required>
                     </div>
                     <div class="mb-3">
-                        <label for="total_price" class="form-label">Jumlah Harga Total</label>
-                        <input type="text" class="form-control" id="total_price" name="total_price" required>
+                        <label for="totalPrice" class="form-label">Jumlah Harga Total</label>
+                        <input type="text" class="form-control" id="totalPrice" name="totalPrice" required>
                     </div>
                     <div class="mb-3">
                         <label for="evidence_image">Bukti Transaksi</label>
@@ -223,7 +223,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var amountInput = document.getElementById('amount');
-        var totalPriceInput = document.getElementById('total_price');
+        var totalPriceInput = document.getElementById('totalPrice');
 
         amountInput.addEventListener('input', function(e) {
             var value = e.target.value.replace(/\./g, '');
@@ -255,10 +255,10 @@
         //     }
         // });
 
-        document.querySelector('form').addEventListener('submit', function(e) {
-            var value = totalPriceInput.value.replace(/\./g, '');
-            totalPriceInput.value = value; 
-        });
+        // document.querySelector('form').addEventListener('submit', function(e) {
+        //     var value = totalPriceInput.value.replace(/\./g, '');
+        //     totalPriceInput.value = value; 
+        // });
 
         var platNomor = @json($bus -> plat_nomor);
 
