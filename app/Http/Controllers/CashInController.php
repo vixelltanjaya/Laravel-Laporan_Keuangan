@@ -19,8 +19,8 @@ class CashInController extends Controller
     public function index()
     {
         $cashin = JournalEntry::whereRaw("substring(evidence_code from 1 for 3) != 'BKK'")
-        ->orderBy('created_at','desc')    
-        ->get();
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         Log::debug('isi cash in' . json_encode($cashin));
 
@@ -39,6 +39,7 @@ class CashInController extends Controller
             'notes' => 'required|string',
             'division' => 'required',
             'employee' => 'integer',
+            'account_id' => 'String',
             'evidence_image' => 'sometimes|file|mimes:jpeg,png,jpg|max:2048',
         ]);
 
@@ -120,6 +121,27 @@ class CashInController extends Controller
 
                 // Create DetailJournalEntry for filtered coa_ids
                 foreach ($filteredCoaIds as $index => $coaId) {
+                    $debit = $request->input('debit')[$index] ?? 0;
+                    $credit = $request->input('credit')[$index] ?? 0;
+
+                    // cek balance
+                    $currentBalance = DB::table('detail_journal_entry')
+                        ->where('account_id', $coaId)
+                        ->select(DB::raw('COALESCE(SUM(debit) - SUM(credit), 0) as balance'))
+                        ->first()->balance;
+
+                    Log::debug('cek current balance' . json_encode($currentBalance));
+
+                    // new balance after trx
+                    $newBalance = $currentBalance + $debit - $credit;
+
+                    Log::debug('cek new balance' . json_encode($newBalance));
+
+                    // if balance of the account minus, throw exception and rollback
+                    if ($newBalance <= 0) {
+                        throw new Exception("Saldo tidak mencukupi untuk Nomor Akun $coaId.");
+                    }
+
                     $detailjournalentry = DetailJournalEntry::create([
                         'entry_id' => $journalEntry->id,
                         'account_id' => $coaId,
@@ -129,7 +151,7 @@ class CashInController extends Controller
                         'evidence_image' => $imagePath ?? ''
                     ]);
                 }
-                Log::debug('Detail Journal Entry: ' .json_encode( $detailjournalentry->toArray()));
+                Log::debug('Detail Journal Entry: ' . json_encode($detailjournalentry->toArray()));
                 Log::debug('Detail employee: ' . json_encode($detailjournalentry->employee_id));
             }
 
@@ -145,8 +167,6 @@ class CashInController extends Controller
             return redirect()->route('cash-in-form.index')->with('gagal', 'Transaksi gagal. ' . $e->getMessage());
         }
     }
-
-
 
     public function update(Request $request, string $id)
     {

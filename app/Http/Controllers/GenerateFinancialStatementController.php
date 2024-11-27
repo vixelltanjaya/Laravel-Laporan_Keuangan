@@ -239,6 +239,41 @@ class GenerateFinancialStatementController extends Controller
         Log::debug('exportIncomeStatement incomeStatement: ' . json_encode($incomeStatement));
         return Excel::download(new NetIncomeExport($incomeStatement, $months), 'net_income.xlsx');
     }
+
+    public function exportBalanceSheet(Request $request)
+    {
+        $requestData = session()->get('export_request');
+        if (is_null($requestData)) {
+            return redirect()->back()->with('gagal', 'Terjadi kesalahan. Silakan refresh halaman dan coba lagi.');
+        }
+
+        $request = new Request($requestData);
+
+        Log::debug('export balance sheet request berdasar filter index' . json_encode($request));
+        $startDate = $request->input('transaction_month_start');
+        $endDate = $request->input('transaction_month_end');
+
+        $startDate = $startDate ?: '2024-01-01';
+
+        $formattedStartDate = Carbon::parse($startDate)->format('d-F-Y');
+        $formattedEndDate = Carbon::parse($endDate)->format('d-F-Y');
+
+        $months = [
+            'start_date' => $formattedStartDate,
+            'end_date' => $formattedEndDate,
+        ];
+
+        // Log request details
+        Log::debug('export balance sheet request: ' . json_encode($request->all()));
+
+        // Fetch income statement data
+        $balanceSheet = CoaModel::getSumRequestTrx($request);
+        $saldoLaba = $this->countNetIncome($request);
+
+        Log::debug('export balance sheet: ' . json_encode($balanceSheet));
+
+        return Excel::download(new BalanceSheetExport($balanceSheet, $saldoLaba, $months), 'balance_sheet.xlsx');
+    }
     public function exportPerubahanModal(Request $request)
     {
         $requestData = session()->get('export_request');

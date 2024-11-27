@@ -111,7 +111,7 @@ class BalanceSheetExport implements FromCollection, WithHeadings, WithTitle
         ');
         // total kewajiban + saldo laba
         $totalKewajibanAndLaba = $totalKewajiban + $totalEkuitas + $netIncomeCurrentMonth + $netIncomeYTD + $netIncome;
-        $data[] = ['Total Kewajiban dan Laba', '', '', number_format($totalKewajibanAndLaba, 2)];
+        $data[] = ['Total Kewajiban dan Ekuitas', '', '', number_format($totalKewajibanAndLaba, 2)];
 
         return collect($data);
     }

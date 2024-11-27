@@ -127,6 +127,28 @@ class CashOutController extends Controller
 
                 // Create DetailJournalEntry for filtered coa_ids
                 foreach ($filteredCoaIds as $index => $coaId) {
+                    $debit = $request->input('debit')[$index] ?? 0;
+                    $credit = $request->input('credit')[$index] ?? 0;
+
+                    // cek balance
+                    $currentBalance = DB::table('detail_journal_entry')
+                        ->where('account_id', $coaId)
+                        ->select(DB::raw('COALESCE(SUM(debit) - SUM(credit), 0) as balance'))
+                        ->first()->balance;
+
+                    Log::debug('cek current balance' . json_encode($currentBalance));
+
+                    // new balance after trx
+                    $newBalance = $currentBalance + $debit - $credit;
+
+                    Log::debug('cek new balance' . json_encode($newBalance));
+                    
+                    // if balance of the account minus, throw exception and rollback
+                    if ($newBalance <= 0) {
+                        throw new Exception("Saldo tidak mencukupi untuk Nomor Akun $coaId.");
+                    }
+
+
                     DetailJournalEntry::create([
                         'entry_id' => $journalEntry->id,
                         'account_id' => $coaId,
@@ -150,5 +172,4 @@ class CashOutController extends Controller
             return redirect()->route('cash-out-form.index')->with('gagal', 'Transaksi gagal. ' . $e->getMessage());
         }
     }
-
 }
