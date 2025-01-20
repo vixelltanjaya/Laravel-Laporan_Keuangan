@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('permissions_user', function (Blueprint $table){
             $table->bigIncrements('id');
-            $table->integer('permission_id');
-            $table->integer('user_id');
+            $table->unsignedBigInteger('permission_id');
+            $table->unsignedBigInteger('user_id');
             $table->timestamps();
             $table->softDeletes();
             $table->index('permission_id');

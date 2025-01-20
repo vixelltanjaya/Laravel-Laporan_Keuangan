@@ -14,9 +14,9 @@ return new class extends Migration
     {
         Schema::create('detail_journal_entry', function(Blueprint $table){
             $table->bigIncrements('id');
-            $table->bigInteger('entry_id')->index();
-            $table->string('account_id',50)->index();
-            $table->string('employee_id',50)->index();
+            $table->unsignedBigInteger('entry_id')->index();
+            $table->string('account_id', 20)->index();
+            $table->unsignedBigInteger('employee_id')->index();
             $table->double('debit',14,2);
             $table->double('credit',14,2);
             $table->string('evidence_image')->nullable();

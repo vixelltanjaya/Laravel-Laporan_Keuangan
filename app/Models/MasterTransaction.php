@@ -12,6 +12,15 @@ class MasterTransaction extends Model
     protected $fillable = ['code','description','evidence_id'];
     protected $table = 'master_transaction';
 
+    protected static function booted()
+    {
+        static::creating(function ($transaction) {
+            // Use a SELECT statement to get the next available code
+            $lastCode = DB::table('master_transaction')->max('code');  // Get the max code value from the table
+            $transaction->code = $lastCode ? $lastCode + 1 : 1000; // Default to 1000 if the table is empty
+        });
+    }
+
 
     public static function joinEvidenceCode(){
         

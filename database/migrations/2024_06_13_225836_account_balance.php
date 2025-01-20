@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('account_balance', function(Blueprint $table){
             $table->bigIncrements('id');
-            $table->string('account_id',20)->index();
+            $table->string('account_id', 20)->index();
             $table->double('beginning_balance',15,3);
             $table->double('debit_mutation',15,3);
             $table->double('credit_mutation',15,3);

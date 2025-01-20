@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('role_user', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('role_id');
-            $table->integer('user_id');
+            $table->unsignedBigInteger('role_id');
+            $table->unsignedBigInteger('user_id');
             $table->timestamps();
             $table->softDeletes();
             $table->index('role_id');

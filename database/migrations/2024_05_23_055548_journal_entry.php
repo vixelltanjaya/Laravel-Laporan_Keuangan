@@ -11,13 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('division', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('description', 155);
+            $table->timestamps();
+        });
         Schema::create('journal_entry', function(Blueprint $table){
             $table->bigIncrements('id');
             $table->string('description',155);
             $table->date('entry_date');
             $table->bigInteger('user_id')->index();
             $table->string('evidence_code',14);
-            $table->integer('division_id')->index();
+            $table->unsignedBigInteger('division_id')->index();
             $table->tinyInteger('is_reversed');
             $table->string('reversed_by',14)->index()->nullable();
             $table->timestamp('reversed_at')->nullable();
@@ -34,5 +39,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('journal_entry');
+        Schema::dropIfExists('division');
     }
 };

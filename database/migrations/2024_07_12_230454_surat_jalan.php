@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Define the foreign key constraint
-            $table->foreign('bis_pariwisata_id')->references('bis_pariwisata')->on('id')->onDelete('cascade');
+            $table->foreign('bis_pariwisata_id')->references('id')->on('bis_pariwisata')->onDelete('cascade');
         });
     }
 

@@ -71,9 +71,9 @@ class BisPariwisata extends Model
             ->select(
                 'A.account_id',
                 'A.account_name',
-                DB::raw('SUM("B".credit) as total_credit')
+                DB::raw('SUM(B.credit) as total_credit')
             )
-            ->where(DB::raw('SUBSTRING("A".account_name, 1, 14)'), '=', 'Pendapatan Bis')
+            ->where(DB::raw('SUBSTRING(A.account_name, 1, 14)'), '=', 'Pendapatan Bis') // Fixed syntax here
             ->groupBy('A.account_id', 'A.account_name')
             ->get();
     }

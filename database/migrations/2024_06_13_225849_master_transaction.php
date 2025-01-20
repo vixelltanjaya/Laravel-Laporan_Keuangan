@@ -12,9 +12,17 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('evidence_code', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('prefix_code', 3)->index();
+            $table->string('code_title', 75);
+            $table->timestamps();
+
+            $table->unique(['prefix_code']);
+        });
         Schema::create('master_transaction', function (Blueprint $table) {
             $table->id(); 
-            $table->integer('code')->unique()->default(DB::raw('(SELECT COALESCE(MAX(code), 999) + 1 FROM master_transaction)'));
+            $table->integer('code')->unique()->nullable();
             $table->string('description');
             $table->unsignedBigInteger('evidence_id');
             $table->timestamps();
@@ -29,5 +37,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('master_transaction');
+        Schema::dropIfExists('evidence_code');
     }
 };
